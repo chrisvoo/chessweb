@@ -1,2 +1,2 @@
-# chess-pico
+# chess-payload
 Chess pico

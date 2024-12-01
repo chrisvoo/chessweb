@@ -1,8 +1,8 @@
 # TODO
 
-* [x] ~~Ability to read an .env file from backend/app/settings.php~~
-* [ ] Define the database schema (might be useful depending what you can do on the hosting provder via SSH)
-* [ ] Set up a DbManager class that has the Setting in the constructor and a getConnection 
+* [x] ~~Ability to read an .env file from backend/app/settings.php~~ (12/1/2024)
+* [x] ~~Define the database schema (might be useful depending what you can do on the hosting provider via SSH)~~ (12/1/2024)
+* [x] ~~Set up a DbManager class~~ (12/1/2024)
 method for accessing PDO. Evaluate using [Eloquent](https://codecourse.com/articles/using-eloquent-outside-of-laravel).
 It's based on [illuminate/database](https://github.com/illuminate/database).
 * [ ] See how PHPUnit works with Slim

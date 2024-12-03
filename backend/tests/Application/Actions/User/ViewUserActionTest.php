@@ -9,7 +9,7 @@ use App\Application\Actions\ActionPayload;
 use App\Application\Handlers\HttpErrorHandler;
 use App\Domain\User\User;
 use App\Domain\User\UserNotFoundException;
-use App\Domain\User\UserRepository;
+use App\Domain\User\UserRepositoryInterface;
 use DI\Container;
 use Slim\Middleware\ErrorMiddleware;
 use Tests\TestCase;
@@ -25,13 +25,13 @@ class ViewUserActionTest extends TestCase
 
         $user = new User(1, 'bill.gates', 'Bill', 'Gates');
 
-        $userRepositoryProphecy = $this->prophesize(UserRepository::class);
+        $userRepositoryProphecy = $this->prophesize(UserRepositoryInterface::class);
         $userRepositoryProphecy
             ->findUserOfId(1)
             ->willReturn($user)
             ->shouldBeCalledOnce();
 
-        $container->set(UserRepository::class, $userRepositoryProphecy->reveal());
+        $container->set(UserRepositoryInterface::class, $userRepositoryProphecy->reveal());
 
         $request = $this->createRequest('GET', '/users/1');
         $response = $app->handle($request);
@@ -59,13 +59,13 @@ class ViewUserActionTest extends TestCase
         /** @var Container $container */
         $container = $app->getContainer();
 
-        $userRepositoryProphecy = $this->prophesize(UserRepository::class);
+        $userRepositoryProphecy = $this->prophesize(UserRepositoryInterface::class);
         $userRepositoryProphecy
             ->findUserOfId(1)
             ->willThrow(new UserNotFoundException())
             ->shouldBeCalledOnce();
 
-        $container->set(UserRepository::class, $userRepositoryProphecy->reveal());
+        $container->set(UserRepositoryInterface::class, $userRepositoryProphecy->reveal());
 
         $request = $this->createRequest('GET', '/users/1');
         $response = $app->handle($request);

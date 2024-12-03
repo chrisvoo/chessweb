@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Actions\User\ViewSingleUserAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -14,11 +15,13 @@ return function (App $app) {
 //    });
 
     $app->group('/api', function (Group $group) {
-        $group->get('', function (Request $request, Response $response) {
-            $payload = json_encode(['hello' => 'world']);
-            $response->getBody()->write($payload);
-            return $response->withHeader('Content-Type', 'application/json');
-        });
+        $group->get('/user/{id}', ViewSingleUserAction::class);
+
+//        $group->get('', function (Request $request, Response $response) {
+//            $payload = json_encode(['hello' => 'world']);
+//            $response->getBody()->write($payload);
+//            return $response->withHeader('Content-Type', 'application/json');
+//        });
 //        $group->get('/{id}', ViewUserAction::class);
     });
 };

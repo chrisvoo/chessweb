@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
-interface UserRepository
+interface UserRepositoryInterface
 {
     /**
      * @return User[]
@@ -16,5 +16,5 @@ interface UserRepository
      * @return User
      * @throws UserNotFoundException
      */
-    public function findUserOfId(int $id): User;
+    public function findById(int $id): User;
 }

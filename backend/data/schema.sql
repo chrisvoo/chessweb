@@ -3,11 +3,17 @@ CREATE TABLE users (
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
     valid TINYINT(1) NOT NULL DEFAULT 1,
+    is_admin TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME,
     PRIMARY KEY (id)
 );
+
+# alter table users add column password VARCHAR(100) NOT NULL;
+INSERT INTO users (first_name, last_name, email, password, valid, is_admin)
+VALUES ('Christian', 'Castelli', 'voodoo81peopleC@gmail.com', '$2y$12$kzeUyyRsoWPIUknPTSKE/OVAe5nOLMozEwGYwT1JBi89zqMlIPq02', 1,1);
 
 CREATE TABLE articles (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -17,7 +23,7 @@ CREATE TABLE articles (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME,
     PRIMARY KEY (id),
-    FOREIGN KEY (author_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE SET NULL
+    FOREIGN KEY (author_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 CREATE TABLE tags (
@@ -36,6 +42,7 @@ CREATE TABLE categories (
     PRIMARY KEY (id)
 );
 
+DROP TABLE IF EXISTS article_tags;
 CREATE TABLE article_tags (
     article_id BIGINT UNSIGNED NOT NULL,
     tag_id BIGINT UNSIGNED NOT NULL,

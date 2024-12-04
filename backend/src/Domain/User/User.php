@@ -10,6 +10,8 @@ class User implements JsonSerializable
 {
     public int $id;
 
+    public string $password;
+
     public string $email;
 
     public string $first_name;

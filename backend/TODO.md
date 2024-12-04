@@ -3,11 +3,11 @@
 * [x] ~~Ability to read an .env file from backend/app/settings.php~~ (12/1/2024)
 * [x] ~~Define the database schema (might be useful depending what you can do on the hosting provider via SSH)~~ (12/1/2024)
 * [x] ~~Set up a DbManager class~~ (12/1/2024)
-* [ ] See how PHPUnit works with Slim
+* [x] ~~See how PHPUnit works with Slim~~ (12/4/2024)
 * [ ] Set up PHPCS and PHPStan
 * [ ] Explore the GitHUb pipeline for tests, linting and code coverage
 * [ ] CRUD user entity
-  * [ ] Read single user
+  * [x] ~~Read single user~~ (12/4/2024)
   * [ ] Read all users
   * [ ] Create user
   * [ ] Update user

@@ -9,52 +9,37 @@ use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-    public function userProvider(): array
+    public function testJsonSerialize()
     {
-        return [
-            [1, 'bill.gates', 'Bill', 'Gates'],
-            [2, 'steve.jobs', 'Steve', 'Jobs'],
-            [3, 'mark.zuckerberg', 'Mark', 'Zuckerberg'],
-            [4, 'evan.spiegel', 'Evan', 'Spiegel'],
-            [5, 'jack.dorsey', 'Jack', 'Dorsey'],
-        ];
-    }
+        $id = 1;
+        $email = 'user@example.com';
+        $firstName = 'John';
+        $password = 'sadasdasd';
+        $lastName = 'Doe';
+        $isAdmin = true;
+        $createdAt = '2021-01-01 00:00:00';
+        $updatedAt = '2021-01-01 00:00:00';
 
-    /**
-     * @dataProvider userProvider
-     * @param int    $id
-     * @param string $username
-     * @param string $firstName
-     * @param string $lastName
-     */
-    public function testGetters(int $id, string $username, string $firstName, string $lastName)
-    {
-        $user = new User($id, $username, $firstName, $lastName);
-
-        $this->assertEquals($id, $user->getId());
-        $this->assertEquals($username, $user->getUsername());
-        $this->assertEquals($firstName, $user->getFirstName());
-        $this->assertEquals($lastName, $user->getLastName());
-    }
-
-    /**
-     * @dataProvider userProvider
-     * @param int    $id
-     * @param string $username
-     * @param string $firstName
-     * @param string $lastName
-     */
-    public function testJsonSerialize(int $id, string $username, string $firstName, string $lastName)
-    {
-        $user = new User($id, $username, $firstName, $lastName);
+        $user = new User();
+        $user->id = $id;
+        $user->email = $email;
+        $user->password = $password;
+        $user->first_name = $firstName;
+        $user->last_name = $lastName;
+        $user->is_admin = $isAdmin;
+        $user->created_at = $createdAt;
+        $user->updated_at = $updatedAt;
 
         $expectedPayload = json_encode([
             'id' => $id,
-            'username' => $username,
-            'firstName' => $firstName,
-            'lastName' => $lastName,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'is_admin' => $isAdmin,
+            'created_at' => $createdAt,
+            'updated_at' => $updatedAt,
         ]);
 
-        $this->assertEquals($expectedPayload, json_encode($user));
+        $this->assertJsonStringEqualsJsonString($expectedPayload, json_encode($user));
     }
 }

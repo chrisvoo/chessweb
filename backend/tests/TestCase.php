@@ -4,13 +4,19 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use App\Application\Handlers\HttpErrorHandler;
+use App\Infrastructure\Persistence\DatabaseManager;
+use App\Infrastructure\Persistence\DatabaseManagerInterface;
+use DI\Container;
 use DI\ContainerBuilder;
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Factory\AppFactory;
+use Slim\Middleware\ErrorMiddleware;
 use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Headers;
 use Slim\Psr7\Request as SlimRequest;
@@ -18,7 +24,41 @@ use Slim\Psr7\Uri;
 
 class TestCase extends PHPUnit_TestCase
 {
-    use ProphecyTrait;
+    protected ?App $app;
+    protected DatabaseManagerInterface|MockObject $databaseManager;
+
+    public function setUp(): void
+    {
+        $this->app = $this->getAppInstance();
+        /** @var Container $container */
+        $container = $this->app->getContainer();
+        $this->databaseManager = $this->mockDatabaseManager();
+        $container->set(DatabaseManagerInterface::class, $this->databaseManager);
+    }
+
+    protected function mockDatabaseManager(): MockObject|DatabaseManagerInterface
+    {
+        $mock = $this->getMockBuilder(DatabaseManagerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mock->method('connect')->willReturn($mock);
+
+        return $mock;
+    }
+
+    protected function mockRepository(string $repoClass): MockObject
+    {
+        $repositoryMock = $this
+            ->getMockBuilder($repoClass)
+            ->getMock();
+
+        /** @var Container $container */
+        $container = $this->app->getContainer();
+        $container->set($repoClass, $repositoryMock);
+
+        return $repositoryMock;
+    }
 
     /**
      * @return App
@@ -30,10 +70,6 @@ class TestCase extends PHPUnit_TestCase
         $containerBuilder = new ContainerBuilder();
 
         // Container intentionally not compiled for tests.
-
-        // Set up settings
-        $settings = require __DIR__ . '/../app/settings.php';
-        $settings($containerBuilder);
 
         // Set up dependencies
         $dependencies = require __DIR__ . '/../app/dependencies.php';
@@ -53,6 +89,13 @@ class TestCase extends PHPUnit_TestCase
         // Register middleware
         $middleware = require __DIR__ . '/../app/middleware.php';
         $middleware($app);
+
+        $callableResolver = $app->getCallableResolver();
+        $responseFactory = $app->getResponseFactory();
+        $errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+        $errorMiddleware = new ErrorMiddleware($callableResolver, $responseFactory, true, false, false);
+        $errorMiddleware->setDefaultErrorHandler($errorHandler);
+        $app->add($errorMiddleware);
 
         // Register routes
         $routes = require __DIR__ . '/../app/routes.php';

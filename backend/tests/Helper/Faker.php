@@ -23,20 +23,24 @@ class Faker
                 throw new Exception("$property->name of $class hasn't a type!");
             }
             $type = $property->getType();
+            $valueInited = false;
             if ($type->allowsNull()) {
                 $value = null;
+                $valueInited = true;
             } elseif ($type->isBuiltin()) {
                 switch($type->getName()) {
-                    case 'string': $value = "abc"; break;
-                    case 'int': $value = 123; break;
-                    case 'float': $value = 123.123; break;
-                    case 'bool': $value = true; break;
-                    case 'array': $value = []; break;
+                    case 'string': $value = "abc"; $valueInited = true; break;
+                    case 'int': $value = 123; $valueInited = true; break;
+                    case 'float': $value = 123.123; $valueInited = true; break;
+                    case 'bool': $value = true; $valueInited = true; break;
+                    case 'array': $value = []; $valueInited = true; break;
                     default: echo 'Skipping type: ' . $type->getName();
                 }
             }
 
-            $instance->{$property->name} = $value;
+            if ($valueInited) {
+                $instance->{$property->name} = $value;
+            }
         }
 
         return $instance;

@@ -5,9 +5,11 @@ declare(strict_types=1);
 use App\Infrastructure\Persistence\DatabaseManager;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DI\ContainerBuilder;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use Monolog\Processor\UidProcessor;
+use Monolog\Processor\MemoryUsageProcessor;
+use Monolog\Processor\WebProcessor;
 use Psr\Log\LoggerInterface;
 
 return function (ContainerBuilder $containerBuilder) {
@@ -15,10 +17,11 @@ return function (ContainerBuilder $containerBuilder) {
         LoggerInterface::class => function () {
             $logger = new Logger($_ENV['LOGGER_NAME']);
 
-            $processor = new UidProcessor();
-            $logger->pushProcessor($processor);
+            $logger->pushProcessor(new MemoryUsageProcessor());
+            $logger->pushProcessor(new WebProcessor());
 
             $handler = new StreamHandler($_ENV['LOGGER_PATH'], $_ENV['LOGGER_LEVEL']);
+            $handler->setFormatter(new LineFormatter(null, 'Y-m-d H:i:s'));
             $logger->pushHandler($handler);
 
             return $logger;

@@ -4,27 +4,40 @@ declare(strict_types=1);
 
 namespace App\Domain\User;
 
+use App\Domain\BaseDomainEntity;
+use DomainException;
 use JsonSerializable;
 
-class User implements JsonSerializable
+class User extends BaseDomainEntity implements JsonSerializable
 {
+    public const TABLE_NAME = 'users';
+
     public int $id;
 
-    public string $password;
-
     public string $email;
+
+    public string $password;
 
     public string $first_name;
 
     public string $last_name;
 
-    public bool $is_admin;
+    public bool $is_admin = false;
 
-    public bool $valid;
+    public bool $valid = true;
 
     public string $created_at;
 
     public ?string $updated_at;
+
+    public function hashPassword(): self
+    {
+        if (empty($this->password)) {
+            throw new DomainException('Password is required.');
+        }
+        $this->password = password_hash($this->password, PASSWORD_DEFAULT, ['cost' => 12]);
+        return $this;
+    }
 
     //     #[\ReturnTypeWillChange]
     public function jsonSerialize(): array

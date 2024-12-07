@@ -8,7 +8,7 @@
 * [ ] Explore the GitHUb pipeline for tests, linting and code coverage
 * [ ] CRUD user entity
   * [x] ~~Read single user~~ (12/4/2024)
-  * [ ] Read all users
+  * [x] ~~Read all users~~
   * [ ] Create user
   * [ ] Update user
   * [ ] Delete user
@@ -32,4 +32,4 @@
   * [ ] Delete category
 * [ ] Authentication middleware. We could implement a JWT access token in memory and a refresh token in cookie.  
 See https://www.cyberchief.ai/2023/05/secure-jwt-token-storage.html
-* [ ] Logs rotation implementation
+* [ ] Logs rotation implementation: https://stackoverflow.com/questions/55369654/how-to-set-max-size-for-log-file-using-monolog

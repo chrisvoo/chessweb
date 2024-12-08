@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Tests;
 
 use App\Application\Handlers\HttpErrorHandler;
-use App\Infrastructure\Persistence\DatabaseManager;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DI\Container;
 use DI\ContainerBuilder;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Factory\AppFactory;
@@ -115,6 +113,7 @@ class TestCase extends PHPUnit_TestCase
     protected function createRequest(
         string $method,
         string $path,
+        array $body = [],
         array $headers = ['HTTP_ACCEPT' => 'application/json'],
         array $cookies = [],
         array $serverParams = []

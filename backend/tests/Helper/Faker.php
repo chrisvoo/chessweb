@@ -29,7 +29,12 @@ class Faker
                 $valueInited = true;
             } elseif ($type->isBuiltin()) {
                 switch($type->getName()) {
-                    case 'string': $value = "abc"; $valueInited = true; break;
+                    case 'string':
+                    {
+                        $value = str_contains($property->name, 'email') ? 'email@example.it' : "abc";
+                        $valueInited = true;
+                        break;
+                    }
                     case 'int': $value = 123; $valueInited = true; break;
                     case 'float': $value = 123.123; $valueInited = true; break;
                     case 'bool': $value = true; $valueInited = true; break;

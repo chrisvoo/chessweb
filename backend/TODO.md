@@ -6,12 +6,12 @@
 * [x] ~~See how PHPUnit works with Slim~~ (12/4/2024)
 * [ ] Set up PHPCS and PHPStan
 * [ ] Explore the GitHUb pipeline for tests, linting and code coverage
-* [ ] CRUD user entity
+* [x] CRUD user entity
   * [x] ~~Read single user~~ (12/4/2024)
-  * [x] ~~Read all users~~
-  * [ ] Create user
-  * [ ] Update user
-  * [ ] Delete user
+  * [x] ~~Read all users~~ (12/8/2024)
+  * [x] ~~Create user~~ (12/8/2024)
+  * [x] ~~Update user~~ (12/8/2024)
+  * [x] ~~Delete user~~ (12/8/2024)
 * [ ] CRUD article entity
   * [ ] Read single article
   * [ ] Read all articles with filters, pagination and sorting

@@ -20,7 +20,7 @@ class UserValidator implements ValidatorInterface
                 v::key(
                     'password',
                     v::stringType()->notEmpty()->length(8)
-                )->assert($data['password'] ?? null);
+                )->assert($data);
             }
 
             v::key(

@@ -251,7 +251,7 @@ class DatabaseManager implements DatabaseManagerInterface
      * @param  integer $id id of record
      * @return int Returns the number of rows affected by the last SQL statement
      */
-    public function deleteById(string $table, int $id)
+    public function deleteById(string $table, int $id): int
     {
         $stmt = $this->run("DELETE FROM $table WHERE id = ?", [$id]);
 
@@ -266,7 +266,7 @@ class DatabaseManager implements DatabaseManagerInterface
      * @param  string $ids ids of records
      * @return int Returns the number of rows affected by the last SQL statement
      */
-    public function deleteByIds(string $table, string $column, string $ids)
+    public function deleteByIds(string $table, string $column, string $ids): int
     {
         $stmt = $this->run("DELETE FROM $table WHERE $column IN ($ids)");
 

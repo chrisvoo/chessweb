@@ -29,7 +29,34 @@ class DatabaseOperation implements JsonSerializable
             'entity_id' => $this->entityId,
             'success' => $this->success,
             'message' => $this->message,
+            'code' => $this->code,
             'affected_rows' => $this->affectedRows
         ];
+    }
+
+    private static function newEntityOperation(int $entityId, string $message, int $code, int $affectedRows = 1): DatabaseOperation
+    {
+        $dbOp = new DatabaseOperation();
+        $dbOp->entityId = $entityId;
+        $dbOp->success = true;
+        $dbOp->message = $message;
+        $dbOp->code = $code;
+        $dbOp->affectedRows = $affectedRows;
+        return $dbOp;
+    }
+
+    public static function newSingleEntitySuccessfullyCreated(int $entityId): DatabaseOperation
+    {
+        return self::newEntityOperation($entityId, 'Entity created', self::ENTITY_CREATED);
+    }
+
+    public static function newSingleEntitySuccessfullyUpdated(int $entityId): DatabaseOperation
+    {
+        return self::newEntityOperation($entityId, 'Entity updated', self::ENTITY_UPDATED);
+    }
+
+    public static function newSingleEntitySuccessfullyDeleted(int $entityId): DatabaseOperation
+    {
+        return self::newEntityOperation($entityId, 'Entity deleted', self::ENTITY_DELETED);
     }
 }

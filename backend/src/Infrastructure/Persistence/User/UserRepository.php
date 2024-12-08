@@ -8,7 +8,6 @@ use App\Domain\Operations\DatabaseOperation;
 use App\Domain\User\User;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DateTime;
-use Monolog\Logger;
 use PDO;
 use Psr\Log\LoggerInterface;
 
@@ -71,7 +70,7 @@ SQL,
                 return $dbOp;
             }
 
-            $afftectedRows = $this->databaseManager->update(
+            $affectedRows = $this->databaseManager->update(
                 User::TABLE_NAME,
                 [
                     'email' => $user->email,
@@ -84,11 +83,8 @@ SQL,
                 ['id' => $user->id]
             );
 
-            $dbOp = new DatabaseOperation();
-            $dbOp->success = true;
-            $dbOp->message = 'User updated';
-            $dbOp->entityId = $user->id;
-            $dbOp->affectedRows = $afftectedRows;
+            $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated($user->id);
+            $dbOp->affectedRows = $affectedRows;
             return $dbOp;
         } else {
             $lastInsertedId = $this->databaseManager->insert(
@@ -104,22 +100,15 @@ SQL,
               ]
             );
 
-            $dbOp = new DatabaseOperation();
-            $dbOp->success = true;
-            $dbOp->message = 'User created';
-            $dbOp->entityId = (int)$lastInsertedId;
-            $dbOp->affectedRows = 1;
-            return $dbOp;
+            return DatabaseOperation::newSingleEntitySuccessfullyCreated((int)$lastInsertedId);
         }
     }
 
     public function delete(int $userId): DatabaseOperation
     {
-        $this->databaseManager->deleteById(User::TABLE_NAME, $userId);
-        $dbOp = new DatabaseOperation();
-        $dbOp->success = true;
-        $dbOp->message = 'User deleted';
-        $dbOp->entityId = $userId;
+        $affectedRows =$this->databaseManager->deleteById(User::TABLE_NAME, $userId);
+        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated($userId);
+        $dbOp->affectedRows = $affectedRows;
         return $dbOp;
     }
 }

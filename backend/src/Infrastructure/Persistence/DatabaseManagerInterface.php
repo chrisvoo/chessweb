@@ -20,6 +20,6 @@ interface DatabaseManagerInterface
     public function update(string $table, array $data, array $where): int;
     public function delete(string $table, array $where, int $limit = 1): int;
     public function deleteAll(string $table): int;
-    public function deleteById(string $table, int $id);
-    public function deleteByIds(string $table, string $column, string $ids);
+    public function deleteById(string $table, int $id): int;
+    public function deleteByIds(string $table, string $column, string $ids): int;
 }

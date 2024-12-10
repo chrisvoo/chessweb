@@ -113,7 +113,6 @@ class TestCase extends PHPUnit_TestCase
     protected function createRequest(
         string $method,
         string $path,
-        array $body = [],
         array $headers = ['HTTP_ACCEPT' => 'application/json'],
         array $cookies = [],
         array $serverParams = []

@@ -25,10 +25,11 @@ class UserRepository implements UserRepositoryInterface
      */
     public function findAll(): array
     {
+        $table = User::TABLE_NAME;
         return $this->databaseManager->rows(<<<SQL
             SELECT id, email, first_name, last_name, is_admin,
                    created_at, updated_at, valid
-            FROM users
+            FROM $table
 SQL,
         [],
         PDO::FETCH_CLASS,
@@ -41,13 +42,14 @@ SQL,
      */
     public function findById(int $id): User|false
     {
+        $table = User::TABLE_NAME;
         /**
          * @var User|false $result
          */
         $result = $this->databaseManager->row(<<<SQL
             SELECT id, email, first_name, last_name, is_admin,
                    created_at, updated_at, valid
-            FROM users
+            FROM $table
             WHERE id = :id
 SQL,
             User::class,
@@ -106,7 +108,7 @@ SQL,
 
     public function delete(int $userId): DatabaseOperation
     {
-        $affectedRows =$this->databaseManager->deleteById(User::TABLE_NAME, $userId);
+        $affectedRows = $this->databaseManager->deleteById(User::TABLE_NAME, $userId);
         $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated($userId);
         $dbOp->affectedRows = $affectedRows;
         return $dbOp;

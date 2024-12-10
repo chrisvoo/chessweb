@@ -7,8 +7,22 @@ use Slim\Exception\HttpBadRequestException;
 
 class InvalidRequestException extends HttpBadRequestException
 {
-    public function __construct(ServerRequestInterface $request, string $message)
-    {
+    private array $extraDetails;
+
+    public function __construct(
+        ServerRequestInterface $request,
+        string $message,
+        array $extraDetails = []
+    ) {
         parent::__construct($request, $message);
+        $this->extraDetails = $extraDetails;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtraDetails(): array
+    {
+        return $this->extraDetails;
     }
 }

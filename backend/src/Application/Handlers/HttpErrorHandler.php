@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Handlers;
 
+use _PHPStan_62c6a0a8b\Nette\Neon\Exception;
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -58,7 +59,11 @@ class HttpErrorHandler extends SlimErrorHandler
             $error->setDescription($exception->getMessage());
         }
 
-        $payload = new ActionPayload($statusCode, null, $error);
+        $data = method_exists($exception, 'getExtraDetails')
+                ? $exception->getExtraDetails()
+                : null;
+
+        $payload = new ActionPayload($statusCode, $data, $error);
         $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT);
 
         $response = $this->responseFactory->createResponse($statusCode);

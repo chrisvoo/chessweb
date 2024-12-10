@@ -20,6 +20,26 @@ class TagRepository implements TagRepositoryInterface
     }
 
     /**
+     * It returns the number of tags matching the filters
+     * @param SimpleNamedFilters $filters
+     * @return int
+     */
+    public function count(SimpleNamedFilters $filters): int
+    {
+        $table = Tag::TABLE_NAME;
+        $whereCondition = isset($filters->name) ? "name LIKE :name" : '';
+        $params = isset($filters->name) ? ['name' => "%{$filters->name}%"] : [];
+
+        return $this->databaseManager->count(<<<SQL
+            SELECT id
+            FROM $table
+            WHERE $whereCondition
+SQL,
+            $params
+        );
+    }
+
+    /**
      * @return Tag[]
      */
     public function list(SimpleNamedFilters $filters): array
@@ -37,7 +57,7 @@ class TagRepository implements TagRepositoryInterface
             FROM $table
             WHERE $whereCondition
             ORDER BY $orderBy $orderDirection
-            OFFSET $offset LIMIT $limit
+            LIMIT $limit OFFSET $offset 
 SQL,
             $params,
             PDO::FETCH_CLASS,

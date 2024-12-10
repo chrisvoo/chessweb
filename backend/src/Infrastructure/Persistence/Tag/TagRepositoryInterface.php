@@ -11,6 +11,13 @@ use App\Domain\Tag\Tag;
 interface TagRepositoryInterface
 {
     /**
+     * It returns the number of tags matching the filters
+     * @param SimpleNamedFilters $filters
+     * @return int
+     */
+    public function count(SimpleNamedFilters $filters): int;
+
+    /**
      * List tags and eventually filter them.
      * @return Tag[]
      */

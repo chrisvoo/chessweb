@@ -27,7 +27,7 @@ class CreateUserActionTest extends TestCase
     /**
      * @throws \ReflectionException
      */
-    public function testUCreateUserSuccess(): void
+    public function testCreateUserSuccess(): void
     {
         $repo = $this->mockRepository(UserRepositoryInterface::class);
         $dbOp = DatabaseOperation::newSingleEntitySuccessfullyCreated(1);

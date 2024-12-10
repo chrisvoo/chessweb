@@ -3,7 +3,6 @@
 namespace App\Application\Actions\Tag;
 
 use App\Application\Actions\Action;
-use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Domain\Pagination\SimpleNamedFilters;
 use App\Domain\Pagination\SortDirection;
 use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
@@ -36,11 +35,22 @@ class ListTagsAction extends Action
         $page_size = $queryParams['page_size'] ?? 10;
 
         $filters->limit = $page_size;
-        $filters->offset = ($page * $page_size) - $page_size;
+        $filters->offset = ($page * $page_size) - $page_size + 1;
 
         $tags = $this->tagRepository->list($filters);
+        $totalItems = $this->tagRepository->count($filters);
+
+        $response = [
+            'items' => array_slice($tags, 0, $filters->limit),
+            'total_items' => $totalItems,
+            'total_pages' => ceil($totalItems / $filters->limit),
+            'has_more_items' => count($tags) > $filters->limit,
+            'page' => (int)$page,
+            'page_size' => (int)$page_size
+        ];
+
         $this->logger->info("Tags list was viewed.");
 
-        return $this->respondWithData($tags);
+        return $this->respondWithData($response);
     }
 }

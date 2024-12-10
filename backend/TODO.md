@@ -20,7 +20,7 @@
   * [ ] Delete article
 * [ ] CRUD tag entity
   * [ ] Read single tag
-  * [ ] Read all tags
+  * [x] Read all tags
   * [ ] Create tag
   * [ ] Update tag
   * [ ] Delete tag

@@ -18,12 +18,11 @@
   * [ ] Create article
   * [ ] Update article
   * [ ] Delete article
-* [ ] CRUD tag entity
-  * [ ] Read single tag
-  * [x] Read all tags
-  * [ ] Create tag
-  * [ ] Update tag
-  * [ ] Delete tag
+* [x] ~~CRUD tag entity (12/11/2024)~~
+  * [x] ~~Read all tags (12/10/2024)~~
+  * [x] ~~Create tag (12/11/2024)~~
+  * [x] ~~Update tag (12/11/2024)~~
+  * [x] ~~Delete tag (12/11/2024)~~
 * [ ] CRUD category entity
   * [ ] Read single category
   * [ ] Read all categories

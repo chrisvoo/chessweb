@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Application\Actions\Tag\CreateTagAction;
+use App\Application\Actions\Tag\DeleteTagAction;
 use App\Application\Actions\Tag\ListTagsAction;
+use App\Application\Actions\Tag\UpdateTagAction;
 use App\Application\Actions\User\DeleteUserAction;
 use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\CreateUserAction;
@@ -27,5 +30,8 @@ return function (App $app) {
 
         // tags
         $group->get('/tags', ListTagsAction::class);
+        $group->post('/tag', CreateTagAction::class);
+        $group->put('/tag/{id}', UpdateTagAction::class);
+        $group->delete('/tag/{id}', DeleteTagAction::class);
     });
 };

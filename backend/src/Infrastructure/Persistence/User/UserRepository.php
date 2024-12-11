@@ -6,6 +6,7 @@ namespace App\Infrastructure\Persistence\User;
 
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\User\User;
+use App\Domain\User\UserNotFoundException;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DateTime;
 use PDO;
@@ -59,17 +60,16 @@ SQL,
         return $result;
     }
 
+    /**
+     * @throws UserNotFoundException
+     */
     public function save(User $user): DatabaseOperation
     {
         if (isset($user->id)) {
             $userExist = $this->findById($user->id);
 
             if (!$userExist) {
-                $dbOp = new DatabaseOperation();
-                $dbOp->success = false;
-                $dbOp->message = 'User not found';
-                $dbOp->entityId = $user->id;
-                return $dbOp;
+                throw new UserNotFoundException();
             }
 
             $affectedRows = $this->databaseManager->update(
@@ -109,7 +109,7 @@ SQL,
     public function delete(int $userId): DatabaseOperation
     {
         $affectedRows = $this->databaseManager->deleteById(User::TABLE_NAME, $userId);
-        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated($userId);
+        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted($userId);
         $dbOp->affectedRows = $affectedRows;
         return $dbOp;
     }

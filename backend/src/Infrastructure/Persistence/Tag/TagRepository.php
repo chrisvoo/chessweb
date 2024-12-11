@@ -5,6 +5,7 @@ namespace App\Infrastructure\Persistence\Tag;
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\Pagination\SimpleNamedFilters;
 use App\Domain\Tag\Tag;
+use App\Domain\Tag\TagNotFoundException;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DateTime;
 use PDO;
@@ -44,21 +45,27 @@ SQL,
      */
     public function list(SimpleNamedFilters $filters): array
     {
+        $this->logger->debug('repo list filters', [var_export($filters, true)]);
+
         $table = Tag::TABLE_NAME;
-        $whereCondition = isset($filters->name) ? "name LIKE :name" : '';
-        $params = isset($filters->name) ? ['name' => "%{$filters->name}%"] : [];
+        $whereCondition = !empty($filters->name) ? "WHERE name LIKE :name" : '';
+        $params = !empty($filters->name) ? ['name' => "%{$filters->name}%"] : [];
         $orderBy = isset($filters->sortBy) ? "{$filters->sortBy}" : 'name';
         $orderDirection = isset($filters->sortOrder) ? "{$filters->sortOrder->value}" : 'ASC';
         $offset = $filters->offset ?? 0;
         $limit = $filters->limit ?? 10;
 
-        return $this->databaseManager->rows(<<<SQL
+        $sql = <<<SQL
             SELECT id, name, created_at, updated_at
             FROM $table
-            WHERE $whereCondition
+            $whereCondition
             ORDER BY $orderBy $orderDirection
             LIMIT $limit OFFSET $offset 
-SQL,
+SQL;
+        $this->logger->debug('list SQL', ['sql' => $sql, 'params' => $params]);
+
+        return $this->databaseManager->rows(
+            $sql,
             $params,
             PDO::FETCH_CLASS,
             Tag::class
@@ -69,17 +76,14 @@ SQL,
      * Upsert of a user
      * @param Tag $tag
      * @return DatabaseOperation
+     * @throws TagNotFoundException
      */
     public function save(Tag $tag): DatabaseOperation
     {
         if (isset($tag->id)) {
             $tagExist = $this->findById($tag->id);
             if (!$tagExist) {
-                $dbOp = new DatabaseOperation();
-                $dbOp->success = false;
-                $dbOp->message = 'Tag not found';
-                $dbOp->entityId = $tag->id;
-                return $dbOp;
+                throw new TagNotFoundException();
             }
 
             $affectedRows = $this->databaseManager->update(
@@ -115,7 +119,7 @@ SQL,
     public function delete(int $tagId): DatabaseOperation
     {
         $affectedRows = $this->databaseManager->deleteById(Tag::TABLE_NAME, $tagId);
-        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated($tagId);
+        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted($tagId);
         $dbOp->affectedRows = $affectedRows;
         return $dbOp;
     }

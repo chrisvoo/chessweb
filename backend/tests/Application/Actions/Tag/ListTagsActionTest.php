@@ -3,7 +3,6 @@
 namespace Tests\Application\Actions\Tag;
 
 use App\Application\Actions\ActionPayload;
-use App\Domain\Pagination\SimpleNamedFilters;
 use App\Domain\Tag\Tag;
 use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use Tests\Helper\Faker;

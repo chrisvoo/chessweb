@@ -34,17 +34,19 @@ class ListTagsAction extends Action
         $page = $queryParams['page'] ?? 1;
         $page_size = $queryParams['page_size'] ?? 10;
 
-        $filters->limit = $page_size;
-        $filters->offset = ($page * $page_size) - $page_size + 1;
+        $filters->limit = $page_size + 1;
+        $filters->offset = ($page * $page_size) - $page_size;
 
         $tags = $this->tagRepository->list($filters);
         $totalItems = $this->tagRepository->count($filters);
 
+        $this->logger->debug('Got tags list', $tags);
+
         $response = [
-            'items' => array_slice($tags, 0, $filters->limit),
+            'items' => array_slice($tags, 0, $page_size),
             'total_items' => $totalItems,
-            'total_pages' => ceil($totalItems / $filters->limit),
-            'has_more_items' => count($tags) > $filters->limit,
+            'total_pages' => ceil($totalItems / $page_size),
+            'has_more_items' => count($tags) > $page_size,
             'page' => (int)$page,
             'page_size' => (int)$page_size
         ];

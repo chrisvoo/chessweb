@@ -25,13 +25,18 @@ class DatabaseOperation implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        return [
+        $fields = [
             'entity_id' => $this->entityId,
             'success' => $this->success,
             'message' => $this->message,
-            'code' => $this->code,
-            'affected_rows' => $this->affectedRows
+            'code' => $this->code
         ];
+
+        if (isset($this->affectedRows)) {
+            $fields['affected_rows'] = $this->affectedRows;
+        }
+
+        return $fields;
     }
 
     private static function newEntityOperation(int $entityId, string $message, int $code, int $affectedRows = 1): DatabaseOperation

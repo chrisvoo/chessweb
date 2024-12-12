@@ -34,8 +34,8 @@ interface TagRepositoryInterface
 
     /**
      * Delete a tag
-     * @param int $tagUd
+     * @param int $tagId
      * @return DatabaseOperation
      */
-    public function delete(int $tagUd): DatabaseOperation;
+    public function delete(int $tagId): DatabaseOperation;
 }

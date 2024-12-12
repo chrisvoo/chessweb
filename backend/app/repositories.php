@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Infrastructure\Persistence\Category\CategoryRepository;
+use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
 use App\Infrastructure\Persistence\Tag\TagRepository;
 use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use App\Infrastructure\Persistence\User\UserRepository;
@@ -14,5 +16,6 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         UserRepositoryInterface::class => autowire(UserRepository::class),
         TagRepositoryInterface::class => autowire(TagRepository::class),
+        CategoryRepositoryInterface::class => autowire(CategoryRepository::class)
     ]);
 };

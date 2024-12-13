@@ -5,10 +5,11 @@ namespace App\Application\Actions\Tag;
 use App\Application\Actions\Action;
 use App\Domain\Pagination\SimpleNamedFilters;
 use App\Domain\Pagination\SortDirection;
+use App\Domain\Validators\ListSimpleNamedQueryStringValidator;
 use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Exception\HttpBadRequestException;
 use Psr\Log\LoggerInterface;
+use Slim\Exception\HttpBadRequestException;
 
 class ListTagsAction extends Action
 {
@@ -24,7 +25,7 @@ class ListTagsAction extends Action
     protected function action(): Response
     {
         $queryParams = $this->request->getQueryParams();
-        (new ListTagQueryStringValidator())->validate($this->request, $queryParams);
+        (new ListSimpleNamedQueryStringValidator())->validate($this->request, $queryParams);
 
         $filters = new SimpleNamedFilters();
         $filters->sortOrder = $queryParams['sort_order'] ?? SortDirection::ASC;

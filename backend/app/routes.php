@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use App\Application\Actions\Category\CreateCategoryAction;
+use App\Application\Actions\Category\DeleteCategoryAction;
+use App\Application\Actions\Category\ListCategoriesAction;
+use App\Application\Actions\Category\UpdateCategoryAction;
 use App\Application\Actions\Tag\CreateTagAction;
 use App\Application\Actions\Tag\DeleteTagAction;
 use App\Application\Actions\Tag\ListTagsAction;
@@ -37,5 +40,9 @@ return function (App $app) {
 
         // categories
         $group->post('/category', CreateCategoryAction::class);
+        $group->get('/categories', ListCategoriesAction::class);
+        $group->put('/category/{id}', UpdateCategoryAction::class);
+        $group->delete('/category/{id}', DeleteCategoryAction::class);
+
     });
 };

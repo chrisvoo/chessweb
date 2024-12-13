@@ -2,7 +2,7 @@
 
 namespace Tests\Domain\Tag;
 
-use App\Application\Actions\Tag\ListTagQueryStringValidator;
+use App\Domain\Validators\ListSimpleNamedQueryStringValidator;
 use Generator;
 use Tests\Domain\BaseValidator;
 
@@ -64,6 +64,6 @@ class ListTagQueryStringValidatorTest extends BaseValidator
         array $payload,
         string $invalidField
     ): void {
-        parent::testValidate($payload, $invalidField, new ListTagQueryStringValidator());
+        parent::testValidate($payload, $invalidField, new ListSimpleNamedQueryStringValidator());
     }
 }

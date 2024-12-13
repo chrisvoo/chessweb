@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Application\Actions\Tag;
+namespace App\Application\Actions\Category;
 
 use App\Application\Actions\Action;
+use App\Domain\Category\CategoryNotFoundException;
 use App\Domain\Tag\TagNotFoundException;
+use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
 use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 
-class DeleteTagAction extends Action
+class DeleteCategoryAction extends Action
 {
     public function __construct(
-        private readonly TagRepositoryInterface $tagRepository,
+        private readonly CategoryRepositoryInterface $categoryRepository,
         protected LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -23,14 +25,14 @@ class DeleteTagAction extends Action
      */
     protected function action(): Response
     {
-        $tagId = $this->resolveArg('id');
-        $op = $this->tagRepository->delete($tagId);
+        $catId = $this->resolveArg('id');
+        $op = $this->categoryRepository->delete($catId);
 
         if ($op->affectedRows === 0) {
-            throw new TagNotFoundException();
+            throw new CategoryNotFoundException();
         }
 
-        $this->logger->info("Tag deleted", ['id' => $op->entityId]);
+        $this->logger->info("Category deleted", ['id' => $op->entityId]);
 
         return $this->respondWithData($op);
     }

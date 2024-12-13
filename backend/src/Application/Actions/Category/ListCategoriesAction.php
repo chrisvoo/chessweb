@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Application\Actions\Tag;
+namespace App\Application\Actions\Category;
 
 use App\Application\Actions\Action;
 use App\Domain\Pagination\SimpleNamedFilters;
 use App\Domain\Pagination\SortDirection;
-use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
+use App\Domain\Validators\ListSimpleNamedQueryStringValidator;
+use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Exception\HttpBadRequestException;
 use Psr\Log\LoggerInterface;
+use Slim\Exception\HttpBadRequestException;
 
-class ListTagsAction extends Action
+class ListCategoriesAction extends Action
 {
     public function __construct(
-        private TagRepositoryInterface $tagRepository,
+        private CategoryRepositoryInterface $categoryRepository,
         protected LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -24,7 +25,7 @@ class ListTagsAction extends Action
     protected function action(): Response
     {
         $queryParams = $this->request->getQueryParams();
-        (new ListTagQueryStringValidator())->validate($this->request, $queryParams);
+        (new ListSimpleNamedQueryStringValidator())->validate($this->request, $queryParams);
 
         $filters = new SimpleNamedFilters();
         $filters->sortOrder = $queryParams['sort_order'] ?? SortDirection::ASC;
@@ -37,10 +38,10 @@ class ListTagsAction extends Action
         $filters->limit = $page_size + 1;
         $filters->offset = ($page * $page_size) - $page_size;
 
-        $tags = $this->tagRepository->list($filters);
-        $totalItems = $this->tagRepository->count($filters);
+        $tags = $this->categoryRepository->list($filters);
+        $totalItems = $this->categoryRepository->count($filters);
 
-        $this->logger->debug('Got tags list', $tags);
+        $this->logger->debug('Got categories list', $tags);
 
         $response = [
             'items' => array_slice($tags, 0, $page_size),
@@ -51,7 +52,7 @@ class ListTagsAction extends Action
             'page_size' => (int)$page_size
         ];
 
-        $this->logger->info("Tags list was viewed.");
+        $this->logger->info("Categories list was viewed.");
 
         return $this->respondWithData($response);
     }

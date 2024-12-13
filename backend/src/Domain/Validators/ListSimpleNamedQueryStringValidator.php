@@ -1,18 +1,14 @@
 <?php
 
-namespace App\Application\Actions\Tag;
+namespace App\Domain\Validators;
 
 use App\Domain\DomainException\InvalidRequestException;
 use App\Domain\Tag\Tag;
-use App\Domain\Validators\PaginationValidatorObject;
-use App\Domain\Validators\SortingValidatorObject;
-use Respect\Validation\Validator as v;
-use App\Domain\Validators\ValidationScope;
-use App\Domain\Validators\ValidatorInterface;
 use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Validator as v;
 use Slim\Psr7\Request;
 
-class ListTagQueryStringValidator implements ValidatorInterface
+class ListSimpleNamedQueryStringValidator implements ValidatorInterface
 {
     /**
      * Validates a request

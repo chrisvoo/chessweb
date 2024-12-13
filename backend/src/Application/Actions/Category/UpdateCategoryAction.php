@@ -1,21 +1,23 @@
 <?php
 
-namespace App\Application\Actions\Tag;
+namespace App\Application\Actions\Category;
 
 use App\Application\Actions\Action;
+use App\Domain\Category\Category;
 use App\Domain\Mappers\Mapper;
 use App\Domain\Tag\Tag;
 use App\Domain\Validators\SimpleNamedValidator;
 use App\Domain\Validators\ValidationScope;
+use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
 use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 
-class UpdateTagAction extends Action
+class UpdateCategoryAction extends Action
 {
     public function __construct(
-        private readonly TagRepositoryInterface $tagRepository,
+        private readonly CategoryRepositoryInterface $categoryRepository,
         protected LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -32,10 +34,10 @@ class UpdateTagAction extends Action
         $validator = new SimpleNamedValidator();
         $validator->validate($this->request, $body, ValidationScope::UPDATE);
 
-        $tag = (new Mapper())->map($body, Tag::class);
-        $op = $this->tagRepository->save($tag);
+        $category = (new Mapper())->map($body, Category::class);
+        $op = $this->categoryRepository->save($category);
 
-        $this->logger->info("Tag updated", ['id' => $op->entityId]);
+        $this->logger->info("Category updated", ['id' => $op->entityId]);
         return $this->respondWithData($op);
     }
 }

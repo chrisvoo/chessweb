@@ -16,7 +16,8 @@ class UpdateUserAction extends Action
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        private UserValidator $validator
     ) {
         parent::__construct($logger);
     }
@@ -29,8 +30,7 @@ class UpdateUserAction extends Action
         $body = $this->request->getParsedBody();
         $body['id'] = $this->resolveArg('id');
 
-        $validator = new UserValidator();
-        $validator->validate($this->request, $body, ValidationScope::UPDATE);
+        $this->validator->validate($this->request, $body, ValidationScope::UPDATE);
 
         $user = (new Mapper())->map($body, User::class);
         $op = $this->userRepository->save($user);

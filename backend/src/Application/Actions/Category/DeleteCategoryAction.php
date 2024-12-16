@@ -4,11 +4,9 @@ namespace App\Application\Actions\Category;
 
 use App\Application\Actions\Action;
 use App\Domain\Category\CategoryNotFoundException;
-use App\Domain\Tag\TagNotFoundException;
 use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
-use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
-use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
+use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 
 class DeleteCategoryAction extends Action

@@ -10,6 +10,8 @@ use App\Domain\User\UserNotFoundException;
 
 interface UserRepositoryInterface
 {
+    public function login(string $email, string $password): User|false;
+
     /**
      * @return User[]
      */

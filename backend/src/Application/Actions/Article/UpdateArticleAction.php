@@ -1,25 +1,23 @@
 <?php
 
-namespace App\Application\Actions\Category;
+namespace App\Application\Actions\Article;
 
 use App\Application\Actions\Action;
-use App\Domain\Category\Category;
+use App\Domain\Article\Article;
+use App\Domain\Article\ArticleValidator;
 use App\Domain\Mappers\Mapper;
-use App\Domain\Tag\Tag;
-use App\Domain\Validators\SimpleNamedValidator;
 use App\Domain\Validators\ValidationScope;
-use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
-use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
+use App\Infrastructure\Persistence\Article\ArticleRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 
-class UpdateCategoryAction extends Action
+class UpdateArticleAction extends Action
 {
     public function __construct(
-        private readonly CategoryRepositoryInterface $categoryRepository,
+        private readonly ArticleRepositoryInterface $articleRepository,
         protected LoggerInterface $logger,
-        private SimpleNamedValidator $validator
+        private ArticleValidator $validator
     ) {
         parent::__construct($logger);
     }
@@ -34,10 +32,11 @@ class UpdateCategoryAction extends Action
 
         $this->validator->validate($this->request, $body, ValidationScope::UPDATE);
 
-        $category = (new Mapper())->map($body, Category::class);
-        $op = $this->categoryRepository->save($category);
+        $article = (new Mapper())->map($body, Article::class);
+        $article->author_id = 1; // @TODO Fix when user is logged
+        $op = $this->articleRepository->save($article);
 
-        $this->logger->info("Category updated", ['id' => $op->entityId]);
+        $this->logger->info("Article updated", ['id' => $op->entityId]);
         return $this->respondWithData($op);
     }
 }

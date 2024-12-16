@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Application\Actions\Tag;
+namespace Tests\Application\Actions\Article;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
@@ -11,12 +11,12 @@ use App\Domain\Tag\TagNotFoundException;
 use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use Tests\TestCase;
 
-class DeleteTagActionTest extends TestCase
+class DeleteArticleActionTest extends TestCase
 {
     /**
      * @throws \ReflectionException
      */
-    public function testDeleteUserSuccess(): void
+    public function testGetSingleUserSuccess(): void
     {
         $repo = $this->mockRepository(TagRepositoryInterface::class);
         $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted(1);
@@ -32,7 +32,7 @@ class DeleteTagActionTest extends TestCase
         $this->assertEquals($serializedPayload, $payload);
     }
 
-    public function testDeleteUserNotFoundException(): void
+    public function testGetSingleUserNotFoundException(): void
     {
         $repo = $this->mockRepository(TagRepositoryInterface::class);
         $repo->method('delete')->willThrowException(new TagNotFoundException());

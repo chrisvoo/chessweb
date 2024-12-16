@@ -16,7 +16,8 @@ class CreateUserAction extends Action
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        private UserValidator $validator
     ) {
         parent::__construct($logger);
     }
@@ -27,8 +28,7 @@ class CreateUserAction extends Action
     protected function action(): Response
     {
         $body = $this->request->getParsedBody();
-        $validator = new UserValidator();
-        $validator->validate($this->request, $body, ValidationScope::CREATE);
+        $this->validator->validate($this->request, $body, ValidationScope::CREATE);
 
         $user = (new Mapper())->map($body, User::class)->hashPassword();
         $op = $this->userRepository->save($user);

@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Application\Actions\Article\CreateArticleAction;
+use App\Application\Actions\Article\DeleteArticleAction;
+use App\Application\Actions\Article\ListArticlesAction;
+use App\Application\Actions\Article\UpdateArticleAction;
+use App\Application\Actions\Article\ViewSingleArticleAction;
+use App\Application\Actions\Auth\LoginAction;
 use App\Application\Actions\Category\CreateCategoryAction;
 use App\Application\Actions\Category\DeleteCategoryAction;
 use App\Application\Actions\Category\ListCategoriesAction;
@@ -25,24 +31,34 @@ return function (App $app) {
 //    });
 
     $app->group('/api', function (Group $group) {
-        // users
         $group->get('/user/{id}', ViewSingleUserAction::class);
+        $group->get('/tags', ListTagsAction::class);
+        $group->get('/categories', ListCategoriesAction::class);
+        $group->get('/article/{id}', ViewSingleArticleAction::class);
+        $group->get('/articles', ListArticlesAction::class);
+
+        // auth
+        $group->post('/login', LoginAction::class);
+
+        // users
         $group->get('/users', ListUsersAction::class);
         $group->post('/user', CreateUserAction::class);
         $group->put('/user/{id}', UpdateUserAction::class);
         $group->delete('/user/{id}', DeleteUserAction::class);
 
         // tags
-        $group->get('/tags', ListTagsAction::class);
         $group->post('/tag', CreateTagAction::class);
         $group->put('/tag/{id}', UpdateTagAction::class);
         $group->delete('/tag/{id}', DeleteTagAction::class);
 
         // categories
         $group->post('/category', CreateCategoryAction::class);
-        $group->get('/categories', ListCategoriesAction::class);
         $group->put('/category/{id}', UpdateCategoryAction::class);
         $group->delete('/category/{id}', DeleteCategoryAction::class);
 
+        // articles
+        $group->post('/article', CreateArticleAction::class);
+        $group->put('/article/{id}', UpdateArticleAction::class);
+        $group->delete('/article/{id}', DeleteArticleAction::class);
     });
 };

@@ -16,7 +16,8 @@ class UpdateTagAction extends Action
 {
     public function __construct(
         private readonly TagRepositoryInterface $tagRepository,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        private SimpleNamedValidator $validator
     ) {
         parent::__construct($logger);
     }
@@ -26,11 +27,10 @@ class UpdateTagAction extends Action
      */
     protected function action(): Response
     {
-        $body = $this->request->getParsedBody();
+        $body = $this->request->getParsedBody() ?? [];
         $body['id'] = $this->resolveArg('id');
 
-        $validator = new SimpleNamedValidator();
-        $validator->validate($this->request, $body, ValidationScope::UPDATE);
+        $this->validator->validate($this->request, $body, ValidationScope::UPDATE);
 
         $tag = (new Mapper())->map($body, Tag::class);
         $op = $this->tagRepository->save($tag);

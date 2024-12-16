@@ -15,7 +15,8 @@ class ListTagsAction extends Action
 {
     public function __construct(
         private TagRepositoryInterface $tagRepository,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        private ListSimpleNamedQueryStringValidator $validator
     ) {
         parent::__construct($logger);
     }
@@ -25,7 +26,7 @@ class ListTagsAction extends Action
     protected function action(): Response
     {
         $queryParams = $this->request->getQueryParams();
-        (new ListSimpleNamedQueryStringValidator())->validate($this->request, $queryParams);
+        $this->validator->validate($this->request, $queryParams);
 
         $filters = new SimpleNamedFilters();
         $filters->sortOrder = $queryParams['sort_order'] ?? SortDirection::ASC;

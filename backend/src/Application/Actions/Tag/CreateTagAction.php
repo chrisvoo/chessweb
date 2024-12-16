@@ -16,7 +16,8 @@ class CreateTagAction extends Action
 {
     public function __construct(
         private readonly TagRepositoryInterface $tagRepository,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        private SimpleNamedValidator $validator
     ) {
         parent::__construct($logger);
     }
@@ -26,9 +27,8 @@ class CreateTagAction extends Action
      */
     protected function action(): Response
     {
-        $body = $this->request->getParsedBody();
-        $validator = new SimpleNamedValidator();
-        $validator->validate($this->request, $body, ValidationScope::CREATE);
+        $body = $this->request->getParsedBody() ?? [];
+        $this->validator->validate($this->request, $body, ValidationScope::CREATE);
 
         $tag = (new Mapper())->map($body, Tag::class);
         $op = $this->tagRepository->save($tag);

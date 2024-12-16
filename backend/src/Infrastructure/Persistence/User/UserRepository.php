@@ -113,4 +113,24 @@ SQL,
         $dbOp->affectedRows = $affectedRows;
         return $dbOp;
     }
+
+    public function login(string $email, string $password): User|false
+    {
+        $table = User::TABLE_NAME;
+        $user = $this->databaseManager->row(
+            <<<SQL
+            SELECT *
+            FROM $table
+            WHERE email = :email
+SQL,
+            User::class,
+            ['email' => $email]
+        );
+
+        if ($user && password_verify($password, $user->password)) {
+            return $user;
+        }
+
+        return false;
+    }
 }

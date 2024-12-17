@@ -2,9 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Infrastructure\Components\JWTService;
+use App\Infrastructure\Components\JWTServiceInterface;
 use App\Infrastructure\Persistence\DatabaseManager;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DI\ContainerBuilder;
+use Lcobucci\Clock\SystemClock;
+use Lcobucci\JWT\JwtFacade;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -36,6 +41,11 @@ return function (ContainerBuilder $containerBuilder) {
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false,
                 ]
+            );
+        },
+        JWTServiceInterface::class => function () {
+            return new JWTService(
+                new SystemClock(new DateTimeZone('UTC')),
             );
         }
     ]);

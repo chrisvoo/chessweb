@@ -25,6 +25,12 @@ class TestCase extends PHPUnit_TestCase
     protected ?App $app;
     protected DatabaseManagerInterface|MockObject $databaseManager;
 
+    public static function setUpBeforeClass(): void
+    {
+        $bootstrap = require __DIR__ . '/../app/bootstrap.php';
+        $bootstrap();
+    }
+
     public function setUp(): void
     {
         $this->app = $this->getAppInstance();

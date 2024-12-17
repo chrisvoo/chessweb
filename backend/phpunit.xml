@@ -11,12 +11,5 @@
     </testsuite>
   </testsuites>
   <php>
-    <env name="DISPLAY_ERROR_DETAILS" value="false"/>
-    <env name="PROJECT_ROOT" value="asdas"/>
-    <env name="LOGGER_NAME" value="asdas"/>
-    <env name="LOGGER_PATH" value="/tmp/app.log"/>
-    <env name="LOGGER_LEVEL" value="ERROR"/>
-    <env name="LOG_ERRORS" value="false"/>
-    <env name="LOG_ERROR_DETAILS" value="false"/>
   </php>
 </phpunit>

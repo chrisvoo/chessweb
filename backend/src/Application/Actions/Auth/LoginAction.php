@@ -26,7 +26,7 @@ class LoginAction extends Action
         $body = $this->request->getParsedBody() ?? [];
         $this->validator->validate($this->request, $body);
 
-        $user =$this->userRepository->login($body['email'], $body['password']);
+        $user = $this->userRepository->login($body['email'], $body['password']);
 
         if (!$user) {
             throw new HttpForbiddenException($this->request);

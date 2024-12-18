@@ -58,10 +58,10 @@ abstract class Action
     }
 
     /**
+     * @param string $name
      * @return mixed
-     * @throws HttpBadRequestException
      */
-    protected function resolveArg(string $name)
+    protected function resolveArg(string $name): mixed
     {
         if (!isset($this->args[$name])) {
             throw new HttpBadRequestException($this->request, "Could not resolve argument `{$name}`.");
@@ -71,22 +71,38 @@ abstract class Action
     }
 
     /**
-     * @param array|object|null $data
+     * Emits a response with data, status and headers specified. Content-Type will be automatically set
+     * to application/json if not specified.
+     * @param mixed $data The data to be returned
+     * @param int $statusCode The response status code
+     * @param array $headers Optional headers to be sent with the response
+     * @return Response
      */
-    protected function respondWithData($data = null, int $statusCode = 200): Response
+    protected function respondWithData(mixed $data = null, int $statusCode = 200, array $headers = []): Response
     {
         $payload = new ActionPayload($statusCode, $data);
 
-        return $this->respond($payload);
+        return $this->respond($payload, $headers);
     }
 
-    protected function respond(ActionPayload $payload): Response
+    protected function respond(ActionPayload $payload, array $headers = []): Response
     {
         $json = json_encode($payload, JSON_PRETTY_PRINT);
         $this->response->getBody()->write($json);
+        $this->response = $this->response->withStatus($payload->getStatusCode());
 
-        return $this->response
-                    ->withHeader('Content-Type', 'application/json')
-                    ->withStatus($payload->getStatusCode());
+        if (empty($headers) || !array_key_exists('Content-Type', $headers)) {
+            $headers['Content-Type'] = 'application/json';
+        }
+
+        $this->logger->debug('headers', $headers);
+
+        foreach ($headers as $key => $value) {
+            $this->logger->debug($key, [$value]);
+            // destructive method, need to reassign the response for avoid losing the headers
+            $this->response = $this->response->withHeader($key, $value);
+        }
+
+        return $this->response;
     }
 }

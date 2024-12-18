@@ -10,6 +10,7 @@ return function () {
     $dotenv->required('PROJECT_ROOT')->notEmpty();
     $dotenv->required('JWT_ISSUER')->notEmpty();
     $dotenv->required('JWT_SECRET')->notEmpty();
+    $dotenv->required('COOKIE_RT_NAME')->notEmpty();
     $dotenv->required('PRODUCTION')->isBoolean();
     $dotenv->ifPresent('DISPLAY_ERROR_DETAILS')->isBoolean();
     $dotenv->ifPresent('LOG_ERRORS')->isBoolean();

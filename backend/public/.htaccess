@@ -28,6 +28,10 @@ deny from all
   # absolute physical path to the directory that contains this htaccess file.
   # RewriteBase /
 
+  # uncomment this if Apache is stripping away the Authorization header
+  # see https://stackoverflow.com/questions/26475885/authorization-header-missing-in-php-post-request
+  # SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^ index.php [QSA,L]

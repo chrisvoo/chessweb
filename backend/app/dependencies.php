@@ -6,10 +6,10 @@ use App\Infrastructure\Components\JWTService;
 use App\Infrastructure\Components\JWTServiceInterface;
 use App\Infrastructure\Persistence\DatabaseManager;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
+use App\Infrastructure\Persistence\User\UserRepositoryInterface;
+use DI\Container;
 use DI\ContainerBuilder;
 use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\JwtFacade;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -43,8 +43,9 @@ return function (ContainerBuilder $containerBuilder) {
                 ]
             );
         },
-        JWTServiceInterface::class => function () {
+        JWTServiceInterface::class => function (Container $container) {
             return new JWTService(
+                $container->get(UserRepositoryInterface::class),
                 new SystemClock(new DateTimeZone('UTC')),
             );
         }

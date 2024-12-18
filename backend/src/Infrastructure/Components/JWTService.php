@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Components;
 
 use App\Domain\User\User;
+use App\Infrastructure\Persistence\User\UserRepositoryInterface;
 use DateTimeImmutable;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Encoding\JoseEncoder;
@@ -28,6 +29,7 @@ class JWTService implements JWTServiceInterface
     private int $errorCode = 0;
 
     public function __construct(
+        private UserRepositoryInterface $userRepository,
         private readonly ClockInterface $clock
     ) {
     }
@@ -56,9 +58,6 @@ class JWTService implements JWTServiceInterface
                 ->issuedBy($_ENV['JWT_ISSUER'])
                 ->expiresAt($issuedAt->modify('+' . $expirationSeconds . ' seconds'))
                 ->withClaim('sub_id', $user->id)
-                ->withClaim('email', $user->email)
-                ->withClaim('given_name', $user->first_name)
-                ->withClaim('family_name', $user->last_name)
         )->toString();
     }
 
@@ -93,23 +92,19 @@ class JWTService implements JWTServiceInterface
             return false;
         }
 
-        if (
-            !$validator->validate($tokenObject, new HasClaim('sub_id')) ||
-            !$validator->validate($tokenObject, new HasClaim('email')) ||
-            !$validator->validate($tokenObject, new HasClaim('given_name')) ||
-            !$validator->validate($tokenObject, new HasClaim('family_name'))
-        ) {
+        if (!$validator->validate($tokenObject, new HasClaim('sub_id'))) {
             $this->errorCode = self::ERROR_MISSING_CLAIM;
             return false;
         }
 
         assert($tokenObject instanceof UnencryptedToken);
 
-        $user = new User();
-        $user->id = (int)$tokenObject->claims()->get('sub_id');
-        $user->email = $tokenObject->claims()->get('email');
-        $user->first_name = $tokenObject->claims()->get('given_name');
-        $user->last_name = $tokenObject->claims()->get('family_name');
+        $userId = (int)$tokenObject->claims()->get('sub_id');
+        $user = $this->userRepository->findById($userId);
+
+        if (empty($user) || !$user->valid) {
+            return false;
+        }
 
         return $user;
     }

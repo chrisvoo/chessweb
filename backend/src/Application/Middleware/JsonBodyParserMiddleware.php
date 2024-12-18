@@ -11,8 +11,6 @@ use Psr\Http\Server\MiddlewareInterface as Middleware;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Log\LoggerInterface;
 
-use const _PHPStan_62c6a0a8b\__;
-
 class JsonBodyParserMiddleware implements Middleware
 {
     public function __construct(private LoggerInterface $logger)
@@ -24,7 +22,6 @@ class JsonBodyParserMiddleware implements Middleware
      */
     public function process(Request $request, RequestHandler $handler): Response
     {
-        $this->logger->debug(__CLASS__ . ' was invoked.');
         $contentType = $request->getHeaderLine('Content-Type');
 
         if (str_contains($contentType, 'application/json')) {
@@ -33,8 +30,8 @@ class JsonBodyParserMiddleware implements Middleware
                 $request = $request->withParsedBody($contents);
             } else {
                 throw new InvalidRequestException(
-                  $request,
-                  json_last_error_msg()
+                    $request,
+                    json_last_error_msg()
                 );
             }
         }

@@ -19,8 +19,7 @@ interface UserRepositoryInterface
 
     /**
      * @param int $id
-     * @return User
-     * @throws UserNotFoundException
+     * @return User|false
      */
     public function findById(int $id): User|false;
 

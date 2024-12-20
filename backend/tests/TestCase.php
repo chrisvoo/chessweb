@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use App\Application\Handlers\HttpErrorHandler;
+use App\Infrastructure\Components\JWTServiceInterface;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DI\Container;
 use DI\ContainerBuilder;
@@ -38,6 +39,17 @@ class TestCase extends PHPUnit_TestCase
         $container = $this->app->getContainer();
         $this->databaseManager = $this->mockDatabaseManager();
         $container->set(DatabaseManagerInterface::class, $this->databaseManager);
+    }
+
+    protected function mockAuthentication(): MockObject|JWTServiceInterface
+    {
+        $jwtService = $this->getMockBuilder(JWTServiceInterface::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['verifyToken', 'issueToken'])
+            ->getMock();
+        $jwtService->method('verifyToken')->willReturn(true);
+
+        return $jwtService;
     }
 
     protected function mockDatabaseManager(): MockObject|DatabaseManagerInterface
@@ -86,6 +98,10 @@ class TestCase extends PHPUnit_TestCase
         // Build PHP-DI Container instance
         $container = $containerBuilder->build();
 
+        // fake token, always pass
+        $jwtService = $this->mockAuthentication();
+        $container->set(JWTServiceInterface::class, $jwtService);
+
         // Instantiate the app
         AppFactory::setContainer($container);
         $app = AppFactory::create();
@@ -132,6 +148,11 @@ class TestCase extends PHPUnit_TestCase
         foreach ($headers as $name => $value) {
             $h->addHeader($name, $value);
         }
+        // fake token
+        $h->addHeader(
+            'Authorization',
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+        );
 
         return new SlimRequest($method, $uri, $h, $cookies, $serverParams, $stream);
     }

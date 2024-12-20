@@ -95,8 +95,6 @@ abstract class Action
             $headers['Content-Type'] = 'application/json';
         }
 
-        $this->logger->debug('headers', $headers);
-
         foreach ($headers as $key => $value) {
             $this->logger->debug($key, [$value]);
             // destructive method, need to reassign the response for avoid losing the headers

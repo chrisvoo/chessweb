@@ -2,16 +2,20 @@
 
 namespace App\Application\Middleware;
 
+use App\Infrastructure\Components\JWTServiceInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
+use Slim\Exception\HttpForbiddenException;
 
 class AuthMiddleware implements MiddlewareInterface
 {
-    public function __construct(private readonly LoggerInterface $logger)
-    {
+    public function __construct(
+        private readonly LoggerInterface $logger,
+        private JWTServiceInterface $jwtService
+    ) {
     }
     /**
      * Process an incoming server request.
@@ -23,7 +27,19 @@ class AuthMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $authHeader = $request->getHeader('Authorization');
-        $this->logger->debug('Auth header', $authHeader);
+
+        if (
+            empty($authHeader) ||
+            !preg_match(
+                '/Bearer\s((.*)\.(.*)\.(.*))/',
+                trim($authHeader[0]),
+                $matches
+            ) ||
+            $this->jwtService->verifyToken($matches[1]) === false
+        ) {
+            throw new HttpForbiddenException($request, 'Not authorized');
+        }
+
         return $handler->handle($request);
     }
 }

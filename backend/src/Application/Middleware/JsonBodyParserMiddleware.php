@@ -13,8 +13,14 @@ use Psr\Log\LoggerInterface;
 
 class JsonBodyParserMiddleware implements Middleware
 {
-    public function __construct(private LoggerInterface $logger)
+    public function __construct(
+        private LoggerInterface $logger
+    ) {
+    }
+
+    public function getContent(): string|false
     {
+        return file_get_contents('php://input');
     }
 
     /**
@@ -25,7 +31,7 @@ class JsonBodyParserMiddleware implements Middleware
         $contentType = $request->getHeaderLine('Content-Type');
 
         if (str_contains($contentType, 'application/json')) {
-            $contents = json_decode(file_get_contents('php://input'), true);
+            $contents = json_decode($this->getContent(), true);
             if (json_last_error() === JSON_ERROR_NONE) {
                 $request = $request->withParsedBody($contents);
             } else {

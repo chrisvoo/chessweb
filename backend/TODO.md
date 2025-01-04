@@ -12,12 +12,12 @@
   * [x] ~~Create user~~ (12/8/2024)
   * [x] ~~Update user~~ (12/8/2024)
   * [x] ~~Delete user~~ (12/8/2024)
-* [ ] CRUD article entity
-  * [ ] Read single article
-  * [ ] Read all articles with filters, pagination and sorting
-  * [ ] Create article
-  * [ ] Update article
-  * [ ] Delete article
+* [x] ~~CRUD article entity~~
+  * [x] ~~Read single article~~
+  * [x] ~~Read all articles with filters, pagination and sorting~~
+  * [x] ~~Create article~~
+  * [x] ~~Update article~~
+  * [x] ~~Delete article~~
 * [x] ~~CRUD tag entity (12/11/2024)~~
   * [x] ~~Read all tags (12/10/2024)~~
   * [x] ~~Create tag (12/11/2024)~~
@@ -28,6 +28,6 @@
   * [x] ~~Create category (12/12/2024)~~
   * [x] ~~Update category (12/13/2024)~~
   * [x] ~~Delete category (12/13/2024)~~
-* [ ] Authentication middleware. We could implement a JWT access token in memory and a refresh token in cookie.  
+* [x] ~~Authentication middleware. We could implement a JWT access token in memory and a refresh token in cookie. (12/20/2024)~~  
 See https://www.cyberchief.ai/2023/05/secure-jwt-token-storage.html
 * [ ] Logs rotation implementation: https://stackoverflow.com/questions/55369654/how-to-set-max-size-for-log-file-using-monolog

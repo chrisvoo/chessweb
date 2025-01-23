@@ -1496,7 +1496,8 @@ button:disabled,
   max-width: 110em;
 }
 
-#main > .inner > * > section {
+#main > .inner > * > section,
+#main > .inner > app-home > * > section {
   padding: 4em 0 4em 0;
   border-top: solid 2px rgba(210, 215, 217, 0.75);
 }

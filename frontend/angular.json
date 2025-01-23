@@ -34,8 +34,7 @@
             "scripts": [
               "node_modules/jquery/dist/jquery.slim.min.js",
               "src/assets/js/browser.min.js",
-              "src/assets/js/breakpoints.min.js",
-              "src/assets/js/main.js"
+              "src/assets/js/breakpoints.min.js"
             ]
           },
           "configurations": {

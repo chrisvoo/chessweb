@@ -202,7 +202,7 @@ export class AppComponent implements OnInit {
               if ($sidebar_inner.data('locked') == 1) {
                 // console.log('locked == 1')
                 if (y <= 0) {
-                  console.log('y <= 0')
+                  // console.log('y <= 0')
                   $sidebar_inner
                     .data('locked', 0)
                     .css('position', '')

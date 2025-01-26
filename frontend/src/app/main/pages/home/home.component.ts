@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import {BannerComponent} from '../../banner/banner.component';
-import {ActivitiesComponent} from '../../activities/activities.component';
-import {LatestNews} from '../../articles/latest-news.component';
+import {BannerComponent} from './banner/banner.component';
+import {ActivitiesComponent} from './activities/activities.component';
+import {LatestNews} from './latest-news/latest-news.component';
 
 @Component({
   selector: 'app-home',

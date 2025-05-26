@@ -1,21 +1,28 @@
-import {Component, OnInit} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import {MainComponent} from './main/main.component';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import { MainComponent } from './main/main.component';
 import $ from 'jquery';
 import {SidebarComponent} from './sidebar/sidebar.component';
+import { AuthService } from './services/auth/auth.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {catchError, EMPTY} from 'rxjs';
+import {ErrorResponse} from '../types/requests';
 
 declare var breakpoints: any
 declare var browser: any
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MainComponent, SidebarComponent],
+  imports: [MainComponent, SidebarComponent],
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  title = 'frontend';
+  title = 'Circolo Scacchistico "La Torre"';
+  #destroyRef = inject(DestroyRef);
+
+  constructor(private authService: AuthService) {
+  }
 
   ngOnInit(): void {
         let	$window = $(window), $head = $('head'), $body = $('body');
@@ -260,5 +267,14 @@ export class AppComponent implements OnInit {
             $window.triggerHandler('resize.sidebar-lock');
           });
         });
+
+        this.authService.refreshToken().pipe(
+          takeUntilDestroyed(this.#destroyRef),
+          catchError(err => {
+            const errResonse = err.error as ErrorResponse
+            console.log(errResonse)
+            return EMPTY;
+          })
+        ).subscribe()
   }
 }

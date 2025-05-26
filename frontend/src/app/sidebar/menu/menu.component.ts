@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
-import {RouterLink} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth/auth.service';
+import { Observable, of } from 'rxjs';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-menu',
   imports: [
-    RouterLink
+    RouterLink,
+    AsyncPipe
   ],
   standalone: true,
   templateUrl: './menu.component.html',
@@ -12,4 +16,9 @@ import {RouterLink} from '@angular/router';
 })
 export class MenuComponent {
 
+  isAuthenticated: Observable<boolean>
+
+  constructor(private authService: AuthService) {
+    this.isAuthenticated = this.authService.isAuthenticated();
+  }
 }

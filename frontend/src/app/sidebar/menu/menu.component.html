@@ -13,11 +13,17 @@
     <li><a routerLink="/credits">Riconoscimenti</a></li>
     <li>
       <span class="opener">Admin</span>
-      <ul>
-        <li><a routerLink="/admin/articoli">Gestione articoli</a></li>
-        <li><a routerLink="/admin/categorie">Gestione categorie</a></li>
-        <li><a routerLink="/admin/tags">Gestione tag</a></li>
-      </ul>
+      @if (isAuthenticated | async) {
+        <ul>
+          <li><a routerLink="/admin/articoli">Gestione articoli</a></li>
+          <li><a routerLink="/admin/categorie">Gestione categorie</a></li>
+          <li><a routerLink="/admin/tags">Gestione tag</a></li>
+        </ul>
+      } @else {
+        <ul>
+          <li><a routerLink="/admin/login">Login</a></li>
+        </ul>
+      }
     </li>
   </ul>
 </nav>

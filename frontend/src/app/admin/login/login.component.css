@@ -1,0 +1,7 @@
+form {
+  max-width: 300px;
+}
+
+button[type="submit"] {
+  margin-bottom: 30px;
+}

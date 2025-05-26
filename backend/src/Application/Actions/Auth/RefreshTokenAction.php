@@ -11,6 +11,7 @@ use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\UnencryptedToken;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 
 class RefreshTokenAction extends Action
@@ -32,8 +33,13 @@ class RefreshTokenAction extends Action
     {
         $refreshToken = $_COOKIE['rt'] ?? '';
 
-        if (empty($refreshToken) || !$this->jwtService->verifyToken($refreshToken)) {
-            throw new HttpForbiddenException($this->request);
+        if (empty($refreshToken)) {
+            return $this->respondWithData([]);
+        }
+
+        // invalid or expired refresh token
+        if (!$this->jwtService->verifyToken($refreshToken)) {
+            throw new HttpBadRequestException($this->request);
         }
 
         $parser = new Parser(new JoseEncoder());

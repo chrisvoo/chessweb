@@ -1,1 +1,48 @@
-<p>login works!</p>
+<section>
+  <header class="main major">
+    <h2>Login</h2>
+  </header>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="field">
+      <label for="email">Email</label>
+      <input
+        pInputText
+        formControlName="email"
+        id="email"
+        type="email"
+        class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+      >
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input
+        pInputText
+        formControlName="password"
+        id="password"
+        type="password"
+        autocomplete="on"
+        class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+      >
+    </div>
+
+    <button
+      type="submit"
+      size="small"
+      pButton
+      pRipple
+      severity="primary"
+      [disabled]="!loginForm.valid"
+    >
+      <WindowMaximizeIcon pButtonIcon />
+      <span pButtonLabel>Invia</span>
+    </button>
+
+    @if (error) {
+      <p-message
+        severity="error"
+        icon="fa-solid fa-circle-exclamation"
+        [text]=this.errorMessage>
+      </p-message>
+    }
+  </form>
+</section>

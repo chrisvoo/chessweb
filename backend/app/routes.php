@@ -8,6 +8,7 @@ use App\Application\Actions\Article\ListArticlesAction;
 use App\Application\Actions\Article\UpdateArticleAction;
 use App\Application\Actions\Article\ViewSingleArticleAction;
 use App\Application\Actions\Auth\LoginAction;
+use App\Application\Actions\Auth\RefreshTokenAction;
 use App\Application\Actions\Category\CreateCategoryAction;
 use App\Application\Actions\Category\DeleteCategoryAction;
 use App\Application\Actions\Category\ListCategoriesAction;
@@ -42,6 +43,7 @@ return function (App $app) {
 
         // auth
         $group->post('/login', LoginAction::class);
+        $group->post('/refresh', RefreshTokenAction::class);
 
         $group->group('', function (Group $group) {
             // users

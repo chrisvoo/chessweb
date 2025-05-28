@@ -1,24 +1,26 @@
-import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { MainComponent } from './main/main.component';
 import $ from 'jquery';
-import {SidebarComponent} from './sidebar/sidebar.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 import { AuthService } from './services/auth/auth.service';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {catchError, EMPTY} from 'rxjs';
-import {ErrorResponse} from '../types/requests';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError, EMPTY } from 'rxjs';
+import { ScrollTopModule } from 'primeng/scrolltop';
+import { ErrorResponse } from '../types/requests';
+import { environment } from '../environments/environment';
 
 declare var breakpoints: any
 declare var browser: any
 
 @Component({
   selector: 'app-root',
-  imports: [MainComponent, SidebarComponent],
+  imports: [MainComponent, SidebarComponent, ScrollTopModule],
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  title = 'Circolo Scacchistico "La Torre"';
+  title = environment.TITLE;
   #destroyRef = inject(DestroyRef);
 
   constructor(private authService: AuthService) {

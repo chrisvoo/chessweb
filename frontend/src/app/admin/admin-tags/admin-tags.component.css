@@ -1,0 +1,37 @@
+table {
+  margin-top: 15px;
+  margin-bottom: 0;
+  border-bottom: solid 2px rgba(210, 215, 217, 0.75);
+  border-collapse: collapse;
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  max-height: 525px;
+}
+
+thead {
+  padding-right: 13px;
+  flex: 0 0 auto;
+}
+
+tbody {
+  flex: 1 1 auto;
+  display: block;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+tr {
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+}
+
+td > i.fa-pen {
+  margin-right: .6em;
+}
+
+td > i {
+  cursor: pointer;
+}
+

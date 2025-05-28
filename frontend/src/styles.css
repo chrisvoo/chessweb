@@ -938,7 +938,7 @@ table tbody tr:nth-child(2n + 1) {
 }
 
 table td {
-  padding: 0.75em 0.75em;
+  padding: 0.5em 0.75em;
 }
 
 table th {
@@ -1007,9 +1007,9 @@ button,
   font-family: "Roboto Slab", serif;
   font-size: 0.8em;
   font-weight: 700;
-  height: 3.5em;
+  height: 2.99em;
   letter-spacing: 0.075em;
-  line-height: 3.5em;
+  line-height: 3em;
   padding: 0 2.25em;
   text-align: center;
   text-decoration: none;
@@ -2065,4 +2065,7 @@ button:disabled,
   padding-top: 0;
 }
 
-
+*::selection {
+  background-color: #949BA0;
+  color: #eff1f2;
+}

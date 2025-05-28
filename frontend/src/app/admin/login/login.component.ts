@@ -10,7 +10,6 @@ import { catchError, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { ErrorResponse } from '../../../types/requests';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',

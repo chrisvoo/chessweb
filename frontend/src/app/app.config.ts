@@ -15,7 +15,10 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     providePrimeNG({
       theme: {
-        preset: CustomPreset
+        preset: CustomPreset,
+        options: {
+          darkModeSelector: false
+        }
       }
     })
   ],

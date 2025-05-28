@@ -1,10 +1,9 @@
-import {DestroyRef, inject, Injectable, OnDestroy} from '@angular/core';
+import { DestroyRef, inject, Injectable, OnDestroy } from '@angular/core';
 import type { User } from '../../../types/models';
-import {BehaviorSubject, catchError, EMPTY, map, Observable, of, tap} from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import {ErrorResponse, LoginResponse, RefreshTokenResponse} from '../../../types/requests';
-import { Router } from '@angular/router';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { ErrorResponse, LoginResponse, RefreshTokenResponse } from '../../../types/requests';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +16,7 @@ export class AuthService implements OnDestroy {
   #destroyRef = inject(DestroyRef);
 
   constructor(
-    private http: HttpClient,
-    private router: Router
+    private http: HttpClient
   ) { }
 
   ngOnDestroy() {
@@ -40,39 +38,52 @@ export class AuthService implements OnDestroy {
   }
 
   login(email: string, password: string): Observable<boolean> {
-      return this.http.post<LoginResponse>('/api/login', { email, password }).pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        tap((response) => {
-          const { access_token, expires_in, user } = response.data;
+      return this.http.post<LoginResponse>(
+        '/api/login',
+        { email, password }
+      )
+        .pipe(
+          takeUntilDestroyed(this.#destroyRef),
+          tap((response) => {
+            const { access_token, expires_in, user } = response.data;
 
-          this.#authenticatedUser.next(user)
-          this.#authenticated.next(true)
-          this.token = access_token
+            this.#authenticatedUser.next(user)
+            this.#authenticated.next(true)
+            this.token = access_token
 
-          this.timeout = setTimeout(() => this.refreshToken, expires_in * 1000);
-        }),
-        map(() => true)
+            this.timeout = setTimeout(() => this.refreshToken, expires_in * 1000);
+          }),
+          map(() => true)
       )
   }
 
   refreshToken(): Observable<boolean> {
     this.token = undefined
 
-    return this.http.post<RefreshTokenResponse>('/api/refresh', { refresh_token: this.token }).pipe(
-      takeUntilDestroyed(this.#destroyRef),
-      tap((response) => {
-        const { access_token, expires_in } = response.data
-        this.token = access_token
-        this.timeout = setTimeout(() => this.refreshToken, expires_in * 1000);
-      }),
-      catchError(err => {
-        const errResonse = err.error as ErrorResponse
-        if (errResonse.statusCode === 400) {
-          console.log('Refresh token expired')
-        }
-        return of(false);
-      }),
-      map(() => true)
+    return this.http.post<RefreshTokenResponse>(
+      '/api/refresh',
+      null
+    )
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        tap((response) => {
+          const { access_token, expires_in } = response.data
+
+          this.#authenticated.next(true)
+          this.token = access_token
+
+          this.timeout = setTimeout(() => this.refreshToken, expires_in * 1000);
+        }),
+        catchError(err => {
+          const errResonse = err.error as ErrorResponse
+          if (errResonse.statusCode === 400) {
+            console.log('Refresh token expired')
+          }
+          this.#authenticated.next(false)
+          this.#authenticatedUser.next(undefined)
+          return of(false);
+        }),
+        map(() => true)
     )
   }
 }

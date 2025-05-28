@@ -48,12 +48,28 @@ export default definePreset(Aura, {
     }
   },
   components: {
-    button: {
-      sm: {
-        font: {
-          size: "0.8em"
+    paginator: {
+      padding: '5px',
+      background: '#f5f6f7',
+      nav: {
+        button: {
+          hover: {
+            background: '#E2E8F0'
+          }
         }
       }
-    }
+    },
+    tooltip: {
+      padding: '5px',
+      css: () => `
+      .p-tooltip {
+        font-size: 12px;
+      }
+      .p-tooltip-text {
+        white-space: nowrap;
+        width: fit-content;
+      }
+      `
+    },
   }
 });

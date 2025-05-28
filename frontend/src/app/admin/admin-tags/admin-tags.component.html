@@ -1,1 +1,105 @@
-<p>admin-tags works!</p>
+<section>
+  <header class="main major">
+    <h2>Admin - Gestione tags</h2>
+  </header>
+<!--  <div class="flex justify-center mb-4">-->
+<!--    <p-selectbutton [options]="sizes" [(ngModel)]="selectedSize" [multiple]="false" optionLabel="name" optionValue="value" />-->
+<!--  </div>-->
+
+    <div class="flex">
+      <button class="button primary">Reset</button>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon>
+          <i class="pi pi-search"></i>
+        </p-inputicon>
+        <input pInputText type="text"  placeholder="Search keyword" />
+      </p-iconfield>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>ciao</td>
+          <td>
+            <i tooltipStyleClass="tooltip-big-width" pTooltip="Modifica" tooltipPosition="top" class="fa-solid fa-pen"></i>
+            <i tooltipStyleClass="tooltip-big-width" pTooltip="Cancella" tooltipPosition="top" class="fa-solid fa-trash"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>ciao</td>
+          <td>
+            <i class="fa-solid fa-pen"></i>
+            <i class="fa-solid fa-trash"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>ciao</td>
+          <td>
+            <i class="fa-solid fa-pen"></i>
+            <i class="fa-solid fa-trash"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>ciao</td>
+          <td>
+            <i class="fa-solid fa-pen"></i>
+            <i class="fa-solid fa-trash"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>ciao</td>
+          <td>
+            <i class="fa-solid fa-pen"></i>
+            <i class="fa-solid fa-trash"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>ciao</td>
+          <td>
+            <i class="fa-solid fa-pen"></i>
+            <i class="fa-solid fa-trash"></i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  <p-paginator
+    [first]="1"
+    [rows]="10"
+    [totalRecords]="120"
+    [showCurrentPageReport]="true"
+    [showPageLinks]="false"
+    [showJumpToPageDropdown]="false"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
+
+
+  <p-table [value]="[{code: 1, name: 'ciao', category: 'Bella', quantity: 5}]" [tableStyle]="{ 'min-width': '50rem' }">
+    <ng-template #header>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Quantity</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-product>
+      <tr>
+        <td>{{ product.code }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.category }}</td>
+        <td>{{ product.quantity }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

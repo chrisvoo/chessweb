@@ -24,15 +24,39 @@ use App\Application\Actions\User\UpdateUserAction;
 use App\Application\Actions\User\ViewSingleUserAction;
 use App\Application\Middleware\AuthMiddleware;
 use App\Infrastructure\Components\JWTServiceInterface;
-use Psr\Log\LoggerInterface;
+//use Psr\Http\Message\ResponseInterface;
+//use Psr\Http\Message\ServerRequestInterface;
+//use Psr\Http\Server\RequestHandlerInterface;
+//use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-//    $app->options('/{routes:.*}', function (Request $request, Response $response) {
-//        // CORS Pre-Flight OPTIONS Request Handler
-//        return $response;
-//    });
+    /*
+    $app->add(function (
+        ServerRequestInterface $request,
+        RequestHandlerInterface $handler
+    ) use ($app): ResponseInterface {
+        if ($request->getMethod() === 'OPTIONS') {
+            $response = $app->getResponseFactory()->createResponse();
+        } else {
+            $response = $handler->handle($request);
+        }
+
+        $response = $response
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
+            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Headers', '*')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+            ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->withHeader('Pragma', 'no-cache');
+
+        if (ob_get_contents()) {
+            ob_clean();
+        }
+
+        return $response;
+    });*/
 
     $app->group('/api', function (Group $group) {
         $group->get('/user/{id}', ViewSingleUserAction::class);
@@ -68,7 +92,6 @@ return function (App $app) {
             $group->delete('/article/{id}', DeleteArticleAction::class);
         })->add(
             new AuthMiddleware(
-                $group->getContainer()->get(LoggerInterface::class),
                 $group->getContainer()->get(JWTServiceInterface::class)
             )
         );

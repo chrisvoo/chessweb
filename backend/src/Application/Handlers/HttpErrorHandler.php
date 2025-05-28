@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Handlers;
 
-use _PHPStan_62c6a0a8b\Nette\Neon\Exception;
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
 use Psr\Http\Message\ResponseInterface as Response;

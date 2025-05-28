@@ -7,14 +7,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpForbiddenException;
 
 class AuthMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private readonly LoggerInterface $logger,
-        private JWTServiceInterface $jwtService
+        private readonly JWTServiceInterface $jwtService
     ) {
     }
     /**

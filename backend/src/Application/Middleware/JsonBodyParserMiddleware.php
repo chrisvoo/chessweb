@@ -9,15 +9,9 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface as Middleware;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Psr\Log\LoggerInterface;
 
 class JsonBodyParserMiddleware implements Middleware
 {
-    public function __construct(
-        private LoggerInterface $logger
-    ) {
-    }
-
     public function getContent(): string|false
     {
         return file_get_contents('php://input');

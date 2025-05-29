@@ -9,8 +9,10 @@ class DatabaseOperation implements JsonSerializable
     public const ENTITY_CREATED = 1;
     public const ENTITY_UPDATED = 2;
     public const ENTITY_DELETED = 3;
+    // as convention, all error codes must be greater than 100
+    public const ENTITY_DUPLICATED = 100;
 
-    public int $entityId;
+    public ?int $entityId;
     public bool $success;
     public string $message;
     public int $code;
@@ -19,49 +21,64 @@ class DatabaseOperation implements JsonSerializable
     /**
      * Specify data which should be serialized to JSON
      * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
-     * @since 5.4
+     * @return array
      */
     public function jsonSerialize(): array
     {
         $fields = [
-            'entity_id' => $this->entityId,
             'success' => $this->success,
             'message' => $this->message,
             'code' => $this->code
         ];
 
-        if (isset($this->affectedRows)) {
+        if (isset($this->affectedRows) && $this->success) {
             $fields['affected_rows'] = $this->affectedRows;
+        }
+
+        if (isset($this->entityId)) {
+            $fields['entity_id'] = $this->entityId;
         }
 
         return $fields;
     }
 
-    private static function newEntityOperation(int $entityId, string $message, int $code, int $affectedRows = 1): DatabaseOperation
+    public function isSuccessful(): bool
     {
+        return $this->success;
+    }
+
+    private static function newEntityOperation(
+        string $message,
+        int $code,
+        ?int $entityId = null,
+        int $affectedRows = 0
+    ): DatabaseOperation {
         $dbOp = new DatabaseOperation();
         $dbOp->entityId = $entityId;
-        $dbOp->success = true;
+        $dbOp->success = $code < self::ENTITY_DUPLICATED;
         $dbOp->message = $message;
         $dbOp->code = $code;
         $dbOp->affectedRows = $affectedRows;
         return $dbOp;
     }
 
+    public static function failed(string $message, int $code): DatabaseOperation
+    {
+        return self::newEntityOperation($message, $code);
+    }
+
     public static function newSingleEntitySuccessfullyCreated(int $entityId): DatabaseOperation
     {
-        return self::newEntityOperation($entityId, 'Entity created', self::ENTITY_CREATED);
+        return self::newEntityOperation('Entity created', self::ENTITY_CREATED, $entityId, 1);
     }
 
     public static function newSingleEntitySuccessfullyUpdated(int $entityId): DatabaseOperation
     {
-        return self::newEntityOperation($entityId, 'Entity updated', self::ENTITY_UPDATED);
+        return self::newEntityOperation('Entity updated', self::ENTITY_UPDATED, $entityId, 1);
     }
 
     public static function newSingleEntitySuccessfullyDeleted(int $entityId): DatabaseOperation
     {
-        return self::newEntityOperation($entityId, 'Entity deleted', self::ENTITY_DELETED);
+        return self::newEntityOperation('Entity deleted', self::ENTITY_DELETED, $entityId, 1);
     }
 }

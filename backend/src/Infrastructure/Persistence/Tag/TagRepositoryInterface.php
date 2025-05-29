@@ -24,6 +24,7 @@ interface TagRepositoryInterface
     public function list(SimpleNamedFilters $filters): array;
 
     public function findById(int $id): Tag|false;
+    public function findByName(string $name): Tag|false;
 
     /**
      * Upsert of a tag

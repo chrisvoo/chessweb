@@ -5,6 +5,7 @@ namespace App\Infrastructure\Persistence\Tag;
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\Pagination\SimpleNamedFilters;
 use App\Domain\Tag\Tag;
+use App\Domain\Tag\TagExistsException;
 use App\Domain\Tag\TagNotFoundException;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DateTime;
@@ -31,7 +32,8 @@ class TagRepository implements TagRepositoryInterface
         $whereCondition = isset($filters->name) ? "name LIKE :name" : '';
         $params = isset($filters->name) ? ['name' => "%{$filters->name}%"] : [];
 
-        return $this->databaseManager->count(<<<SQL
+        return $this->databaseManager->count(
+            <<<SQL
             SELECT id
             FROM $table
             WHERE $whereCondition
@@ -99,6 +101,14 @@ SQL;
             $dbOp->affectedRows = $affectedRows;
             return $dbOp;
         } else {
+            $tagExist = $this->findByName($tag->name);
+            if ($tagExist) {
+                return DatabaseOperation::failed(
+                    'Tag ' . $tag->name . ' already exists',
+                    DatabaseOperation::ENTITY_DUPLICATED
+                );
+            }
+
             $lastInsertedId = $this->databaseManager->insert(
                 Tag::TABLE_NAME,
                 [
@@ -130,13 +140,33 @@ SQL;
         /**
          * @var Tag|false $result
          */
-        $result = $this->databaseManager->row(<<<SQL
+        $result = $this->databaseManager->row(
+            <<<SQL
             SELECT id, name, created_at, updated_at
             FROM $table
             WHERE id = :id
 SQL,
             Tag::class,
             ['id' => $id]
+        );
+
+        return $result;
+    }
+
+    public function findByName(string $name): Tag|false
+    {
+        $table = Tag::TABLE_NAME;
+        /**
+         * @var Tag|false $result
+         */
+        $result = $this->databaseManager->row(
+            <<<SQL
+            SELECT id, name, created_at, updated_at
+            FROM $table
+            WHERE LOWER(name) = :name
+SQL,
+            Tag::class,
+            ['name' => strtolower($name)]
         );
 
         return $result;

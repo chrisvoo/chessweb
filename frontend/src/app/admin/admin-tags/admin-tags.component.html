@@ -2,104 +2,115 @@
   <header class="main major">
     <h2>Admin - Gestione tags</h2>
   </header>
-<!--  <div class="flex justify-center mb-4">-->
-<!--    <p-selectbutton [options]="sizes" [(ngModel)]="selectedSize" [multiple]="false" optionLabel="name" optionValue="value" />-->
-<!--  </div>-->
 
-    <div class="flex">
-      <button class="button primary">Reset</button>
-      <p-iconfield iconPosition="left" class="ml-auto">
-        <p-inputicon>
-          <i class="pi pi-search"></i>
-        </p-inputicon>
-        <input pInputText type="text"  placeholder="Search keyword" />
-      </p-iconfield>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nome</th>
-          <th>Azioni</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>ciao</td>
-          <td>
-            <i tooltipStyleClass="tooltip-big-width" pTooltip="Modifica" tooltipPosition="top" class="fa-solid fa-pen"></i>
-            <i tooltipStyleClass="tooltip-big-width" pTooltip="Cancella" tooltipPosition="top" class="fa-solid fa-trash"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>ciao</td>
-          <td>
-            <i class="fa-solid fa-pen"></i>
-            <i class="fa-solid fa-trash"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>ciao</td>
-          <td>
-            <i class="fa-solid fa-pen"></i>
-            <i class="fa-solid fa-trash"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>ciao</td>
-          <td>
-            <i class="fa-solid fa-pen"></i>
-            <i class="fa-solid fa-trash"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td>ciao</td>
-          <td>
-            <i class="fa-solid fa-pen"></i>
-            <i class="fa-solid fa-trash"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>ciao</td>
-          <td>
-            <i class="fa-solid fa-pen"></i>
-            <i class="fa-solid fa-trash"></i>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  <p-paginator
-    [first]="1"
-    [rows]="10"
-    [totalRecords]="120"
-    [showCurrentPageReport]="true"
-    [showPageLinks]="false"
-    [showJumpToPageDropdown]="false"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
-
-
-  <p-table [value]="[{code: 1, name: 'ciao', category: 'Bella', quantity: 5}]" [tableStyle]="{ 'min-width': '50rem' }">
-    <ng-template #header>
+  <p-table #dt
+    dataKey="code"
+    stripedRows
+    sortField="name"
+    [scrollable]="true"
+    scrollHeight="450px"
+    [sortOrder]="sortOrder"
+    [value]="tags"
+    [globalFilterFields]="['name']"
+    currentPageReportTemplate="{first}/{last} di {totalRecords} record"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Trova tag"
+          />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" >
       <tr>
-        <th>Code</th>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Quantity</th>
+        <th>ID</th>
+        <th pSortableColumn="name">
+          Nome
+          <p-sortIcon field="name" />
+        </th>
+        <th>Creato il</th>
+        <th style="width: 8rem"></th>
       </tr>
     </ng-template>
-    <ng-template #body let-product>
+    <ng-template pTemplate="body" let-tag>
       <tr>
-        <td>{{ product.code }}</td>
-        <td>{{ product.name }}</td>
-        <td>{{ product.category }}</td>
-        <td>{{ product.quantity }}</td>
+        <td>{{ tag.id }}</td>
+        <td>{{ tag.name }}</td>
+        <td>{{ tag.created_at }}</td>
+        <td>
+          <div class="flex flex-row justify-content-around">
+            <p-button
+              pTooltip="Modifica"
+              tooltipPosition="top"
+              raised
+              icon="pi pi-pencil"
+              (click)="onModifyItem(tag)"
+              severity="secondary"
+              rounded
+            />
+            <p-button
+              pTooltip="Cancella"
+              tooltipPosition="top"
+              raised
+              icon="pi pi-trash"
+              (click)="onDeleteItem(tag)"
+              severity="secondary"
+              rounded
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4">Nessun tag trovato.</td>
       </tr>
     </ng-template>
   </p-table>
+  <p-dialog
+    [formGroup]="tagForm"
+    header="Modifica tag"
+    [modal]="true"
+    [(visible)]="editDialogVisible"
+    [style]="{ width: '25rem' }"
+  >
+    <div class="flex flex-column items-center mb-5">
+      <label for="name">Nome</label>
+      <input
+        formControlName="name"
+        pInputText
+        id="name"
+        class="flex-auto"
+        [value]="tagToBeEdited?.name"
+        autocomplete="off"
+      />
+      @if (shouldDisplayErrorMessage()) {
+        <p-message
+          icon="pi pi-exclamation-circle"
+          severity="error"
+          size="small"
+          class="mt-2"
+          variant="simple"
+        >
+          @if (name?.hasError('required')) {
+            Bisogna specificare un nome
+          } @else if (name?.hasError('noWhiteSpaceOnly')) {
+            Il nome non può contenere solo spazi
+          }
+        </p-message>
+      }
+    </div>
+    <div class="flex justify-end gap-2">
+      <p-button label="Annulla" severity="secondary" (click)="editDialogVisible = false" />
+      <p-button label="Save" severity="primary" [disabled]="!tagForm.valid" (click)="updateTag()" />
+    </div>
+  </p-dialog>
 </section>

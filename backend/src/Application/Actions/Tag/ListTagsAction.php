@@ -29,7 +29,9 @@ class ListTagsAction extends Action
         $this->validator->validate($this->request, $queryParams);
 
         $filters = new SimpleNamedFilters();
-        $filters->sortOrder = $queryParams['sort_order'] ?? SortDirection::ASC;
+        $filters->sortOrder = !empty($queryParams['sort_order'])
+            ? SortDirection::fromValue($queryParams['sort_order'])
+            : SortDirection::ASC;
         $filters->sortBy = $queryParams['sort_by'] ?? 'name';
         $filters->name = $queryParams['name'] ?? '';
 

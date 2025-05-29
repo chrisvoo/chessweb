@@ -18,3 +18,29 @@ export interface ErrorResponse {
 }
 
 export type RefreshTokenResponse = Omit<LoginResponse, "user">
+
+export interface ListItemsRequest<T> {
+  statusCode: number
+  data: {
+    items: T[]
+  },
+  total_items: number,
+  total_pages: number,
+  has_more_items: boolean,
+  page: number
+  page_size: number
+}
+
+export interface SortParams {
+  sort_by: string
+  sort_order: 'asc' | 'desc'
+}
+
+export interface PaginationParams {
+  page: number
+  page_size: number
+}
+
+export interface ListTagsParams extends SortParams, PaginationParams {
+  name: string
+}

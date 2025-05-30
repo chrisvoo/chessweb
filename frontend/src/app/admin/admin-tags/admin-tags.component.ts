@@ -1,6 +1,7 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
-import { Button } from 'primeng/button';
+import { Button, ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -10,17 +11,26 @@ import { TagsService } from '../../services/tags/tags.service';
 import { Tag } from '../../../types/models';
 import { catchError, throwError } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
-import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Message } from 'primeng/message';
 import { noWhiteSpaceOnly } from '../../validators/no-whitespace-only';
+import { ErrorResponse } from '../../../types/requests';
+import { Divider } from 'primeng/divider';
+import { Toast } from 'primeng/toast';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-admin-tags',
-  imports: [TableModule, Button, IconField, InputIcon, InputText, Paginator, TooltipModule, Dialog, ReactiveFormsModule, Message],
+  imports: [
+    TableModule, Button, IconField, InputIcon, InputText, Paginator,
+    TooltipModule, Dialog, ReactiveFormsModule, Message, Divider, Toast,
+    ConfirmDialogModule, ButtonDirective, ButtonIcon, ButtonLabel
+  ],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './admin-tags.component.html',
-  standalone: true,
-  styleUrl: './admin-tags.component.css'
+  styleUrl: './admin-tags.component.css',
+  standalone: true
 })
 export class AdminTagsComponent implements OnInit {
   page = 1
@@ -30,14 +40,17 @@ export class AdminTagsComponent implements OnInit {
   errorMessage: string = ''
   error: boolean = false;
   editDialogVisible = false
-  tagToBeEdited?: Tag
+  tagToBeModified?: Tag
   tagForm: FormGroup
+  loadingResponse = false
 
   #destroyRef = inject(DestroyRef);
 
   constructor(
     private tagsService: TagsService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {
     this.tagForm = this.formBuilder.group({
       name: ['', Validators.compose([
@@ -51,7 +64,14 @@ export class AdminTagsComponent implements OnInit {
     this.loadTags();
   }
 
+  #resetResponseStatusFields(): void {
+    this.error = false;
+    this.errorMessage = ''
+  }
+
   loadTags(): void {
+    this.#resetResponseStatusFields();
+
     this.tagsService.listTags({
       page: this.page,
       page_size: this.pageSize,
@@ -65,13 +85,16 @@ export class AdminTagsComponent implements OnInit {
         return throwError(() => err)
       })
     ).subscribe((res) => {
-      const { total_items, total_pages, has_more_items, data } = res
       this.tags = res.data.items
     })
   }
 
-  shouldDisplayErrorMessage(): boolean | undefined {
+  hasFormErrors(): boolean | undefined {
     return this.name?.invalid && (this.name?.dirty || this.name?.touched);
+  }
+
+  hasServerError(): boolean {
+    return this.error && this.errorMessage != ''
   }
 
   get name(): AbstractControl<any, any> | null {
@@ -79,19 +102,85 @@ export class AdminTagsComponent implements OnInit {
   }
 
   onModifyItem(item: Tag): void {
-    this.tagToBeEdited = item
+    this.tagToBeModified = item
     this.tagForm.patchValue({ name: item.name })
     this.editDialogVisible = true;
   }
 
   onDeleteItem(item: Tag): void {
-    console.log(item);
+    this.tagToBeModified = item
+    this.confirmationService.confirm({
+      header: 'Cancellazione tag',
+      message: `Vuoi cancellare ${this.tagToBeModified?.name}?`,
+      accept: this.deleteTag,
+      icon: 'pi pi-question-circle',
+    })
+
   }
 
   updateTag(): void {
+    this.#resetResponseStatusFields();
+    this.loadingResponse = true;
+
     if (this.tagForm.valid) {
-      console.log(this.name?.value)
-      this.editDialogVisible = false
+      const tag = { ...this.tagToBeModified! }
+      tag.name = this.tagForm.get('name')?.value;
+      this.tagsService.updateTag(tag).
+        pipe(
+          takeUntilDestroyed(this.#destroyRef),
+          catchError(err => {
+            this.error = true
+            this.errorMessage = 'È avvenuto un errore, contattare l\'amministratore'
+            const errResponse = err.error as ErrorResponse
+            if (
+              errResponse.statusCode === 400 &&
+              errResponse.data.code === 100
+            ) {
+              this.errorMessage = 'Il tag specificato esiste già';
+            }
+
+            this.loadingResponse = false;
+            return throwError(() => err)
+          })
+        ).subscribe((res) => {
+          this.loadTags()
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Tag creato con successo'
+          })
+          this.editDialogVisible = false
+          this.loadingResponse = false;
+        })
+    } else {
+      console.error('invalid form!?')
     }
+  }
+
+  deleteTag(): void {
+    this.#resetResponseStatusFields();
+    this.loadingResponse = true;
+
+    this.tagsService.deleteTag(this.tagToBeModified!.id)
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        catchError(err => {
+          this.error = true
+          this.errorMessage = 'È avvenuto un errore, contattare l\'amministratore'
+          this.loadingResponse = false;
+          return throwError(() => err)
+        })
+     ).subscribe(() => {
+        this.loadTags()
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Tag cancellato con successo'
+        })
+        this.loadingResponse = false;
+        this.closeConfirmationService()
+     })
+  }
+
+  closeConfirmationService(): void {
+    this.confirmationService.close()
   }
 }

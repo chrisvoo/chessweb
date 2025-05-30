@@ -5,8 +5,9 @@ namespace App\Infrastructure\Persistence\Category;
 use App\Domain\Category\Category;
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\Pagination\SimpleNamedFilters;
+use App\Infrastructure\Persistence\UniquenessCheckInterface;
 
-interface CategoryRepositoryInterface
+interface CategoryRepositoryInterface extends UniquenessCheckInterface
 {
     /**
      * It returns the number of categories matching the filters

@@ -3,6 +3,7 @@
 namespace App\Application\Actions\Tag;
 
 use App\Application\Actions\Action;
+use App\Domain\DomainException\InvalidRequestException;
 use App\Domain\Mappers\Mapper;
 use App\Domain\Tag\Tag;
 use App\Domain\Validators\SimpleNamedValidator;
@@ -34,6 +35,14 @@ class UpdateTagAction extends Action
 
         $tag = (new Mapper())->map($body, Tag::class);
         $op = $this->tagRepository->save($tag);
+
+        if (!$op->isSuccessful()) {
+            throw new InvalidRequestException(
+                $this->request,
+                $op->message,
+                $op->jsonSerialize()
+            );
+        }
 
         $this->logger->info("Tag updated", ['id' => $op->entityId]);
         return $this->respondWithData($op);

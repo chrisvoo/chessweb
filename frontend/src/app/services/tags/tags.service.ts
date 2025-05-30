@@ -3,14 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { formatDate, parseISO } from 'date-fns'
 import { AuthService } from '../auth/auth.service';
-import { ListItemsRequest, ListTagsParams } from '../../../types/requests';
+import {ListItemsRequest, ListTagsParams, ManagedEntityResponse} from '../../../types/requests';
 import { Tag } from '../../../types/models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TagsService {
-  ENDPOINT = '/api/tags'
+  LIST_ENDPOINT = '/api/tags'
+  UPDATE_DELETE_ENDPOINT = '/api/tag/:id';
+  CREATE_ENDPOINT = '/api/tag';
 
   constructor(
     private readonly http: HttpClient,
@@ -21,7 +23,7 @@ export class TagsService {
     const token = this.authService.getToken();
 
     return this.http.get<ListItemsRequest<Tag>>(
-      this.ENDPOINT,
+      this.LIST_ENDPOINT,
       {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -42,6 +44,41 @@ export class TagsService {
           }
         }
       })
+    )
+  }
+
+  updateTag(tag: Tag): Observable<ManagedEntityResponse> {
+    return this.http.put<ManagedEntityResponse>(
+      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${tag.id}`),
+      { name: tag.name },
+      {
+        headers: {
+          'Authorization': `Bearer ${this.authService.getToken()}`
+        }
+      }
+    )
+  }
+
+  deleteTag(tagId: number): Observable<ManagedEntityResponse> {
+    return this.http.delete<ManagedEntityResponse>(
+      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${tagId}`),
+      {
+        headers: {
+          'Authorization': `Bearer ${this.authService.getToken()}`
+        }
+      }
+    )
+  }
+
+  createTag(name: string): Observable<ManagedEntityResponse> {
+    return this.http.post<ManagedEntityResponse>(
+      this.CREATE_ENDPOINT,
+      { name },
+      {
+        headers: {
+          'Authorization': `Bearer ${this.authService.getToken()}`
+        }
+      }
     )
   }
 }

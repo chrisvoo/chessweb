@@ -31,7 +31,8 @@ class CategoryRepository implements CategoryRepositoryInterface
         $whereCondition = isset($filters->name) ? "name LIKE :name" : '';
         $params = isset($filters->name) ? ['name' => "%{$filters->name}%"] : [];
 
-        return $this->databaseManager->count(<<<SQL
+        return $this->databaseManager->count(
+            <<<SQL
             SELECT id
             FROM $table
             WHERE $whereCondition
@@ -73,13 +74,33 @@ SQL;
         );
     }
 
+    public function findByName(string $name): Category|false
+    {
+        $table = Category::TABLE_NAME;
+        /**
+         * @var Category|false $result
+         */
+        $result = $this->databaseManager->row(
+            <<<SQL
+            SELECT id, name, created_at, updated_at
+            FROM $table
+            WHERE LOWER(name) = :name
+SQL,
+            Category::class,
+            ['name' => strtolower($name)]
+        );
+
+        return $result;
+    }
+
     public function findById(int $id): Category|false
     {
         $table = Category::TABLE_NAME;
         /**
          * @var Category|false $result
          */
-        $result = $this->databaseManager->row(<<<SQL
+        $result = $this->databaseManager->row(
+            <<<SQL
             SELECT id, name, created_at, updated_at
             FROM $table
             WHERE id = :id
@@ -105,6 +126,13 @@ SQL,
                 throw new CategoryNotFoundException();
             }
 
+            if ($this->isDuplicatedEntity($category->name, $categoryExist->id)) {
+                return DatabaseOperation::failed(
+                    'Category ' . $category->name . ' already exists',
+                    DatabaseOperation::ENTITY_DUPLICATED
+                );
+            }
+
             $affectedRows = $this->databaseManager->update(
                 Category::TABLE_NAME,
                 [
@@ -118,6 +146,13 @@ SQL,
             $dbOp->affectedRows = $affectedRows;
             return $dbOp;
         } else {
+            if ($this->isDuplicatedEntity($category->name)) {
+                return DatabaseOperation::failed(
+                    'Category ' . $category->name . ' already exists',
+                    DatabaseOperation::ENTITY_DUPLICATED
+                );
+            }
+
             $lastInsertedId = $this->databaseManager->insert(
                 Category::TABLE_NAME,
                 [
@@ -141,5 +176,30 @@ SQL,
         $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted($categoryId);
         $dbOp->affectedRows = $affectedRows;
         return $dbOp;
+    }
+
+    public function isDuplicatedEntity(string $name, ?int $id = null): bool
+    {
+        $table = Category::TABLE_NAME;
+        $sql =
+            <<<SQL
+            SELECT id
+            FROM $table
+            WHERE LOWER(name) = :name
+SQL;
+        $params = [
+            'name' => strtolower($name)
+        ];
+
+        if ($id !== null) {
+            $sql .= ' AND id != :id';
+            $params['id'] = $id;
+        }
+        /**
+         * @var Category|false $result
+         */
+        $result = $this->databaseManager->row($sql, Category::class, $params);
+
+        return !empty($result);
     }
 }

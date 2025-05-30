@@ -4,6 +4,7 @@ namespace App\Application\Actions\Category;
 
 use App\Application\Actions\Action;
 use App\Domain\Category\Category;
+use App\Domain\DomainException\InvalidRequestException;
 use App\Domain\Mappers\Mapper;
 use App\Domain\Tag\Tag;
 use App\Domain\Validators\SimpleNamedValidator;
@@ -36,6 +37,14 @@ class UpdateCategoryAction extends Action
 
         $category = (new Mapper())->map($body, Category::class);
         $op = $this->categoryRepository->save($category);
+
+        if (!$op->isSuccessful()) {
+            throw new InvalidRequestException(
+                $this->request,
+                $op->message,
+                $op->jsonSerialize()
+            );
+        }
 
         $this->logger->info("Category updated", ['id' => $op->entityId]);
         return $this->respondWithData($op);

@@ -5,7 +5,6 @@ namespace App\Infrastructure\Persistence\Tag;
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\Pagination\SimpleNamedFilters;
 use App\Domain\Tag\Tag;
-use App\Domain\Tag\TagExistsException;
 use App\Domain\Tag\TagNotFoundException;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DateTime;
@@ -88,6 +87,13 @@ SQL;
                 throw new TagNotFoundException();
             }
 
+            if ($this->isDuplicatedEntity($tag->name, $tag->id)) {
+                return DatabaseOperation::failed(
+                    'Tag ' . $tag->name . ' already exists',
+                    DatabaseOperation::ENTITY_DUPLICATED
+                );
+            }
+
             $affectedRows = $this->databaseManager->update(
                 Tag::TABLE_NAME,
                 [
@@ -101,8 +107,7 @@ SQL;
             $dbOp->affectedRows = $affectedRows;
             return $dbOp;
         } else {
-            $tagExist = $this->findByName($tag->name);
-            if ($tagExist) {
+            if ($this->isDuplicatedEntity($tag->name)) {
                 return DatabaseOperation::failed(
                     'Tag ' . $tag->name . ' already exists',
                     DatabaseOperation::ENTITY_DUPLICATED
@@ -153,22 +158,28 @@ SQL,
         return $result;
     }
 
-    public function findByName(string $name): Tag|false
+    public function isDuplicatedEntity(string $name, ?int $id = null): bool
     {
         $table = Tag::TABLE_NAME;
+        $sql =
+            <<<SQL
+            SELECT id
+            FROM $table
+            WHERE LOWER(name) = :name
+SQL;
+        $params = [
+            'name' => strtolower($name)
+        ];
+
+        if ($id !== null) {
+            $sql .= ' AND id != :id';
+            $params['id'] = $id;
+        }
         /**
          * @var Tag|false $result
          */
-        $result = $this->databaseManager->row(
-            <<<SQL
-            SELECT id, name, created_at, updated_at
-            FROM $table
-            WHERE LOWER(name) = :name
-SQL,
-            Tag::class,
-            ['name' => strtolower($name)]
-        );
+        $result = $this->databaseManager->row($sql, Tag::class, $params);
 
-        return $result;
+        return !empty($result);
     }
 }

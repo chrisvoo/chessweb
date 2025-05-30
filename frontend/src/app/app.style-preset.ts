@@ -4,17 +4,17 @@ import Aura from '@primeng/themes/aura';
 export default definePreset(Aura, {
   semantic: {
     primary: {
-      50: '{zinc.50}',
-      100: '{zinc.100}',
-      200: '{zinc.200}',
-      300: '{zinc.300}',
-      400: '{zinc.400}',
-      500: '{zinc.500}',
-      600: '{zinc.600}',
-      700: '{zinc.700}',
-      800: '{zinc.800}',
-      900: '{zinc.900}',
-      950: '{zinc.950}'
+      50: '{orange.50}',
+      100: '{orange.100}',
+      200: '{orange.200}',
+      300: '{orange.300}',
+      400: '{orange.400}',
+      500: '{orange.500}',
+      600: '{orange.600}',
+      700: '{orange.700}',
+      800: '{orange.800}',
+      900: '{orange.900}',
+      950: '{orange.950}'
     },
     // colorScheme: {
     //   light: {
@@ -48,17 +48,6 @@ export default definePreset(Aura, {
     // }
   },
   components: {
-    // paginator: {
-    //   padding: '5px',
-    //   background: '#f5f6f7',
-    //   nav: {
-    //     button: {
-    //       hover: {
-    //         background: '#E2E8F0'
-    //       }
-    //     }
-    //   }
-    // },
     tooltip: {
       padding: '5px',
       css: () => `
@@ -71,5 +60,27 @@ export default definePreset(Aura, {
       }
       `
     },
+    inputtext: {
+      focus: {
+        border: {
+          color: 'grey'
+        }
+      }
+    },
+    divider: {
+      content: {
+        color: 'black'
+      }
+    },
+    confirmdialog: {
+      icon: {
+        size: '1em',
+      }
+    },
+    datatable: {
+      header: {
+        padding: '0 0 1em 0'
+      }
+    }
   }
 });

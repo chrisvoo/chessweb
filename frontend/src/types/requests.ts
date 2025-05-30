@@ -11,6 +11,11 @@ export interface LoginResponse {
 
 export interface ErrorResponse {
   statusCode: number
+  data: {
+    success: boolean
+    message: string
+    code: number
+  }
   error: {
     type: string
     description: string
@@ -29,6 +34,17 @@ export interface ListItemsRequest<T> {
   has_more_items: boolean,
   page: number
   page_size: number
+}
+
+export interface ManagedEntityResponse {
+  statusCode: number
+  data: {
+    success: boolean
+    message: string
+    code: number
+    affected_rows: number
+    entity_id: number
+  }
 }
 
 export interface SortParams {

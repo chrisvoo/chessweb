@@ -7,8 +7,9 @@ namespace App\Infrastructure\Persistence\Tag;
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\Pagination\SimpleNamedFilters;
 use App\Domain\Tag\Tag;
+use App\Infrastructure\Persistence\UniquenessCheckInterface;
 
-interface TagRepositoryInterface
+interface TagRepositoryInterface extends UniquenessCheckInterface
 {
     /**
      * It returns the number of tags matching the filters
@@ -24,7 +25,6 @@ interface TagRepositoryInterface
     public function list(SimpleNamedFilters $filters): array;
 
     public function findById(int $id): Tag|false;
-    public function findByName(string $name): Tag|false;
 
     /**
      * Upsert of a tag

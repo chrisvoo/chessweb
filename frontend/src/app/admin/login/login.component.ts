@@ -12,7 +12,7 @@ import { ErrorResponse } from '../../../types/requests';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-login',
+  selector: 'login',
   imports: [
     FormsModule,
     InputText,

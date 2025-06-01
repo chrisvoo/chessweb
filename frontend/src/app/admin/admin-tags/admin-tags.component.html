@@ -1,8 +1,4 @@
-<section>
-  <header class="main major">
-    <h2>Admin - Gestione tags</h2>
-  </header>
-
+<page title="Admin - Gestione tags">
   <p-table #dt
     dataKey="code"
     stripedRows
@@ -31,6 +27,7 @@
           label="Crea nuovo tag"
           severity="primary"
           raised
+          (click)="onCreateTag()"
         />
       </div>
     </ng-template>
@@ -87,9 +84,9 @@
 
   <p-dialog
     [formGroup]="tagForm"
-    header="Modifica tag"
+    [header]="dialogHeader"
     [modal]="true"
-    [(visible)]="editDialogVisible"
+    [(visible)]="isDialogVisible"
     [style]="{ width: '25rem' }"
   >
     <div class="flex flex-column items-center mb-5">
@@ -99,7 +96,7 @@
         pInputText
         id="name"
         class="flex-auto"
-        [value]="tagToBeModified?.name"
+        [value]="targetTag?.name"
         autocomplete="off"
       />
       @if (hasFormErrors() || hasServerError()) {
@@ -127,7 +124,7 @@
         size="small"
         label="Annulla"
         severity="secondary"
-        (click)="editDialogVisible = false"
+        (click)="isDialogVisible = false"
         raised
       />
       <p-button
@@ -135,7 +132,7 @@
         label="Save"
         severity="primary"
         [disabled]="!tagForm.valid"
-        (click)="updateTag()"
+        (click)="targetTag?.id ? updateTag() : createTag()"
         [loading]="loadingResponse"
         raised
       />
@@ -164,4 +161,4 @@
       ></p-button>
     </ng-template>
   </p-confirmdialog>
-</section>
+</page>

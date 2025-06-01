@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
+import {PageComponent} from '../../../page/page.component';
 
 @Component({
-  selector: 'app-courses',
-  imports: [],
+  selector: 'courses',
+  imports: [
+    PageComponent
+  ],
   standalone: true,
   templateUrl: './courses.component.html',
   styleUrl: './courses.component.css'

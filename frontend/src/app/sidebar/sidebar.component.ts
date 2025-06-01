@@ -6,7 +6,7 @@ import {ContactsComponent} from './contacts/contacts.component';
 import {FooterComponent} from './footer/footer.component';
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'sidebar',
   imports: [
     SearchboxComponent,
     MenuComponent,

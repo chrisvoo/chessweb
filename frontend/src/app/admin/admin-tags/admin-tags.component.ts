@@ -19,13 +19,15 @@ import { ErrorResponse } from '../../../types/requests';
 import { Divider } from 'primeng/divider';
 import { Toast } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { PageComponent } from '../../page/page.component';
 
 @Component({
   selector: 'app-admin-tags',
   imports: [
     TableModule, Button, IconField, InputIcon, InputText, Paginator,
     TooltipModule, Dialog, ReactiveFormsModule, Message, Divider, Toast,
-    ConfirmDialogModule, ButtonDirective, ButtonIcon, ButtonLabel
+    ConfirmDialogModule, ButtonDirective, ButtonIcon, ButtonLabel,
+    PageComponent
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './admin-tags.component.html',
@@ -39,8 +41,9 @@ export class AdminTagsComponent implements OnInit {
   tags: Tag[] = []
   errorMessage: string = ''
   error: boolean = false;
-  editDialogVisible = false
-  tagToBeModified?: Tag
+  isDialogVisible = false
+  dialogHeader = ''
+  targetTag?: Tag
   tagForm: FormGroup
   loadingResponse = false
 
@@ -102,20 +105,32 @@ export class AdminTagsComponent implements OnInit {
   }
 
   onModifyItem(item: Tag): void {
-    this.tagToBeModified = item
+    this.targetTag = item
     this.tagForm.patchValue({ name: item.name })
-    this.editDialogVisible = true;
+    this.dialogHeader = 'Modifica tag'
+    this.isDialogVisible = true;
   }
 
   onDeleteItem(item: Tag): void {
-    this.tagToBeModified = item
+    this.targetTag = item
     this.confirmationService.confirm({
       header: 'Cancellazione tag',
-      message: `Vuoi cancellare ${this.tagToBeModified?.name}?`,
+      message: `Vuoi cancellare ${this.targetTag?.name}?`,
       accept: this.deleteTag,
       icon: 'pi pi-question-circle',
     })
+  }
 
+  onCreateTag(): void {
+    this.tagForm.patchValue({ name: '' })
+    this.dialogHeader = 'Crea tag'
+    this.targetTag = {
+      id: null,
+      name: '',
+      created_at: '',
+      updated_at: '',
+    }
+    this.isDialogVisible = true;
   }
 
   updateTag(): void {
@@ -123,7 +138,7 @@ export class AdminTagsComponent implements OnInit {
     this.loadingResponse = true;
 
     if (this.tagForm.valid) {
-      const tag = { ...this.tagToBeModified! }
+      const tag = { ...this.targetTag! }
       tag.name = this.tagForm.get('name')?.value;
       this.tagsService.updateTag(tag).
         pipe(
@@ -146,9 +161,9 @@ export class AdminTagsComponent implements OnInit {
           this.loadTags()
           this.messageService.add({
             severity: 'success',
-            summary: 'Tag creato con successo'
+            summary: 'Tag aggiornato con successo'
           })
-          this.editDialogVisible = false
+          this.isDialogVisible = false
           this.loadingResponse = false;
         })
     } else {
@@ -156,11 +171,46 @@ export class AdminTagsComponent implements OnInit {
     }
   }
 
+  createTag(): void {
+    this.#resetResponseStatusFields();
+    this.loadingResponse = true;
+
+    if (this.tagForm.valid) {
+      const tagName = this.tagForm.get('name')?.value
+      this.tagsService.createTag(tagName).
+        pipe(
+          takeUntilDestroyed(this.#destroyRef),
+          catchError(err => {
+            this.error = true
+            this.errorMessage = 'È avvenuto un errore, contattare l\'amministratore'
+            const errResponse = err.error as ErrorResponse
+            if (
+              errResponse.statusCode === 400 &&
+              errResponse.data.code === 100
+            ) {
+              this.errorMessage = 'Il tag specificato esiste già';
+            }
+
+            this.loadingResponse = false;
+            return throwError(() => err)
+          })
+        ).subscribe((res) => {
+          this.loadTags()
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Tag creato con successo'
+          })
+          this.isDialogVisible = false
+          this.loadingResponse = false;
+        })
+    }
+  }
+
   deleteTag(): void {
     this.#resetResponseStatusFields();
     this.loadingResponse = true;
 
-    this.tagsService.deleteTag(this.tagToBeModified!.id)
+    this.tagsService.deleteTag(this.targetTag!.id!)
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
         catchError(err => {

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import {PageComponent} from '../../../../page/page.component';
 
 @Component({
-  selector: 'app-activities',
-  imports: [],
+  selector: 'activities',
+  imports: [PageComponent],
   standalone: true,
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.css'

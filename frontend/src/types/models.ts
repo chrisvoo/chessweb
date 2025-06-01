@@ -9,7 +9,7 @@ export interface User {
 }
 
 export interface Tag {
-  id: number
+  id: number|null
   name: string
   created_at: string
   updated_at: string|null

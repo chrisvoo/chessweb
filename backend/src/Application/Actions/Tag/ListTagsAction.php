@@ -34,26 +34,35 @@ class ListTagsAction extends Action
             : SortDirection::ASC;
         $filters->sortBy = $queryParams['sort_by'] ?? 'name';
         $filters->name = $queryParams['name'] ?? '';
+        $filters->all_items = $queryParams['all_items'] ?? false;
 
-        $page = $queryParams['page'] ?? 1;
-        $page_size = $queryParams['page_size'] ?? 10;
+        if ($filters->all_items !== true) {
+            $page = $queryParams['page'] ?? 1;
+            $page_size = $queryParams['page_size'] ?? 10;
 
-        $filters->limit = $page_size + 1;
-        $filters->offset = ($page * $page_size) - $page_size;
+            $filters->limit = $page_size + 1;
+            $filters->offset = ($page * $page_size) - $page_size;
+        }
 
         $tags = $this->tagRepository->list($filters);
         $totalItems = $this->tagRepository->count($filters);
 
         $this->logger->debug('Got tags list', $tags);
 
-        $response = [
-            'items' => array_slice($tags, 0, $page_size),
-            'total_items' => $totalItems,
-            'total_pages' => ceil($totalItems / $page_size),
-            'has_more_items' => count($tags) > $page_size,
-            'page' => (int)$page,
-            'page_size' => (int)$page_size
-        ];
+        if ($filters->all_items !== true) {
+            $response = [
+                'items' => array_slice($tags, 0, $page_size),
+                'total_items' => $totalItems,
+                'total_pages' => ceil($totalItems / $page_size),
+                'has_more_items' => count($tags) > $page_size,
+                'page' => (int)$page,
+                'page_size' => (int)$page_size
+            ];
+        } else {
+            $response = [
+                'items' => $tags,
+            ];
+        }
 
         $this->logger->info("Tags list was viewed.");
 

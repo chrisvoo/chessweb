@@ -23,7 +23,8 @@ class ListSimpleNamedQueryStringValidator implements ValidatorInterface
             v::allOf(
                 (new PaginationValidatorObject())->getValidator(),
                 (new SortingValidatorObject(Tag::getSortableFields()))->getValidator(),
-                v::key('name', v::stringType()->notEmpty(), false)
+                v::key('name', v::stringType()->notEmpty(), false),
+                v::key('all_items', v::boolVal()->notEmpty(), false),
             )->assert($data);
         } catch (NestedValidationException $e) {
             // since when using allOf the single keys are not available in the message details, we have to manually

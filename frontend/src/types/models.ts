@@ -8,16 +8,10 @@ export interface User {
   updated_at: Date|null
 }
 
-export interface Tag {
+export interface NamedEntity {
   id: number|null
   name: string
   created_at: string
   updated_at: string|null
 }
 
-export interface Category {
-  id: number
-  name: string
-  created_at: string
-  updated_at: string|null
-}

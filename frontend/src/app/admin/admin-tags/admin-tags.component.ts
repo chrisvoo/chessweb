@@ -5,10 +5,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
-import { Paginator } from 'primeng/paginator';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagsService } from '../../services/tags/tags.service';
-import { Tag } from '../../../types/models';
 import { catchError, throwError } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -20,14 +18,14 @@ import { Divider } from 'primeng/divider';
 import { Toast } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PageComponent } from '../../page/page.component';
+import {NamedEntity} from '../../../types/models';
 
 @Component({
-  selector: 'app-admin-tags',
+  selector: 'admin-tags',
   imports: [
-    TableModule, Button, IconField, InputIcon, InputText, Paginator,
+    TableModule, Button, IconField, InputIcon, InputText,
     TooltipModule, Dialog, ReactiveFormsModule, Message, Divider, Toast,
-    ConfirmDialogModule, ButtonDirective, ButtonIcon, ButtonLabel,
-    PageComponent
+    ConfirmDialogModule, PageComponent
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './admin-tags.component.html',
@@ -35,15 +33,13 @@ import { PageComponent } from '../../page/page.component';
   standalone: true
 })
 export class AdminTagsComponent implements OnInit {
-  page = 1
-  pageSize = 10
   sortOrder = 1
-  tags: Tag[] = []
+  tags: NamedEntity[] = []
   errorMessage: string = ''
   error: boolean = false;
   isDialogVisible = false
   dialogHeader = ''
-  targetTag?: Tag
+  targetTag?: NamedEntity
   tagForm: FormGroup
   loadingResponse = false
 
@@ -76,8 +72,7 @@ export class AdminTagsComponent implements OnInit {
     this.#resetResponseStatusFields();
 
     this.tagsService.listTags({
-      page: this.page,
-      page_size: this.pageSize,
+      all_items: true,
       sort_by: 'name',
       sort_order: this.sortOrder === 1 ? 'asc' : 'desc',
     }).pipe(
@@ -104,14 +99,14 @@ export class AdminTagsComponent implements OnInit {
     return this.tagForm.get('name')
   }
 
-  onModifyItem(item: Tag): void {
+  onModifyItem(item: NamedEntity): void {
     this.targetTag = item
     this.tagForm.patchValue({ name: item.name })
     this.dialogHeader = 'Modifica tag'
     this.isDialogVisible = true;
   }
 
-  onDeleteItem(item: Tag): void {
+  onDeleteItem(item: NamedEntity): void {
     this.targetTag = item
     this.confirmationService.confirm({
       header: 'Cancellazione tag',

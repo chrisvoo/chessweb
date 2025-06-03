@@ -1,29 +1,25 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
-import { formatDate, parseISO } from 'date-fns'
-import { AuthService } from '../auth/auth.service';
-import {
-  ListAllItemsResponse,
-  ListItemsParams,
-  ManagedEntityResponse
-} from '../../../types/requests';
+import {HttpClient} from '@angular/common/http';
+import {AuthService} from '../auth/auth.service';
+import {ListAllItemsResponse, ListItemsParams, ManagedEntityResponse} from '../../../types/requests';
+import {map, Observable} from 'rxjs';
 import {NamedEntity} from '../../../types/models';
+import {formatDate, parseISO} from 'date-fns';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TagsService {
-  LIST_ENDPOINT = '/api/tags'
-  UPDATE_DELETE_ENDPOINT = '/api/tag/:id';
-  CREATE_ENDPOINT = '/api/tag';
+export class CategoriesService {
+  LIST_ENDPOINT = '/api/categories'
+  UPDATE_DELETE_ENDPOINT = '/api/category/:id';
+  CREATE_ENDPOINT = '/api/category';
 
   constructor(
     private readonly http: HttpClient,
     private readonly authService: AuthService,
   ) { }
 
-  listTags(params: Partial<ListItemsParams<true>>): Observable<ListAllItemsResponse<NamedEntity>> {
+  listCategories(params: Partial<ListItemsParams<true>>): Observable<ListAllItemsResponse<NamedEntity>> {
     const token = this.authService.getToken();
 
     return this.http.get<ListAllItemsResponse<NamedEntity>>(
@@ -39,11 +35,11 @@ export class TagsService {
         return {
           ...res,
           data: {
-            items: res.data.items.map((tag: NamedEntity) => {
-              const { created_at, updated_at } = tag;
+            items: res.data.items.map((category: NamedEntity) => {
+              const { created_at, updated_at } = category;
               const createdAtFormatted = formatDate(parseISO(created_at),  'dd-MM-yyyy');
               const updatedAtFormatted = updated_at ? formatDate(parseISO(updated_at),  'dd-MM-yyyy') : ''
-              return { ...tag, created_at: createdAtFormatted, updated_at: updatedAtFormatted }
+              return { ...category, created_at: createdAtFormatted, updated_at: updatedAtFormatted }
             })
           }
         }
@@ -51,10 +47,10 @@ export class TagsService {
     )
   }
 
-  updateTag(tag: NamedEntity): Observable<ManagedEntityResponse> {
+  updateCategory(category: NamedEntity): Observable<ManagedEntityResponse> {
     return this.http.put<ManagedEntityResponse>(
-      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${tag.id}`),
-      { name: tag.name },
+      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${category.id}`),
+      { name: category.name },
       {
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`
@@ -63,9 +59,9 @@ export class TagsService {
     )
   }
 
-  deleteTag(tagId: number): Observable<ManagedEntityResponse> {
+  deleteCategory(categoryId: number): Observable<ManagedEntityResponse> {
     return this.http.delete<ManagedEntityResponse>(
-      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${tagId}`),
+      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${categoryId}`),
       {
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`
@@ -74,7 +70,7 @@ export class TagsService {
     )
   }
 
-  createTag(name: string): Observable<ManagedEntityResponse> {
+  createCategory(name: string): Observable<ManagedEntityResponse> {
     return this.http.post<ManagedEntityResponse>(
       this.CREATE_ENDPOINT,
       { name },

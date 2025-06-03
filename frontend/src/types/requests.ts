@@ -24,11 +24,14 @@ export interface ErrorResponse {
 
 export type RefreshTokenResponse = Omit<LoginResponse, "user">
 
-export interface ListItemsRequest<T> {
+export interface ListAllItemsResponse<T> {
   statusCode: number
   data: {
     items: T[]
-  },
+  }
+}
+
+export interface ListPaginatedItemsResponse<T> extends ListAllItemsResponse<T> {
   total_items: number,
   total_pages: number,
   has_more_items: boolean,
@@ -57,6 +60,11 @@ export interface PaginationParams {
   page_size: number
 }
 
-export interface ListTagsParams extends SortParams, PaginationParams {
+export interface NameParam {
   name: string
 }
+
+export type ListItemsParams<T extends boolean> =
+  T extends true ? SortParams & NameParam & { all_items: boolean }
+  : SortParams & NameParam & PaginationParams;
+

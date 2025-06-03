@@ -1,4 +1,165 @@
 <page title="Admin - Gestione categorie">
-  <p>Per il momento, qui non c'è nulla</p>
+  <p-table #dt
+           dataKey="code"
+           stripedRows
+           sortField="name"
+           [scrollable]="true"
+           scrollHeight="450px"
+           [sortOrder]="sortOrder"
+           [globalFilterFields]="['name']"
+           [value]="categories"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex flex-row-reverse">
+        <p-iconfield iconPosition="left" class="ml-2">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Trova categoria"
+          />
+        </p-iconfield>
+        <p-button
+          size="small"
+          label="Crea nuova categoria"
+          severity="primary"
+          raised
+          (click)="onCreateCategory()"
+        />
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" >
+      <tr>
+        <th>ID</th>
+        <th pSortableColumn="name">
+          Nome
+          <p-sortIcon field="name" />
+        </th>
+        <th>Creato il</th>
+        <th style="width: 8rem"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-category>
+      <tr>
+        <td>{{ category.id }}</td>
+        <td>{{ category.name }}</td>
+        <td>{{ category.created_at }}</td>
+        <td>
+          <div class="flex flex-row justify-content-around">
+            <p-button
+              pTooltip="Modifica"
+              tooltipPosition="top"
+              raised
+              icon="pi pi-pencil"
+              (click)="onModifyItem(category)"
+              severity="secondary"
+              rounded
+            />
+            <p-button
+              pTooltip="Cancella"
+              tooltipPosition="top"
+              raised
+              icon="pi pi-trash"
+              (click)="onDeleteItem(category)"
+              severity="secondary"
+              rounded
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4">Nessuna categoria trovata.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-divider align="center" type="dashed">
+    Categorie trovate: {{ categories.length }}
+  </p-divider>
+
+  <p-dialog
+    [formGroup]="categoryForm"
+    [header]="dialogHeader"
+    [modal]="true"
+    [(visible)]="isDialogVisible"
+    [style]="{ width: '25rem' }"
+  >
+    <div class="flex flex-column items-center mb-5">
+      <label for="name">Nome</label>
+      <input
+        formControlName="name"
+        pInputText
+        id="name"
+        class="flex-auto"
+        [value]="targetCategory?.name"
+        autocomplete="off"
+      />
+      @if (hasFormErrors() || hasServerError()) {
+        <p-message
+          icon="pi pi-exclamation-circle"
+          severity="error"
+          size="small"
+          class="mt-2"
+          variant="simple"
+        >
+          @if (hasFormErrors()) {
+            @if (name?.hasError('required')) {
+              Bisogna specificare un nome
+            } @else if (name?.hasError('noWhiteSpaceOnly')) {
+              Il nome non può contenere solo spazi
+            }
+          } @else {
+            {{ this.errorMessage }}
+          }
+        </p-message>
+      }
+    </div>
+    <div class="flex justify-end gap-2">
+      <p-button
+        size="small"
+        label="Annulla"
+        severity="secondary"
+        (click)="isDialogVisible = false"
+        raised
+      />
+      <p-button
+        size="small"
+        label="Save"
+        severity="primary"
+        [disabled]="!categoryForm.valid"
+        (click)="targetCategory?.id ? updateCategory() : createCategory()"
+        [loading]="loadingResponse"
+        raised
+      />
+    </div>
+  </p-dialog>
+  <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"/>
+  <p-confirmdialog [style]="{ 'minWidth': '350px' }">
+    <ng-template pTemplate="footer">
+      <p-button
+        type="button"
+        severity="secondary"
+        icon="pi pi-times"
+        size="small"
+        label="Annulla"
+        (click)="closeConfirmationService()"
+        raised
+      ></p-button>
+      <p-button
+        type="button"
+        size="small"
+        icon="pi pi-check"
+        severity="primary"
+        label="Si"
+        (click)="deleteCategory()"
+        raised
+      ></p-button>
+    </ng-template>
+  </p-confirmdialog>
 </page>
 

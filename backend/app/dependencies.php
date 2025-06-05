@@ -33,11 +33,12 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $logger;
         },
-        DatabaseManagerInterface::class => function () {
+        DatabaseManagerInterface::class => function (Container $container) {
             return new DatabaseManager(
                 "mysql:host={$_ENV['DB_HOST']};dbname={$_ENV['DB_NAME']};charset=utf8mb4;port={$_ENV['DB_PORT']}",
                 $_ENV['DB_USER'],
                 $_ENV['DB_PASS'],
+                $container->get(LoggerInterface::class),
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

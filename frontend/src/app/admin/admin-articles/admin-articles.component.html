@@ -2,12 +2,21 @@
   <p-table #dt
      dataKey="code"
      stripedRows
-     sortField="created_at"
      [scrollable]="true"
-     scrollHeight="450px"
+     sortMode="single"
+     sortField="created_at"
      [sortOrder]="sortOrder"
+     scrollHeight="450px"
      [globalFilterFields]="['title']"
      [value]="articles"
+     [paginator]="true"
+     [lazy]="true"
+     (onLazyLoad)="loadArticles($event)"
+     [totalRecords]="totalCount"
+     [(rows)]="pageSize"
+     [rowsPerPageOptions]="[10, 20, 30]"
+     [(first)]="offset"
+     [alwaysShowPaginator]="false"
   >
     <ng-template pTemplate="caption">
       <div class="flex flex-row-reverse">
@@ -82,7 +91,7 @@
   </p-table>
 
   <p-divider align="center" type="dashed">
-    Articoli trovati: {{ articles.length }}
+    Articoli trovati: {{ totalCount }}
   </p-divider>
 
   <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"/>

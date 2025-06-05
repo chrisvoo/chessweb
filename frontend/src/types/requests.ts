@@ -37,12 +37,16 @@ export interface ListAllItemsResponse<T> {
   }
 }
 
-export interface ListPaginatedItemsResponse<T> extends ListAllItemsResponse<T> {
-  total_items: number,
-  total_pages: number,
-  has_more_items: boolean,
-  page: number
-  page_size: number
+export interface ListPaginatedItemsResponse<T> {
+  statusCode: number
+  data: {
+    items: T[],
+    total_items: number,
+    total_pages: number,
+    has_more_items: boolean,
+    page: number
+    page_size: number
+  }
 }
 
 export interface ManagedEntityResponse {
@@ -57,7 +61,7 @@ export interface ManagedEntityResponse {
 }
 
 export interface SortParams {
-  sort_by: string
+  sort_by: string | string[]
   sort_order: 'asc' | 'desc'
 }
 
@@ -66,7 +70,11 @@ export interface PaginationParams {
   page_size: number
 }
 
-export type ListPaginatedParams = SortParams & PaginationParams;
+export interface SearchParams {
+  search_text?: string
+}
+
+export type ListPaginatedParams = SortParams & PaginationParams & SearchParams;
 
 export type ListAllItemsParams = SortParams & { all_items: boolean }
 

@@ -11,6 +11,7 @@ use DateTime;
 use PDO;
 use Psr\Log\LoggerInterface;
 
+/* @TODO refactor the SQL composition */
 class ArticleRepository implements ArticleRepositoryInterface
 {
     public function __construct(
@@ -26,7 +27,8 @@ class ArticleRepository implements ArticleRepositoryInterface
         /**
          * @var Article|false $result
          */
-        $result = $this->databaseManager->row(<<<SQL
+        $result = $this->databaseManager->row(
+            <<<SQL
             SELECT id, title, author_id, content, created_at, updated_at
             FROM $table
             WHERE id = :id
@@ -43,31 +45,52 @@ SQL,
      */
     public function list(ArticleFilters $filters): array
     {
-        $this->logger->debug('repo articles list filters', [var_export($filters, true)]);
+        $this->logger->debug('repo articles list filters', [json_encode($filters)]);
 
         $orderBy = isset($filters->sortBy) ? "{$filters->sortBy}" : 'created_at';
         $orderDirection = isset($filters->sortOrder) ? "{$filters->sortOrder->value}" : 'DESC';
         $offset = $filters->offset ?? 0;
         $limit = $filters->limit ?? 10;
         $params = [];
+        $joins = [];
+        $wheres = [];
 
         $able = Article::TABLE_NAME;
         $sql = "SELECT id, title, author_id, content, created_at, updated_at 
                 FROM $able a ";
 
-        if (!empty($filters->search_text)) {
-            $sql .= "WHERE (a.title LIKE :search_text OR a.content LIKE :search_text) ";
-            $params['search_text'] = "%{$filters->search_text}%";
-        } elseif(!empty($filters->tagId)) {
-            $sql .= "INNER JOIN article_tag at ON a.id = at.article_id WHERE at.tag_id = :tag_id ";
+        if (!empty($filters->tagId)) {
+            $joins[] = "INNER JOIN article_tag at ON a.id = at.article_id ";
+            $wheres[] = 'at.tag_id = :tag_id';
             $params['tag_id'] = $filters->tagId;
-        } elseif(!empty($filters->categoryId)) {
-            $sql .= "INNER JOIN article_categories ac ON a.id = ac.article_id WHERE ac.category_id = :category_id ";
+        }
+
+        if (!empty($filters->categoryId)) {
+            $joins[] = "INNER JOIN article_categories ac ON a.id = ac.article_id ";
+            $wheres[] = 'ac.category_id = :category_id';
             $params['category_id'] = $filters->categoryId;
-        } elseif(!empty($filters->createdFrom) && !empty($filters->createdTo)) {
-            $sql .= "WHERE a.created_at BETWEEN :created_from AND :created_to ";
+        }
+
+        /* PDO does not allow the same named placeholder to appear more than once in the SQL unless you're using
+         * PDO::ATTR_EMULATE_PREPARES = true (which is off by default in many environments for security */
+        if (!empty($filters->search_text)) {
+            $wheres[] = "(a.title LIKE :search1 OR a.content LIKE :search2) ";
+            $params['search1'] = "%{$filters->search_text}%";
+            $params['search2'] = "%{$filters->search_text}%";
+        }
+
+        if (!empty($filters->createdFrom) && !empty($filters->createdTo)) {
+            $wheres[] = "a.created_at BETWEEN :created_from AND :created_to ";
             $params['created_from'] = $filters->createdFrom;
             $params['created_to'] = $filters->createdTo;
+        }
+
+        if (!empty($joins)) {
+            $sql .= implode(' ', $joins) . ' ';
+        }
+
+        if (!empty($wheres)) {
+            $sql .= 'WHERE ' . implode(' AND ', $wheres) . ' ';
         }
 
         $sql .= "ORDER BY $orderBy $orderDirection LIMIT $limit OFFSET $offset";
@@ -86,22 +109,44 @@ SQL,
         $able = Article::TABLE_NAME;
         $sql = "SELECT id FROM $able a ";
         $params = [];
+        $joins = [];
+        $wheres = [];
 
-        if (!empty($filters->search_text)) {
-            $sql .= "WHERE (a.title LIKE :search_text OR a.content LIKE :search_text) ";
-            $params['search_text'] = "%{$filters->search_text}%";
-        } elseif(!empty($filters->tagId)) {
-            $sql .= "INNER JOIN article_tag at ON a.id = at.article_id WHERE at.tag_id = :tag_id ";
+        if (!empty($filters->tagId)) {
+            $joins[] = "INNER JOIN article_tag at ON a.id = at.article_id ";
+            $wheres[] = 'at.tag_id = :tag_id';
             $params['tag_id'] = $filters->tagId;
-        } elseif(!empty($filters->categoryId)) {
-            $sql .= "INNER JOIN article_categories ac ON a.id = ac.article_id WHERE ac.category_id = :category_id ";
+        }
+
+        if (!empty($filters->categoryId)) {
+            $joins[] = "INNER JOIN article_categories ac ON a.id = ac.article_id ";
+            $wheres[] = 'ac.category_id = :category_id';
             $params['category_id'] = $filters->categoryId;
-        } elseif(!empty($filters->createdFrom) && !empty($filters->createdTo)) {
-            $sql .= "WHERE a.created_at BETWEEN :created_from AND :created_to ";
+        }
+
+        /* PDO does not allow the same named placeholder to appear more than once in the SQL unless you're using
+         * PDO::ATTR_EMULATE_PREPARES = true (which is off by default in many environments for security */
+        if (!empty($filters->search_text)) {
+            $wheres[] = "(a.title LIKE :search1 OR a.content LIKE :search2) ";
+            $params['search1'] = "%{$filters->search_text}%";
+            $params['search2'] = "%{$filters->search_text}%";
+        }
+
+        if (!empty($filters->createdFrom) && !empty($filters->createdTo)) {
+            $wheres[] = "a.created_at BETWEEN :created_from AND :created_to ";
             $params['created_from'] = $filters->createdFrom;
             $params['created_to'] = $filters->createdTo;
         }
 
+        if (!empty($joins)) {
+            $sql .= implode(' ', $joins) . ' ';
+        }
+
+        if (!empty($wheres)) {
+            $sql .= 'WHERE ' . implode(' AND ', $wheres) . ' ';
+        }
+
+        $this->logger->debug('list SQL', ['sql' => $sql, 'params' => $params]);
         return $this->databaseManager->count(
             $sql,
             $params

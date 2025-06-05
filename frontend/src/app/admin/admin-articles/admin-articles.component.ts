@@ -10,7 +10,7 @@ import {InputIcon} from 'primeng/inputicon';
 import {InputText} from 'primeng/inputtext';
 import {Message} from 'primeng/message';
 import {ConfirmationService, MessageService, PrimeTemplate} from 'primeng/api';
-import {TableModule} from 'primeng/table';
+import {TableLazyLoadEvent, TableModule, TablePageEvent} from 'primeng/table';
 import {Toast} from 'primeng/toast';
 import {Tooltip} from 'primeng/tooltip';
 import {Article} from '../../../types/models';
@@ -18,6 +18,7 @@ import {noWhiteSpaceOnly} from '../../validators/no-whitespace-only';
 import {ArticlesService} from '../../services/articles/articles.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, throwError} from 'rxjs';
+import {ListPaginatedItemsResponse, ListPaginatedParams} from '../../../types/requests';
 
 @Component({
   selector: 'app-admin-articles',
@@ -32,13 +33,17 @@ import {catchError, throwError} from 'rxjs';
   styleUrl: './admin-articles.component.css'
 })
 export class AdminArticlesComponent implements OnInit {
-  sortOrder = -1
+  sortOrder: number = -1
+  sortField: string = 'created_at'
   articles: Article[] = []
   errorMessage: string = ''
   error: boolean = false;
   targetArticle?: Article
   articleForm: FormGroup
   loadingResponse = false
+  offset: number = 0
+  pageSize: number = 10
+  totalCount: number = 0
 
   #destroyRef = inject(DestroyRef);
 
@@ -66,26 +71,40 @@ export class AdminArticlesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadArticles()
+    // this.loadArticles()
   }
 
-  loadArticles(): void {
+  loadArticles(event: TableLazyLoadEvent): void {
+    console.log(event)
     this.#resetResponseStatusFields();
 
-    this.articlesService.listArticles({
-      page: 1,
-      page_size: 10,
-      sort_by: 'created_at',
-      sort_order: this.sortOrder === 1 ? 'asc' : 'desc',
-    }).pipe(
+    this.pageSize = event.rows ?? this.pageSize;
+    this.offset = event.first ?? 0;
+    this.sortField = event.sortField ? event.sortField as string : 'created_at';
+    const page = Math.floor(this.offset / this.pageSize) + 1;
+    const searchText = event.globalFilter ? event.globalFilter as string : '';
+
+    const params: ListPaginatedParams = {
+      page,
+      page_size: this.pageSize,
+      sort_by: this.sortField,
+      sort_order: event.sortOrder === 1 ? 'asc' : 'desc'
+    }
+
+    if (searchText.trim() != '') {
+      params.search_text = searchText
+    }
+
+    this.articlesService.listArticles(params).pipe(
       takeUntilDestroyed(this.#destroyRef),
       catchError(err => {
         this.error = true
         this.errorMessage = 'È avvenuto un errore, contattare l\'amministratore'
         return throwError(() => err)
       })
-    ).subscribe((res) => {
+    ).subscribe((res: ListPaginatedItemsResponse<Article>) => {
       this.articles = res.data.items
+      this.totalCount = res.data.total_items
     })
   }
 

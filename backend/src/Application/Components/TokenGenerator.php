@@ -21,6 +21,8 @@ class TokenGenerator
         $secure = boolval($_ENV['PRODUCTION']) === true;
 
         if ($generateRefreshToken) {
+            /* Calling setcookie() again with the same cookie name will overwrite the existing cookie on the client,
+               assuming the domain, path, and other cookie attributes (like Secure and HttpOnly) match. */
             setcookie(
                 $_ENV['COOKIE_RT_NAME'],
                 $refreshToken,

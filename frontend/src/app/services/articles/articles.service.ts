@@ -33,14 +33,21 @@ export class ArticlesService {
     ).pipe(
       map((res) => {
         return {
-          ...res,
+          statusCode: res.statusCode,
           data: {
             items: res.data.items.map((article: Article) => {
               const { created_at, updated_at } = article;
-              const createdAtFormatted = formatDate(parseISO(created_at),  'dd-MM-yyyy');
-              const updatedAtFormatted = updated_at ? formatDate(parseISO(updated_at),  'dd-MM-yyyy') : ''
+              const createdAtFormatted = created_at !== "0000-00-00 00:00:00"
+                                                ? formatDate(parseISO(created_at),  'dd-MM-yyyy') : '';
+              const updatedAtFormatted = updated_at
+                                                ? formatDate(parseISO(updated_at),  'dd-MM-yyyy') : ''
               return { ...article, created_at: createdAtFormatted, updated_at: updatedAtFormatted }
-            })
+            }),
+            total_items: res.data.total_items,
+            total_pages: res.data.total_pages,
+            page: res.data.page,
+            has_more_items: res.data.has_more_items,
+            page_size: res.data.page_size
           }
         }
       })

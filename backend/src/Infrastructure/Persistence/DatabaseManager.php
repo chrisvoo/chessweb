@@ -4,6 +4,7 @@ namespace App\Infrastructure\Persistence;
 
 use PDO;
 use PDOStatement;
+use Psr\Log\LoggerInterface;
 
 class DatabaseManager implements DatabaseManagerInterface
 {
@@ -13,9 +14,9 @@ class DatabaseManager implements DatabaseManagerInterface
         private string $dns,
         private string $username,
         private string $password,
-        private array $options = []
-    )
-    {
+        private readonly LoggerInterface $logger,
+        private array $options = [],
+    ) {
     }
 
     public function connect(): DatabaseManagerInterface
@@ -53,22 +54,20 @@ class DatabaseManager implements DatabaseManagerInterface
             return $this->pdo->query($sql);
         }
 
-        $stmt = $this->pdo->prepare($sql);
-
-        //check if args is associative or sequential?
-        $is_assoc = !(array() === $args) && array_keys($args) !== range(0, count($args) - 1);
-        if ($is_assoc) {
-            foreach ($args as $key => $value) {
-                if (is_int($value)) {
-                    $stmt->bindValue(":$key", $value, PDO::PARAM_INT);
-                } else {
-                    $stmt->bindValue(":$key", $value);
-                }
+        foreach ($args as $key => $val) {
+            if (!str_contains($sql, ":$key")) {
+                $this->logger->error("ERROR: Param :$key not found in SQL");
             }
-            $stmt->execute();
-        } else {
-            $stmt->execute($args);
         }
+        preg_match_all('/:([a-zA-Z0-9_]+)/', $sql, $matches);
+        foreach ($matches[1] as $param) {
+            if (!array_key_exists($param, $args)) {
+                $this->logger->error("ERROR: SQL expects :$param but it's missing from \$params");
+            }
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($args);
 
         return $stmt;
     }
@@ -140,7 +139,7 @@ class DatabaseManager implements DatabaseManagerInterface
     public function insert(string $table, array $data): false|string
     {
         // enclose columns in backticks
-        $columns = array_map(function($column) {
+        $columns = array_map(function ($column) {
             return '`' . trim($column, '`') . '`';
         }, array_keys($data));
 

@@ -17,7 +17,7 @@ class CreateArticleAction extends Action
     public function __construct(
         private readonly ArticleRepositoryInterface $articleRepository,
         protected LoggerInterface $logger,
-        private ArticleValidator $validator
+        private readonly ArticleValidator $validator
     ) {
         parent::__construct($logger);
     }

@@ -29,6 +29,7 @@ $repositories($containerBuilder);
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();
+$container->set('upload_directory', realpath(__DIR__ . '/../files'));
 
 // Instantiate the app
 AppFactory::setContainer($container);

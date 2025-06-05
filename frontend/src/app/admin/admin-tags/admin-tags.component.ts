@@ -17,7 +17,7 @@ import { ErrorResponse } from '../../../types/requests';
 import { Divider } from 'primeng/divider';
 import { Toast } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { PageComponent } from '../../page/page.component';
+import { PageComponent } from '../../components/page/page.component';
 import {NamedEntity} from '../../../types/models';
 
 @Component({

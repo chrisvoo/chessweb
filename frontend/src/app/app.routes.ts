@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './main/pages/home/home.component';
-import { NotFoundComponent } from './main/pages/not-found/not-found.component';
+import { HomeComponent } from './components/main/pages/home/home.component';
+import { NotFoundComponent } from './components/main/pages/not-found/not-found.component';
 import { AdminComponent } from './admin/admin.component';
 import { environment } from '../environments/environment';
+import {isLoggedInGuard} from './guards/auth.guard';
 
 const mainTitle = environment.TITLE
 
@@ -16,59 +17,60 @@ export const routes: Routes = [
   {
     path: 'tornei',
     title: `${mainTitle} - Tornei`,
-    loadComponent: () => import('./main/pages/tournaments/tournaments.component')
+    loadComponent: () => import('./components/main/pages/tournaments/tournaments.component')
       .then(m => m.TournamentsComponent)
   },
   {
     path: 'corsi',
     title: `${mainTitle} - Corsi`,
-    loadComponent: () => import('./main/pages/courses/courses.component')
+    loadComponent: () => import('./components/main/pages/courses/courses.component')
       .then(m => m.CoursesComponent)
   },
   {
     path: 'documenti',
     title: `${mainTitle} - Documenti`,
-    loadComponent: () => import('./main/pages/documents/documents.component')
+    loadComponent: () => import('./components/main/pages/documents/documents.component')
       .then(m => m.DocumentsComponent)
   },
   {
     path: 'tesseramento',
     title: `${mainTitle} - Tesseramento`,
-    loadComponent: () => import('./main/pages/membership/membership.component')
+    loadComponent: () => import('./components/main/pages/membership/membership.component')
       .then(m => m.MembershipComponent)
   },
   {
     path: 'news',
     title: `${mainTitle} - News`,
-    loadComponent: () => import('./main/pages/news/news.component')
+    loadComponent: () => import('./components/main/pages/news/news.component')
       .then(m => m.NewsComponent)
   },
   {
     path: 'galleria',
     title: `${mainTitle} - Galleria`,
-    loadComponent: () => import('./main/pages/gallery/gallery.component')
+    loadComponent: () => import('./components/main/pages/gallery/gallery.component')
       .then(m => m.GalleryComponent)
   },
   {
     path: 'credits',
     title: `${mainTitle} - Riconoscimenti`,
-    loadComponent: () => import('./main/pages/credits/credits.component')
+    loadComponent: () => import('./components/main/pages/credits/credits.component')
       .then(m => m.CreditsComponent)
+  },
+  {
+    path: 'login',
+    title: `${mainTitle} - Login`,
+    loadComponent: () => import('./components/main/pages/login/login.component')
+      .then(m => m.LoginComponent)
   },
   {
     path: 'admin',
     title: `${mainTitle} - Admin`,
+    canActivate: [isLoggedInGuard],
     children: [
       {
         path: '',
         loadComponent: () => import('./admin/admin.component')
           .then(m => AdminComponent)
-      },
-      {
-        path: 'login',
-        title: `${mainTitle} - Admin > Login`,
-        loadComponent: () => import('./admin/login/login.component')
-          .then(m => m.LoginComponent)
       },
       {
         path: 'articoli',

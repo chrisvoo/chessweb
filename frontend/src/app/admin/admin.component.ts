@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {PageComponent} from '../page/page.component';
+import {PageComponent} from '../components/page/page.component';
 
 @Component({
   selector: 'admin',

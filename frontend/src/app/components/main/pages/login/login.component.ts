@@ -5,11 +5,12 @@ import { InputText } from 'primeng/inputtext';
 import { WindowMaximizeIcon } from 'primeng/icons';
 import { Ripple } from 'primeng/ripple';
 import { Message } from 'primeng/message';
-import { AuthService } from '../../services/auth/auth.service';
+import { AuthService } from '../../../../services/auth/auth.service';
 import { catchError, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { ErrorResponse } from '../../../types/requests';
+import { ErrorResponse } from '../../../../../types/requests';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {PageComponent} from '../../../page/page.component';
 
 @Component({
   selector: 'login',
@@ -22,7 +23,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     ButtonLabel,
     ButtonDirective,
     Ripple,
-    Message
+    Message,
+    PageComponent
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',

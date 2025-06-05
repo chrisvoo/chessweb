@@ -1,32 +1,28 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AuthService} from '../auth/auth.service';
-import {
-  ListAllItemsParams,
-  ListAllItemsResponse,
-  ManagedEntityResponse
-} from '../../../types/requests';
+import {ListPaginatedItemsResponse, ListPaginatedParams, ManagedEntityResponse} from '../../../types/requests';
 import {map, Observable} from 'rxjs';
-import {NamedEntity} from '../../../types/models';
+import {Article, NamedEntity} from '../../../types/models';
 import {formatDate, parseISO} from 'date-fns';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CategoriesService {
-  LIST_ENDPOINT = '/api/categories'
-  UPDATE_DELETE_ENDPOINT = '/api/category/:id';
-  CREATE_ENDPOINT = '/api/category';
+export class ArticlesService {
+  LIST_ENDPOINT = '/api/articles'
+  UPDATE_DELETE_ENDPOINT = '/api/article/:id';
+  CREATE_ENDPOINT = '/api/article';
 
   constructor(
     private readonly http: HttpClient,
     private readonly authService: AuthService,
   ) { }
 
-  listCategories(params: ListAllItemsParams): Observable<ListAllItemsResponse<NamedEntity>> {
+  listArticles(params: ListPaginatedParams): Observable<ListPaginatedItemsResponse<Article>> {
     const token = this.authService.getToken();
 
-    return this.http.get<ListAllItemsResponse<NamedEntity>>(
+    return this.http.get<ListPaginatedItemsResponse<Article>>(
       this.LIST_ENDPOINT,
       {
         headers: {
@@ -39,11 +35,11 @@ export class CategoriesService {
         return {
           ...res,
           data: {
-            items: res.data.items.map((category: NamedEntity) => {
-              const { created_at, updated_at } = category;
+            items: res.data.items.map((article: Article) => {
+              const { created_at, updated_at } = article;
               const createdAtFormatted = formatDate(parseISO(created_at),  'dd-MM-yyyy');
               const updatedAtFormatted = updated_at ? formatDate(parseISO(updated_at),  'dd-MM-yyyy') : ''
-              return { ...category, created_at: createdAtFormatted, updated_at: updatedAtFormatted }
+              return { ...article, created_at: createdAtFormatted, updated_at: updatedAtFormatted }
             })
           }
         }
@@ -51,10 +47,10 @@ export class CategoriesService {
     )
   }
 
-  updateCategory(category: NamedEntity): Observable<ManagedEntityResponse> {
+  updateArticle(article: Article): Observable<ManagedEntityResponse> {
     return this.http.put<ManagedEntityResponse>(
-      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${category.id}`),
-      { name: category.name },
+      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${article.id}`),
+      { ...article },
       {
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`
@@ -63,9 +59,9 @@ export class CategoriesService {
     )
   }
 
-  deleteCategory(categoryId: number): Observable<ManagedEntityResponse> {
+  deleteArticle(articleId: number): Observable<ManagedEntityResponse> {
     return this.http.delete<ManagedEntityResponse>(
-      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${categoryId}`),
+      this.UPDATE_DELETE_ENDPOINT.replace(':id', `${articleId}`),
       {
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`
@@ -74,10 +70,10 @@ export class CategoriesService {
     )
   }
 
-  createCategory(name: string): Observable<ManagedEntityResponse> {
+  createArticle(article: Pick<Article, 'title' | 'content'>): Observable<ManagedEntityResponse> {
     return this.http.post<ManagedEntityResponse>(
       this.CREATE_ENDPOINT,
-      { name },
+      { ...article },
       {
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`

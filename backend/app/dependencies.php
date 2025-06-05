@@ -15,7 +15,9 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\MemoryUsageProcessor;
 use Monolog\Processor\WebProcessor;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Slim\Psr7\Factory\StreamFactory;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -48,6 +50,9 @@ return function (ContainerBuilder $containerBuilder) {
                 $container->get(UserRepositoryInterface::class),
                 new SystemClock(new DateTimeZone('UTC')),
             );
+        },
+        StreamFactoryInterface::class => function (Container $container) {
+            return new StreamFactory();
         }
     ]);
 };

@@ -5,7 +5,7 @@ import { formatDate, parseISO } from 'date-fns'
 import { AuthService } from '../auth/auth.service';
 import {
   ListAllItemsResponse,
-  ListItemsParams,
+  ListAllItemsParams,
   ManagedEntityResponse
 } from '../../../types/requests';
 import {NamedEntity} from '../../../types/models';
@@ -23,7 +23,7 @@ export class TagsService {
     private readonly authService: AuthService,
   ) { }
 
-  listTags(params: Partial<ListItemsParams<true>>): Observable<ListAllItemsResponse<NamedEntity>> {
+  listTags(params: ListAllItemsParams): Observable<ListAllItemsResponse<NamedEntity>> {
     const token = this.authService.getToken();
 
     return this.http.get<ListAllItemsResponse<NamedEntity>>(

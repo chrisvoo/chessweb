@@ -1,5 +1,5 @@
-import {Component, DestroyRef, inject} from '@angular/core';
-import { PageComponent } from '../../page/page.component';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import { PageComponent } from '../../components/page/page.component';
 import {Button} from "primeng/button";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {Dialog} from "primeng/dialog";
@@ -32,7 +32,7 @@ import {ErrorResponse} from '../../../types/requests';
   styleUrl: './admin-categories.component.css',
   standalone: true,
 })
-export class AdminCategoriesComponent {
+export class AdminCategoriesComponent implements OnInit {
   sortOrder = 1
   categories: NamedEntity[] = []
   errorMessage: string = ''

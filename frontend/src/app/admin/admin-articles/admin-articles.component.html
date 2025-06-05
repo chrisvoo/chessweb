@@ -1,3 +1,112 @@
 <page title="Admin - Gestione articoli">
-  <p>Per il momento, qui non c'è nulla</p>
+  <p-table #dt
+     dataKey="code"
+     stripedRows
+     sortField="created_at"
+     [scrollable]="true"
+     scrollHeight="450px"
+     [sortOrder]="sortOrder"
+     [globalFilterFields]="['title']"
+     [value]="articles"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex flex-row-reverse">
+        <p-iconfield iconPosition="left" class="ml-2">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Trova articolo"
+          />
+        </p-iconfield>
+        <p-button
+          size="small"
+          label="Crea nuovo articoli"
+          severity="primary"
+          raised
+          (click)="onCreateArticle()"
+        />
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" >
+      <tr>
+        <th>ID</th>
+        <th pSortableColumn="title">
+          Titolo
+          <p-sortIcon field="title" />
+        </th>
+        <th pSortableColumn="created_at">
+          Creato il
+          <p-sortIcon field="created_at" />
+        </th>
+        <th style="width: 8rem"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-article>
+      <tr>
+        <td>{{ article.id }}</td>
+        <td>{{ article.title }}</td>
+        <td>{{ article.created_at }}</td>
+        <td>
+          <div class="flex flex-row justify-content-around">
+            <p-button
+              pTooltip="Modifica"
+              tooltipPosition="top"
+              raised
+              icon="pi pi-pencil"
+              (click)="onModifyArticle(article)"
+              severity="secondary"
+              rounded
+            />
+            <p-button
+              pTooltip="Cancella"
+              tooltipPosition="top"
+              raised
+              icon="pi pi-trash"
+              (click)="onDeleteArticle(article)"
+              severity="secondary"
+              rounded
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4">Nessun articolo trovato.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-divider align="center" type="dashed">
+    Articoli trovati: {{ articles.length }}
+  </p-divider>
+
+  <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"/>
+  <p-confirmdialog [style]="{ 'minWidth': '350px' }">
+    <ng-template pTemplate="footer">
+      <p-button
+        type="button"
+        severity="secondary"
+        icon="pi pi-times"
+        size="small"
+        label="Annulla"
+        (click)="closeConfirmationService()"
+        raised
+      ></p-button>
+      <p-button
+        type="button"
+        size="small"
+        icon="pi pi-check"
+        severity="primary"
+        label="Si"
+        (click)="deleteArticle()"
+        raised
+      ></p-button>
+    </ng-template>
+  </p-confirmdialog>
 </page>
+

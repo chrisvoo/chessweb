@@ -13,6 +13,8 @@ use App\Application\Actions\Category\CreateCategoryAction;
 use App\Application\Actions\Category\DeleteCategoryAction;
 use App\Application\Actions\Category\ListCategoriesAction;
 use App\Application\Actions\Category\UpdateCategoryAction;
+use App\Application\Actions\Files\StreamFileAction;
+use App\Application\Actions\Files\UploadAction;
 use App\Application\Actions\Tag\CreateTagAction;
 use App\Application\Actions\Tag\DeleteTagAction;
 use App\Application\Actions\Tag\ListTagsAction;
@@ -65,6 +67,8 @@ return function (App $app) {
         $group->get('/article/{id}', ViewSingleArticleAction::class);
         $group->get('/articles', ListArticlesAction::class);
 
+        $group->get('/file', StreamFileAction::class);
+
         // auth
         $group->post('/login', LoginAction::class);
         $group->post('/refresh', RefreshTokenAction::class);
@@ -90,6 +94,9 @@ return function (App $app) {
             $group->post('/article', CreateArticleAction::class);
             $group->put('/article/{id}', UpdateArticleAction::class);
             $group->delete('/article/{id}', DeleteArticleAction::class);
+
+            // files
+            $group->post('/upload', UploadAction::class);
         })->add(
             new AuthMiddleware(
                 $group->getContainer()->get(JWTServiceInterface::class)

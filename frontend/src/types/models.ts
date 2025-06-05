@@ -15,3 +15,11 @@ export interface NamedEntity {
   updated_at: string|null
 }
 
+export interface Article {
+  id: number|null
+  title: string
+  content: string
+  author_id: number
+  created_at: string
+  updated_at: string|null
+}

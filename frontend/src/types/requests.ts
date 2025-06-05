@@ -22,7 +22,13 @@ export interface ErrorResponse {
   }
 }
 
-export type RefreshTokenResponse = Omit<LoginResponse, "user">
+export type RefreshTokenResponse = {
+  statusCode: number
+  data: {
+    access_token?: string
+    expires_in?: number
+  }
+}
 
 export interface ListAllItemsResponse<T> {
   statusCode: number
@@ -60,11 +66,8 @@ export interface PaginationParams {
   page_size: number
 }
 
-export interface NameParam {
-  name: string
-}
+export type ListPaginatedParams = SortParams & PaginationParams;
 
-export type ListItemsParams<T extends boolean> =
-  T extends true ? SortParams & NameParam & { all_items: boolean }
-  : SortParams & NameParam & PaginationParams;
+export type ListAllItemsParams = SortParams & { all_items: boolean }
+
 

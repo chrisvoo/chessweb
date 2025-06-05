@@ -32,7 +32,9 @@ class ListArticlesAction extends Action
         $this->validator->validate($this->request, $queryParams);
 
         $filters = new ArticleFilters();
-        $filters->sortOrder = $queryParams['sort_order'] ?? SortDirection::DESC;
+        $filters->sortOrder = !empty($queryParams['sort_order'])
+            ? SortDirection::fromValue($queryParams['sort_order'])
+            : SortDirection::ASC;
         $filters->sortBy = $queryParams['sort_by'] ?? 'created_at';
         $filters->search_text = $queryParams['search_text'] ?? null;
         $filters->category_id = $queryParams['category_id'] ?? null;

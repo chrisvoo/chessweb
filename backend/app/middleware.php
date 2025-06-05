@@ -7,5 +7,5 @@ use Slim\App;
 
 // global middlewares
 return function (App $app) {
-    $app->add(JsonBodyParserMiddleware::class);
+    $app->addBodyParsingMiddleware();
 };

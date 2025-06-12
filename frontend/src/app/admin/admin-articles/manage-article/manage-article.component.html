@@ -1,0 +1,68 @@
+<page title="Admin - Crea nuovo articolo">
+  <form [formGroup]="articleForm">
+    <div class="field">
+      <label for="title">Titolo</label>
+      <input
+        id="title"
+        pInputText
+        formControlName="title"
+        [value]="targetArticle?.title"
+        type="text"
+        class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+      />
+    </div>
+    <div class="field">
+      <label for="content">Contenuto</label>
+      <p-editor
+        id="content"
+        class="text-base text-color surface-overlay p-2  surface-border border-round appearance-none outline-none focus:border-primary w-full"
+        formControlName="content"
+        [style]="{ height: '320px' }"
+      />
+    </div>
+
+    <div class="field">
+      <label for="tags">Tags</label>
+      <p-autoComplete
+        id="tags"
+        formControlName="tags"
+        [suggestions]="tagSuggestions"
+        (completeMethod)="searchTags($event)"
+        optionLabel="name"
+        [multiple]="true"
+        [dropdown]="true"
+        [forceSelection]="true"
+        placeholder="Cerca e scegli un tag (opzionale)"
+        styleClass="w-full"
+      >
+      </p-autoComplete>
+      <small>Puoi selezionare solo tag esistenti.</small>
+    </div>
+
+    <div class="field">
+      <label for="categories">Categorie</label>
+      <p-autoComplete
+        id="categories"
+        formControlName="categories"
+        [suggestions]="categorySuggestions"
+        (completeMethod)="searchCategories($event)"
+        optionLabel="name"
+        [multiple]="true"
+        [dropdown]="true"
+        [forceSelection]="true"
+        placeholder="Cerca e scegli una categoria (opzionale)"
+        styleClass="w-full"
+      >
+      </p-autoComplete>
+      <small>Puoi selezionare solo categorie esistenti.</small>
+    </div>
+  </form>
+
+  <p-button
+    size="small"
+    label="Pubblica"
+    severity="primary"
+    raised
+    (click)="saveArticle()" [disabled]="!articleForm.valid"
+  />
+</page>

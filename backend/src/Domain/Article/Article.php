@@ -35,7 +35,7 @@ class Article extends BaseDomainEntity implements JsonSerializable
         $article = [
             'id' => $this->id,
             'title' => $this->title,
-            'content' => $this->content,
+            'content' => $this->content ?? '',
             'author_id' => $this->author_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at

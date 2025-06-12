@@ -15,4 +15,5 @@ class ArticleFilters
     public ?int $tag_id;
     public ?string $created_from;
     public ?string $created_to;
+    public ?bool $skipContent;
 }

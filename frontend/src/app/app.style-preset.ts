@@ -81,6 +81,11 @@ export default definePreset(Aura, {
       header: {
         padding: '0 0 1em 0'
       }
+    },
+    autocomplete: {
+      padding: {
+        x: 0, y: 0
+      }
     }
   }
 });

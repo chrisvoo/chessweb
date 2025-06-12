@@ -56,8 +56,15 @@ SQL,
         $wheres = [];
 
         $able = Article::TABLE_NAME;
-        $sql = "SELECT id, title, author_id, content, created_at, updated_at 
-                FROM $able a ";
+        $fields = [
+            "id", "title", "author_id", "created_at", "updated_at"
+        ];
+
+        if (!$filters->skipContent) {
+            $fields[] = "content";
+        }
+
+        $sql = "SELECT " . implode(", ", $fields) . " FROM $able a ";
 
         if (!empty($filters->tagId)) {
             $joins[] = "INNER JOIN article_tag at ON a.id = at.article_id ";

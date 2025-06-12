@@ -41,6 +41,7 @@ class ListArticlesAction extends Action
         $filters->tag_id = $queryParams['tag_id'] ?? null;
         $filters->created_from = $queryParams['created_from'] ?? null;
         $filters->created_to = $queryParams['created_to'] ?? null;
+        $filters->skipContent = $queryParams['skip_content'] ?? true;
 
         $page = $queryParams['page'] ?? 1;
         $page_size = $queryParams['page_size'] ?? 10;

@@ -19,13 +19,14 @@ import {ArticlesService} from '../../services/articles/articles.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, throwError} from 'rxjs';
 import {ListPaginatedItemsResponse, ListPaginatedParams} from '../../../types/requests';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-admin-articles',
   imports: [
     PageComponent, Button, ConfirmDialog, Dialog, Divider, FormsModule, IconField,
     InputIcon, InputText, Message, PrimeTemplate, ReactiveFormsModule, TableModule,
-    Toast, Tooltip
+    Toast, Tooltip, RouterLink
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './admin-articles.component.html',
@@ -106,10 +107,6 @@ export class AdminArticlesComponent implements OnInit {
       this.articles = res.data.items
       this.totalCount = res.data.total_items
     })
-  }
-
-  onCreateArticle() {
-
   }
 
   onModifyArticle(article: Article) {

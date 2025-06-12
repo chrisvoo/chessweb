@@ -1,0 +1,12 @@
+:host ::ng-deep input[role=combobox]:focus {
+  background: transparent;
+  border: none;
+  color: inherit;
+  box-shadow: none;
+}
+
+:host ::ng-deep button.p-ripple.p-autocomplete-dropdown {
+  box-shadow: none;
+  height: inherit;
+  border-radius: 0 6px 6px 0 !important;
+}

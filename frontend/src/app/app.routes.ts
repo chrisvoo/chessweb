@@ -75,8 +75,19 @@ export const routes: Routes = [
       {
         path: 'articoli',
         title: `${mainTitle} - Admin > Articoli`,
-        loadComponent: () => import('./admin/admin-articles/admin-articles.component')
-          .then(m => m.AdminArticlesComponent)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./admin/admin-articles/admin-articles.component')
+              .then(m => m.AdminArticlesComponent),
+          },
+          {
+            path: 'nuovo',
+            title: `${mainTitle} - Admin > Articoli - Crea nuovo articolo`,
+            loadComponent: () => import('./admin/admin-articles/manage-article/manage-article.component')
+              .then(m => m.ManageArticleComponent)
+          }
+        ]
       },
       {
         path: 'categorie',

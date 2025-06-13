@@ -1,6 +1,6 @@
 <page title="Admin - Crea nuovo articolo">
   <form [formGroup]="articleForm">
-    <div class="field">
+    <div class="automcomplete">
       <label for="title">Titolo</label>
       <input
         id="title"
@@ -8,20 +8,20 @@
         formControlName="title"
         [value]="targetArticle?.title"
         type="text"
-        class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+        class=""
       />
     </div>
-    <div class="field">
+    <div class="automcomplete">
       <label for="content">Contenuto</label>
       <p-editor
         id="content"
-        class="text-base text-color surface-overlay p-2  surface-border border-round appearance-none outline-none focus:border-primary w-full"
+        class=""
         formControlName="content"
         [style]="{ height: '320px' }"
       />
     </div>
 
-    <div class="field">
+    <div class="automcomplete">
       <label for="tags">Tags</label>
       <p-autoComplete
         id="tags"
@@ -33,13 +33,13 @@
         [dropdown]="true"
         [forceSelection]="true"
         placeholder="Cerca e scegli un tag (opzionale)"
-        styleClass="w-full"
+        [style]="{ 'width': '100%' }"
       >
       </p-autoComplete>
       <small>Puoi selezionare solo tag esistenti.</small>
     </div>
 
-    <div class="field">
+    <div>
       <label for="categories">Categorie</label>
       <p-autoComplete
         id="categories"
@@ -51,18 +51,20 @@
         [dropdown]="true"
         [forceSelection]="true"
         placeholder="Cerca e scegli una categoria (opzionale)"
-        styleClass="w-full"
+        [style]="{ 'width': '100%' }"
       >
       </p-autoComplete>
-      <small>Puoi selezionare solo categorie esistenti.</small>
+      <small class="field-2">Puoi selezionare solo categorie esistenti.</small>
     </div>
   </form>
 
-  <p-button
-    size="small"
-    label="Pubblica"
-    severity="primary"
-    raised
-    (click)="saveArticle()" [disabled]="!articleForm.valid"
-  />
+  <div class="save-btn">
+    <p-button
+      size="small"
+      label="Pubblica"
+      severity="primary"
+      raised
+      (click)="saveArticle()" [disabled]="!articleForm.valid"
+    />
+  </div>
 </page>

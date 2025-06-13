@@ -7,11 +7,17 @@
   --primary-color-text: #7f888f;
 }
 
-  /*
-    Editorial by HTML5 UP
-    html5up.net | @ajlkn
-    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
-  */
+.p-inputtext, input[role="combobox"] {
+  font-size: 13pt !important;
+  font-weight: 400;
+  color: var(--primary-color-text) !important;
+}
+
+/*
+  Editorial by HTML5 UP
+  html5up.net | @ajlkn
+  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+*/
 html, body, div, span, applet, object,
 iframe, h1, h2, h3, h4, h5, h6, p, blockquote,
 pre, a, abbr, acronym, address, big, cite,
@@ -119,7 +125,7 @@ body.is-preload *, body.is-preload *:before, body.is-preload *:after, body.is-re
 
 /* Type */
 body, input, select, textarea {
-  color: #7f888f;
+  color: var(--primary-color-text);
   font-family: "Open Sans", sans-serif;
   font-size: 13pt;
   font-weight: 400;
@@ -445,7 +451,7 @@ input[type="radio"] {
 input[type="checkbox"] + label,
 input[type="radio"] + label {
   text-decoration: none;
-  color: #7f888f;
+  color: var(--primary-color-text);
   cursor: pointer;
   display: inline-block;
   font-size: 1em;
@@ -1031,6 +1037,14 @@ button,
   white-space: nowrap;
 }
 
+.p-paginator button {
+  box-shadow: inset 0 0 0 2px transparent;
+}
+
+.p-dialog-close-button {
+  box-shadow: inset 0 0 0 2px #e8e0e0;
+}
+
 input[type="submit"]:hover,
 input[type="reset"]:hover,
 input[type="button"]:hover,
@@ -1570,7 +1584,7 @@ button:disabled,
   -webkit-transform: scaleX(-1);
   -ms-transform: scaleX(-1);
   transform: scaleX(-1);
-  color: #7f888f;
+  color: var(--primary-color-text);
   content: '\f002';
   cursor: default;
   display: block;
@@ -1784,7 +1798,7 @@ button:disabled,
   }
 
   #sidebar .toggle:before {
-    color: #7f888f;
+    color: var(--primary-color-text);
     margin-left: -0.0625em;
     margin-top: -0.25em;
     font-size: 1.1rem;

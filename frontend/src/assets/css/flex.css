@@ -10,8 +10,20 @@
   flex-direction: row-reverse;
 }
 
+.column {
+  flex-direction: column;
+}
+
 .row > * {
   box-sizing: border-box;
+}
+
+.bottom {
+  margin-bottom: 1em;
+}
+
+.bottom-2 {
+  margin-bottom: 2em;
 }
 
 .row.gtr-uniform > * > :last-child {

@@ -11,6 +11,7 @@ import {ListAllItemsParams, SearchParams} from '../../../../types/requests';
 import {map} from 'rxjs';
 import {AutoComplete} from 'primeng/autocomplete';
 import {Button, ButtonDirective, ButtonLabel} from 'primeng/button';
+import {NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-manage-article',
@@ -22,7 +23,8 @@ import {Button, ButtonDirective, ButtonLabel} from 'primeng/button';
     AutoComplete,
     ButtonDirective,
     ButtonLabel,
-    Button
+    Button,
+    NgStyle
   ],
   templateUrl: './manage-article.component.html',
   styleUrl: './manage-article.component.css',

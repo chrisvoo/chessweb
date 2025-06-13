@@ -48,6 +48,19 @@ export default definePreset(Aura, {
     // }
   },
   components: {
+    editor: {
+      toolbar: {
+        border: {
+          color: '#cbd5e1'
+        }
+      },
+      content: {
+        border: {
+          color: '#cbd5e1'
+        },
+        color: 'var(--primary-color-text)'
+      }
+    },
     tooltip: {
       padding: '5px',
       css: () => `

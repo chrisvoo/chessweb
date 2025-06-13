@@ -10,3 +10,29 @@
   height: inherit;
   border-radius: 0 6px 6px 0 !important;
 }
+
+input[role="combobox"] {
+  width: 100%;
+}
+
+.automcomplete {
+  margin-bottom: 1em;
+}
+
+.automcomplete-1 {
+  margin-bottom: 1.5em;
+}
+
+.save-btn {
+  display: flex;
+  justify-content: flex-end;
+}
+
+:host ::ng-deep  .ql-container {
+  font-size: 13pt;
+  font-weight: 400;
+}
+
+:host ::ng-deep .ql-formats button {
+  box-shadow: none;
+}

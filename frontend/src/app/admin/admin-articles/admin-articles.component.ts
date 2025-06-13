@@ -20,13 +20,14 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, throwError} from 'rxjs';
 import {ListPaginatedItemsResponse, ListPaginatedParams} from '../../../types/requests';
 import {RouterLink} from '@angular/router';
+import {NgStyle} from '@angular/common';
 
 @Component({
   selector: 'app-admin-articles',
   imports: [
     PageComponent, Button, ConfirmDialog, Dialog, Divider, FormsModule, IconField,
     InputIcon, InputText, Message, PrimeTemplate, ReactiveFormsModule, TableModule,
-    Toast, Tooltip, RouterLink
+    Toast, Tooltip, RouterLink, NgStyle
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './admin-articles.component.html',

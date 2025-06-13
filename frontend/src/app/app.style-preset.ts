@@ -63,8 +63,11 @@ export default definePreset(Aura, {
     inputtext: {
       focus: {
         border: {
-          color: 'grey'
+          color: '#f56a6a'
         }
+      },
+      border: {
+        color: '#cbd5e1'
       }
     },
     divider: {

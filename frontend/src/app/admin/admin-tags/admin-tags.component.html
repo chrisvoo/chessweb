@@ -10,7 +10,7 @@
     [value]="tags"
   >
     <ng-template pTemplate="caption">
-      <div class="flex flex-row-reverse">
+      <div class="row reverse">
         <p-iconfield iconPosition="left" class="ml-2">
           <p-inputicon>
             <i class="pi pi-search"></i>
@@ -39,7 +39,7 @@
           <p-sortIcon field="name" />
         </th>
         <th>Creato il</th>
-        <th style="width: 8rem"></th>
+        <th style="width: 12rem"></th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-tag>
@@ -48,7 +48,7 @@
         <td>{{ tag.name }}</td>
         <td>{{ tag.created_at }}</td>
         <td>
-          <div class="flex flex-row justify-content-around">
+          <div class="row aln-center aln-middle" style="margin-left: 5px">
             <p-button
               pTooltip="Modifica"
               tooltipPosition="top"

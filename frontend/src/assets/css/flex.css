@@ -6,6 +6,10 @@
   align-items: stretch;
 }
 
+.reverse {
+  flex-direction: row-reverse;
+}
+
 .row > * {
   box-sizing: border-box;
 }
@@ -16,6 +20,10 @@
 
 .row.aln-left {
   justify-content: flex-start;
+}
+
+.row.around {
+  justify-content: space-around;
 }
 
 .row.aln-center {

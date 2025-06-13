@@ -9,3 +9,8 @@
   flex-direction: row-reverse;
   min-height: 100vh;
 }
+
+/** icon in input text */
+:host ::ng-deep p-inputicon:first-child {
+  inset-inline-start: 2.35em !important;
+}

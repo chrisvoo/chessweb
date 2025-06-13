@@ -29,8 +29,7 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/assets/css/flex.css",
-              "node_modules/primeflex/primeflex.css"
+              "src/assets/css/flex.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.slim.min.js",

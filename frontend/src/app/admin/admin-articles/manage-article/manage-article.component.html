@@ -1,6 +1,6 @@
 <page title="Admin - Crea nuovo articolo">
   <form [formGroup]="articleForm">
-    <div class="automcomplete">
+    <div class="bottom-margin">
       <label for="title">Titolo</label>
       <input
         id="title"
@@ -11,17 +11,26 @@
         class=""
       />
     </div>
-    <div class="automcomplete">
-      <label for="content">Contenuto</label>
+    <div class="bottom-margin">
+      <label for="title">Contenuto</label>
       <p-editor
         id="content"
-        class=""
         formControlName="content"
         [style]="{ height: '320px' }"
-      />
+      >
+        <ng-template #header>
+          <span class="ql-formats">
+              <button type="button" class="ql-bold" aria-label="Grassetto"></button>
+              <button type="button" class="ql-italic" aria-label="Corsivo"></button>
+              <button type="button" class="ql-underline" aria-label="Sottolineato"></button>
+              <button type="button" class="ql-link" aria-label="Link"></button>
+              <button type="button" class="ql-image" aria-label="Image"></button>
+          </span>
+        </ng-template>
+      </p-editor>
     </div>
 
-    <div class="automcomplete">
+    <div class="bottom-margin">
       <label for="tags">Tags</label>
       <p-autoComplete
         id="tags"

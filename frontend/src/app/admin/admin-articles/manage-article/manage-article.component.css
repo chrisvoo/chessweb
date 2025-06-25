@@ -1,3 +1,27 @@
+@import "https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css";
+
+.ql-toolbar.ql-snow {
+  border-top-left-radius: 0.375em;
+  border-top-right-radius: 0.375em;
+  border: solid 1px rgba(210, 215, 217, 0.75);
+  box-shadow: var(--p-inputtext-shadow);
+}
+
+.ql-container.ql-snow {
+  border-bottom-left-radius: 0.375em;
+  border-bottom-right-radius: 0.375em;
+  border: solid 1px rgba(210, 215, 217, 0.75);
+  box-shadow: var(--p-inputtext-shadow);
+}
+
+.ql-snow.ql-toolbar button.ql-active {
+  background-color: var(--primary-color);
+}
+
+.ql-snow .ql-tooltip {
+  z-index: 1000 !important;
+}
+
 :host ::ng-deep input[role=combobox]:focus {
   background: transparent;
   border: none;
@@ -15,11 +39,11 @@ input[role="combobox"] {
   width: 100%;
 }
 
-.automcomplete {
+.bottom-margin {
   margin-bottom: 1em;
 }
 
-.automcomplete-1 {
+.bottom-margin-1 {
   margin-bottom: 1.5em;
 }
 
@@ -33,6 +57,6 @@ input[role="combobox"] {
   font-weight: 400;
 }
 
-:host ::ng-deep .ql-formats button {
+:host ::ng-deep .ql-formats button, .ql-toolbar.ql-snow button {
   box-shadow: none;
 }

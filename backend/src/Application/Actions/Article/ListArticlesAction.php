@@ -41,7 +41,8 @@ class ListArticlesAction extends Action
         $filters->tag_id = $queryParams['tag_id'] ?? null;
         $filters->created_from = $queryParams['created_from'] ?? null;
         $filters->created_to = $queryParams['created_to'] ?? null;
-        $filters->skipContent = $queryParams['skip_content'] ?? true;
+        $filters->skipContent = !isset($queryParams['skip_content']) ||
+                                $queryParams['skip_content'] === 'true';
 
         $page = $queryParams['page'] ?? 1;
         $page_size = $queryParams['page_size'] ?? 10;
@@ -49,16 +50,20 @@ class ListArticlesAction extends Action
         $filters->limit = $page_size + 1;
         $filters->offset = ($page * $page_size) - $page_size;
 
-        $tags = $this->articleRepository->list($filters);
+        $articles = $this->articleRepository->list($filters);
         $totalItems = $this->articleRepository->count($filters);
 
-        $this->logger->debug('Got articles list', $tags);
+        $this->logger->debug(
+            'Got articles list with params ' .
+            json_encode($filters) . ' from params ' .
+            json_encode($queryParams)
+        );
 
         $response = [
-            'items' => array_slice($tags, 0, $page_size),
+            'items' => array_slice($articles, 0, $page_size),
             'total_items' => $totalItems,
             'total_pages' => ceil($totalItems / $page_size),
-            'has_more_items' => count($tags) > $page_size,
+            'has_more_items' => count($articles) > $page_size,
             'page' => (int)$page,
             'page_size' => (int)$page_size
         ];

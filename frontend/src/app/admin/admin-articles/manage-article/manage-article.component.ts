@@ -1,17 +1,19 @@
-import {Component, DestroyRef, inject} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {PageComponent} from '../../../components/page/page.component';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {noWhiteSpaceOnly} from '../../../validators/no-whitespace-only';
-import {Editor} from 'primeng/editor';
+import {Editor, EditorModule} from 'primeng/editor';
 import {InputText} from 'primeng/inputtext';
 import {Article, NamedEntity} from '../../../../types/models';
 import {CategoriesService} from '../../../services/categories/categories.service';
 import {TagsService} from '../../../services/tags/tags.service';
-import {ListAllItemsParams, SearchParams} from '../../../../types/requests';
+import {ListAllItemsParams} from '../../../../types/requests';
 import {map} from 'rxjs';
 import {AutoComplete} from 'primeng/autocomplete';
 import {Button, ButtonDirective, ButtonLabel} from 'primeng/button';
 import {NgStyle} from '@angular/common';
+import Quill from 'quill';
+
 
 @Component({
   selector: 'app-manage-article',
@@ -30,7 +32,7 @@ import {NgStyle} from '@angular/common';
   styleUrl: './manage-article.component.css',
   standalone: true
 })
-export class ManageArticleComponent {
+export class ManageArticleComponent implements OnInit {
   articleForm: FormGroup
   loadingResponse = false
   errorMessage: string = ''
@@ -40,8 +42,6 @@ export class ManageArticleComponent {
   // State for AutoComplete suggestions
   tagSuggestions: NamedEntity[] = [];
   categorySuggestions: NamedEntity[] = [];
-
-  #destroyRef = inject(DestroyRef);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -62,6 +62,10 @@ export class ManageArticleComponent {
     })
   }
 
+  ngOnInit(): void {
+
+  }
+
   /**
    * Searches for tags based on user input.
    * @param event The event emitted by p-autoComplete, containing the query.
@@ -79,10 +83,10 @@ export class ManageArticleComponent {
       params.name = event.query
     }
 
-    this.tagsService.listTags(params).pipe( //
-      map(res => res.data.items) //
+    this.tagsService.listTags(params).pipe(
+      map(res => res.data.items)
     ).subscribe(suggestions => {
-      this.tagSuggestions = suggestions; //
+      this.tagSuggestions = suggestions;
     });
   }
 
@@ -101,10 +105,10 @@ export class ManageArticleComponent {
       params.name = event.query
     }
 
-    this.categoriesService.listCategories(params).pipe( //
-      map(res => res.data.items) //
+    this.categoriesService.listCategories(params).pipe(
+      map(res => res.data.items)
     ).subscribe(suggestions => {
-      this.categorySuggestions = suggestions; //
+      this.categorySuggestions = suggestions;
     });
   }
 

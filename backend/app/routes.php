@@ -8,6 +8,7 @@ use App\Application\Actions\Article\ListArticlesAction;
 use App\Application\Actions\Article\UpdateArticleAction;
 use App\Application\Actions\Article\ViewSingleArticleAction;
 use App\Application\Actions\Auth\LoginAction;
+use App\Application\Actions\Auth\LogoutAction;
 use App\Application\Actions\Auth\RefreshTokenAction;
 use App\Application\Actions\Category\CreateCategoryAction;
 use App\Application\Actions\Category\DeleteCategoryAction;
@@ -18,6 +19,7 @@ use App\Application\Actions\Files\UploadAction;
 use App\Application\Actions\Tag\CreateTagAction;
 use App\Application\Actions\Tag\DeleteTagAction;
 use App\Application\Actions\Tag\ListTagsAction;
+use App\Application\Actions\Tag\TagCloudAction;
 use App\Application\Actions\Tag\UpdateTagAction;
 use App\Application\Actions\User\DeleteUserAction;
 use App\Application\Actions\User\ListUsersAction;
@@ -63,6 +65,7 @@ return function (App $app) {
     $app->group('/api', function (Group $group) {
         $group->get('/user/{id}', ViewSingleUserAction::class);
         $group->get('/tags', ListTagsAction::class);
+        $group->get('/tags/cloud', TagCloudAction::class);
         $group->get('/categories', ListCategoriesAction::class);
         $group->get('/article/{id}', ViewSingleArticleAction::class);
         $group->get('/articles', ListArticlesAction::class);
@@ -71,6 +74,7 @@ return function (App $app) {
 
         // auth
         $group->post('/login', LoginAction::class);
+        $group->get('/logout', LogoutAction::class);
         $group->post('/refresh', RefreshTokenAction::class);
 
         $group->group('', function (Group $group) {

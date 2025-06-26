@@ -3,8 +3,8 @@ import type { User } from '../../../types/models';
 import {
   BehaviorSubject,
   catchError, EMPTY, exhaustMap,
-  finalize,
-  map,
+  finalize, ignoreElements,
+  map, never,
   Observable,
   of, shareReplay, Subject, switchMap, takeUntil,
   tap,
@@ -13,6 +13,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { LoginResponse, RefreshTokenResponse } from '../../../types/requests';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,8 @@ export class AuthService implements OnDestroy {
   #logout$ = new Subject<void>();
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) { }
 
   ngOnDestroy() {
@@ -48,13 +50,20 @@ export class AuthService implements OnDestroy {
     return this.#tokenSubject.value;
   }
 
-  logout(): void {
+  logout(): Observable<void> {
     // Clear observables and state
     this.#logout$.next();                    // cancel auto-refresh
     this.#tokenSubject.next(null);           // remove token
     this.#authenticatedUser.next(undefined); // clear user info
 
-    // @TODO navigate to login and erase refresh token cookie
+    return this.http.get('/api/logout')
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        tap(() => {
+          void this.router.navigate(['/login'])
+        }),
+        ignoreElements()
+      );
   }
 
   login(email: string, password: string): Observable<boolean> {

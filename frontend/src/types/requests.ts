@@ -37,6 +37,13 @@ export interface ListAllItemsResponse<T> {
   }
 }
 
+export interface TagCloudItem {
+  name: string,
+  tag_id: number,
+  weight: number,
+  total_count: number
+}
+
 export interface ListPaginatedItemsResponse<T> {
   statusCode: number
   data: {

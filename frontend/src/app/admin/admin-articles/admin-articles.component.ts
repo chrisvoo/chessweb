@@ -77,7 +77,6 @@ export class AdminArticlesComponent implements OnInit {
   }
 
   loadArticles(event: TableLazyLoadEvent): void {
-    console.log(event)
     this.#resetResponseStatusFields();
 
     this.pageSize = event.rows ?? this.pageSize;

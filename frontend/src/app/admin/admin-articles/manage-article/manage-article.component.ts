@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {PageComponent} from '../../../components/page/page.component';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {noWhiteSpaceOnly} from '../../../validators/no-whitespace-only';
@@ -12,8 +12,6 @@ import {map} from 'rxjs';
 import {AutoComplete} from 'primeng/autocomplete';
 import {Button, ButtonDirective, ButtonLabel} from 'primeng/button';
 import {NgStyle} from '@angular/common';
-import Quill from 'quill';
-
 
 @Component({
   selector: 'app-manage-article',
@@ -71,8 +69,6 @@ export class ManageArticleComponent implements OnInit {
    * @param event The event emitted by p-autoComplete, containing the query.
    */
   searchTags(event: { query: string }) {
-    // NOTE: Your ListAllItemsParams type does not include a search parameter.
-    // I am assuming your API supports a 'search_text' query param.
     const params: ListAllItemsParams & { name?: string } = {
       all_items: true,
       sort_by: 'name',

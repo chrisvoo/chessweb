@@ -3,13 +3,11 @@
 namespace App\Application\Actions\Auth;
 
 use App\Application\Actions\Action;
-use App\Domain\DomainException\DomainRecordNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 
 class LogoutAction extends Action
 {
-
     /**
      * @throws HttpBadRequestException
      */

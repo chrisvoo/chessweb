@@ -1,6 +1,7 @@
-<article>
+<article [id]="id()">
   <!--            <a href="#" class="image"><img src="images/pic01.jpg" alt="" /></a>-->
   <h3>{{ title() }}</h3>
+  <small>{{ createdAt() }}</small>
   <p>{{ content() }}</p>
   @if (isContentTruncated) {
     <ul class="actions">

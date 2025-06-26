@@ -6,7 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import {
   ListAllItemsResponse,
   ListAllItemsParams,
-  ManagedEntityResponse
+  ManagedEntityResponse, TagCloudItem
 } from '../../../types/requests';
 import {NamedEntity} from '../../../types/models';
 
@@ -17,21 +17,23 @@ export class TagsService {
   LIST_ENDPOINT = '/api/tags'
   UPDATE_DELETE_ENDPOINT = '/api/tag/:id';
   CREATE_ENDPOINT = '/api/tag';
+  TAG_CLOUD_ENDPOINT = '/api/tags/cloud';
 
   constructor(
     private readonly http: HttpClient,
     private readonly authService: AuthService,
   ) { }
 
-  listTags(params: ListAllItemsParams): Observable<ListAllItemsResponse<NamedEntity>> {
-    const token = this.authService.getToken();
+  getTagCloud(): Observable<ListAllItemsResponse<TagCloudItem>> {
+    return this.http.get<ListAllItemsResponse<TagCloudItem>>(
+      this.TAG_CLOUD_ENDPOINT
+    )
+  }
 
+  listTags(params: ListAllItemsParams): Observable<ListAllItemsResponse<NamedEntity>> {
     return this.http.get<ListAllItemsResponse<NamedEntity>>(
       this.LIST_ENDPOINT,
       {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
         params: { ...params }
       }
     ).pipe(

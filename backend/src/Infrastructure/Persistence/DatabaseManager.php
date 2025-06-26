@@ -80,9 +80,16 @@ class DatabaseManager implements DatabaseManagerInterface
      * @param string|null $class
      * @return array|false
      */
-    public function rows(string $sql, array $args = [], int $fetchMode = PDO::FETCH_CLASS, ?string $class = null): array|false
-    {
-        return $this->run($sql, $args)->fetchAll($fetchMode, $class);
+    public function rows(
+        string $sql,
+        array $args = [],
+        int $fetchMode = PDO::FETCH_CLASS,
+        ?string $class = null
+    ): array|false {
+        if ($fetchMode === PDO::FETCH_CLASS) {
+            return $this->run($sql, $args)->fetchAll($fetchMode, $class);
+        }
+        return $this->run($sql, $args)->fetchAll($fetchMode);
     }
 
     /**

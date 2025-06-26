@@ -1,3 +1,30 @@
+<sidebar-item title="Notizie per tag" *ngIf="tagCloudItems.length > 0">
+  <div class="mini-posts">
+    <article>
+      <ul class="cloud" role="listbox" aria-label="Tag cloud">
+        @for(tagCloudItem of tagCloudItems; track tagCloudItem.tag_id) {
+          <li>
+            <a
+              [attr.data-weight]="tagCloudItem.weight"
+              [href]="'/notizie?tag=' + tagCloudItem.tag_id"
+            >
+              {{ tagCloudItem.name }}
+            </a>
+          </li>
+        }
+      </ul>
+    </article>
+  </div>
+</sidebar-item>
+<sidebar-item title="Notizie per categorie">
+  <div class="mini-posts">
+    <article>
+      <!--            <iframe src="https://lichess.org/training/frame?theme=brown&bg=dark" style="width: 100%; height: 100%; aspect-ratio: 10/11;" allowtransparency="true" frameborder="0"></iframe>-->
+      <a href="#" class="image"><img src="images/pic07.jpg" alt="" /></a>
+      <p>TODO</p>
+    </article>
+  </div>
+</sidebar-item>
 <sidebar-item title="Puzzle del giorno">
   <div class="mini-posts">
     <article>

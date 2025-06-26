@@ -21,4 +21,8 @@ export class MenuComponent {
   constructor(private authService: AuthService) {
     this.isAuthenticated = this.authService.isAuthenticated();
   }
+
+  logout() {
+    this.authService.logout();
+  }
 }

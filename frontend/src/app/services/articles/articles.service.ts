@@ -20,14 +20,9 @@ export class ArticlesService {
   ) { }
 
   listArticles(params: ListPaginatedParams): Observable<ListPaginatedItemsResponse<Article>> {
-    const token = this.authService.getToken();
-
     return this.http.get<ListPaginatedItemsResponse<Article>>(
       this.LIST_ENDPOINT,
       {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
         params: { ...params }
       }
     ).pipe(

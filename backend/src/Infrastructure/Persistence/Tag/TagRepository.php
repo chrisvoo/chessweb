@@ -182,4 +182,16 @@ SQL;
 
         return !empty($result);
     }
+
+    public function getTagCloud(): array
+    {
+        $sql = <<<SQL
+            SELECT t.name, t.id AS tag_id, COUNT(at.tag_id) AS total_count
+            FROM article_tags at
+            INNER JOIN tags t ON t.id = at.tag_id
+            GROUP BY t.name, t.id
+            ORDER BY total_count DESC
+SQL;
+        return $this->databaseManager->rows($sql, [], PDO::FETCH_ASSOC);
+    }
 }

@@ -45,18 +45,6 @@ export const routes: Routes = [
       .then(m => m.NewsComponent)
   },
   {
-    path: 'galleria',
-    title: `${mainTitle} - Galleria`,
-    loadComponent: () => import('./components/main/pages/gallery/gallery.component')
-      .then(m => m.GalleryComponent)
-  },
-  {
-    path: 'credits',
-    title: `${mainTitle} - Riconoscimenti`,
-    loadComponent: () => import('./components/main/pages/credits/credits.component')
-      .then(m => m.CreditsComponent)
-  },
-  {
     path: 'login',
     title: `${mainTitle} - Login`,
     loadComponent: () => import('./components/main/pages/login/login.component')

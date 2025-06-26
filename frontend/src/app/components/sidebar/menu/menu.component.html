@@ -9,8 +9,6 @@
     <li><a routerLink="/news">Notizie</a></li>
     <li><a routerLink="/tornei">Tornei</a></li>
     <li><a routerLink="/corsi">Corsi</a></li>
-    <li><a routerLink="/galleria">Galleria</a></li>
-    <li><a routerLink="/credits">Riconoscimenti</a></li>
     <li>
       <span class="opener">Admin</span>
       @if (isAuthenticated | async) {
@@ -18,6 +16,7 @@
           <li><a routerLink="/admin/articoli">Gestione articoli</a></li>
           <li><a routerLink="/admin/categorie">Gestione categorie</a></li>
           <li><a routerLink="/admin/tags">Gestione tag</a></li>
+          <li><a (click)="logout()">Logout</a></li>
         </ul>
       } @else {
         <ul>

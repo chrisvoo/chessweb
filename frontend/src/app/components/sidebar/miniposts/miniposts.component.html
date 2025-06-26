@@ -4,24 +4,33 @@
       <ul class="cloud" role="listbox" aria-label="Tag cloud">
         @for(tagCloudItem of tagCloudItems; track tagCloudItem.tag_id) {
           <li>
-            <a
-              [attr.data-weight]="tagCloudItem.weight"
-              [href]="'/notizie?tag=' + tagCloudItem.tag_id"
-            >
-              {{ tagCloudItem.name }}
-            </a>
+            <p-overlaybadge [value]="tagCloudItem.total_count" badgeSize="small">
+              <a
+                [attr.data-weight]="tagCloudItem.weight"
+                [href]="'/notizie?tag_id=' + tagCloudItem.tag_id"
+              >
+                {{ tagCloudItem.name }}
+              </a>
+            </p-overlaybadge>
           </li>
         }
       </ul>
     </article>
   </div>
 </sidebar-item>
-<sidebar-item title="Notizie per categorie">
+<sidebar-item title="Notizie per categorie" *ngIf="categoryStatsItems.length > 0">
   <div class="mini-posts">
     <article>
-      <!--            <iframe src="https://lichess.org/training/frame?theme=brown&bg=dark" style="width: 100%; height: 100%; aspect-ratio: 10/11;" allowtransparency="true" frameborder="0"></iframe>-->
-      <a href="#" class="image"><img src="images/pic07.jpg" alt="" /></a>
-      <p>TODO</p>
+      <ul class="alt">
+        @for(catItem of categoryStatsItems; track catItem.category_id) {
+          <li>
+            <a [href]="'/notizie?category_id=' + catItem.category_id">
+              {{ catItem.name }}
+            </a>
+            <p-badge [value]="catItem.total_count" severity="warn" />
+          </li>
+        }
+      </ul>
     </article>
   </div>
 </sidebar-item>

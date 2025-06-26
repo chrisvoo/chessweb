@@ -1,15 +1,20 @@
 import {Component, OnInit} from '@angular/core';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { SidebarItemComponent } from '../sidebar-item/sidebar-item.component';
-import {TagCloudItem} from '../../../../types/requests';
+import {CategoryStatsItem, TagCloudItem} from '../../../../types/requests';
 import {map} from 'rxjs';
 import {TagsService} from '../../../services/tags/tags.service';
 import {NgIf} from '@angular/common';
+import {CategoriesService} from '../../../services/categories/categories.service';
+import {Badge} from 'primeng/badge';
 
 @Component({
   selector: 'app-miniposts',
   imports: [
     SidebarItemComponent,
-    NgIf
+    NgIf,
+    OverlayBadgeModule,
+    Badge
   ],
   standalone: true,
   templateUrl: './miniposts.component.html',
@@ -17,13 +22,26 @@ import {NgIf} from '@angular/common';
 })
 export class MinipostsComponent implements OnInit {
   tagCloudItems: TagCloudItem[] = []
+  categoryStatsItems: CategoryStatsItem[] = []
   mode: 'linear' | 'logarithmic' = 'logarithmic'
 
-  constructor(private tagsService: TagsService) {
+  constructor(
+    private tagsService: TagsService,
+    private categoryService: CategoriesService
+  ) {
   }
 
   ngOnInit() {
     this.loadTagCloud(this.mode)
+    this.loadCategoryList()
+  }
+
+  loadCategoryList(): void {
+    this.categoryService.getCategoriesStats().pipe(
+      map(res => res.data.items)
+    ).subscribe(items => {
+      this.categoryStatsItems = items;
+    });
   }
 
   loadTagCloud(mode: string) {
@@ -105,8 +123,8 @@ export class MinipostsComponent implements OnInit {
             });
           }
         })
-      ).subscribe(suggestions => {
-        this.tagCloudItems = suggestions;
+      ).subscribe(items => {
+        this.tagCloudItems = items;
       });
   }
 }

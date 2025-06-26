@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AuthService} from '../auth/auth.service';
 import {
+  CategoryStatsItem,
   ListAllItemsParams,
   ListAllItemsResponse,
-  ManagedEntityResponse
+  ManagedEntityResponse, TagCloudItem
 } from '../../../types/requests';
 import {map, Observable} from 'rxjs';
 import {NamedEntity} from '../../../types/models';
@@ -17,11 +18,18 @@ export class CategoriesService {
   LIST_ENDPOINT = '/api/categories'
   UPDATE_DELETE_ENDPOINT = '/api/category/:id';
   CREATE_ENDPOINT = '/api/category';
+  CAT_GROUPED_ENDPOINT = '/api/categories/stats';
 
   constructor(
     private readonly http: HttpClient,
     private readonly authService: AuthService,
   ) { }
+
+  getCategoriesStats(): Observable<ListAllItemsResponse<CategoryStatsItem>> {
+    return this.http.get<ListAllItemsResponse<CategoryStatsItem>>(
+      this.CAT_GROUPED_ENDPOINT
+    )
+  }
 
   listCategories(params: ListAllItemsParams): Observable<ListAllItemsResponse<NamedEntity>> {
     const token = this.authService.getToken();

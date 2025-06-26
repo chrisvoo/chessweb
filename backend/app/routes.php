@@ -10,6 +10,7 @@ use App\Application\Actions\Article\ViewSingleArticleAction;
 use App\Application\Actions\Auth\LoginAction;
 use App\Application\Actions\Auth\LogoutAction;
 use App\Application\Actions\Auth\RefreshTokenAction;
+use App\Application\Actions\Category\CategoryCloudAction;
 use App\Application\Actions\Category\CreateCategoryAction;
 use App\Application\Actions\Category\DeleteCategoryAction;
 use App\Application\Actions\Category\ListCategoriesAction;
@@ -64,9 +65,13 @@ return function (App $app) {
 
     $app->group('/api', function (Group $group) {
         $group->get('/user/{id}', ViewSingleUserAction::class);
+
         $group->get('/tags', ListTagsAction::class);
-        $group->get('/tags/cloud', TagCloudAction::class);
+        $group->get('/tags/stats', TagCloudAction::class);
+
         $group->get('/categories', ListCategoriesAction::class);
+        $group->get('/categories/stats', CategoryCloudAction::class);
+
         $group->get('/article/{id}', ViewSingleArticleAction::class);
         $group->get('/articles', ListArticlesAction::class);
 

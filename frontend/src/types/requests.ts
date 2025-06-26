@@ -38,9 +38,15 @@ export interface ListAllItemsResponse<T> {
 }
 
 export interface TagCloudItem {
-  name: string,
-  tag_id: number,
-  weight: number,
+  name: string
+  tag_id: number
+  weight: number
+  total_count: number
+}
+
+export interface CategoryStatsItem {
+  name: string
+  category_id: number
   total_count: number
 }
 
@@ -48,9 +54,9 @@ export interface ListPaginatedItemsResponse<T> {
   statusCode: number
   data: {
     items: T[],
-    total_items: number,
-    total_pages: number,
-    has_more_items: boolean,
+    total_items: number
+    total_pages: number
+    has_more_items: boolean
     page: number
     page_size: number
   }

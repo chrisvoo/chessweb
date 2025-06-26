@@ -1,11 +1,26 @@
+ul {
+  margin: 0
+}
+
+ul li {
+  padding-left: 0;
+}
+
 ul.cloud {
   list-style: none;
   padding-left: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   line-height: 2.5rem;
+  gap: 1em;
+}
+
+ul.alt li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /*ul.cloud a[data-weight="1"] { --size: 1; }*/
@@ -21,3 +36,4 @@ ul.cloud a[data-weight="7"] { --size: 7; }
 ul.cloud a {
   font-size: calc(var(--size) * 0.4rem);
 }
+

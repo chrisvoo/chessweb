@@ -202,4 +202,16 @@ SQL;
 
         return !empty($result);
     }
+
+    public function getCategoryCloud(int $limit = 10): array
+    {
+        $sql = <<<SQL
+            SELECT c.name, c.id AS category_id, COUNT(ac.category_id) AS total_count
+            FROM article_categories ac
+             INNER JOIN categories c ON c.id = ac.category_id
+            GROUP BY c.name, c.id
+            ORDER BY total_count DESC
+SQL;
+        return $this->databaseManager->rows($sql, [], PDO::FETCH_ASSOC);
+    }
 }

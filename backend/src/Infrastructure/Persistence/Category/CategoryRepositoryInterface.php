@@ -37,4 +37,6 @@ interface CategoryRepositoryInterface extends UniquenessCheckInterface
      * @return DatabaseOperation
      */
     public function delete(int $categoryId): DatabaseOperation;
+
+    public function getCategoryCloud(int $limit = 10): array;
 }

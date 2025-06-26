@@ -17,7 +17,7 @@ export class TagsService {
   LIST_ENDPOINT = '/api/tags'
   UPDATE_DELETE_ENDPOINT = '/api/tag/:id';
   CREATE_ENDPOINT = '/api/tag';
-  TAG_CLOUD_ENDPOINT = '/api/tags/cloud';
+  TAG_CLOUD_ENDPOINT = '/api/tags/stats';
 
   constructor(
     private readonly http: HttpClient,

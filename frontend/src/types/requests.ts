@@ -88,7 +88,12 @@ export interface SearchParams {
 }
 
 export type ListPaginatedParams = SortParams & PaginationParams & SearchParams;
-export type ListPaginatedArticles = ListPaginatedParams & { skip_content?: boolean}
+export type ListArticlesFilters = {
+  skip_content?: boolean
+  category_id?: number
+  tag_id?: number
+}
+export type ListPaginatedArticles = ListPaginatedParams & ListArticlesFilters
 
 export type ListAllItemsParams = SortParams & { all_items: boolean }
 

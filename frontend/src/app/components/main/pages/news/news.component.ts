@@ -6,6 +6,7 @@ import {ListPaginatedArticles, ListPaginatedItemsResponse} from '../../../../../
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, throwError} from 'rxjs';
 import {Paginator, PaginatorState} from 'primeng/paginator';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-news',
@@ -20,20 +21,51 @@ export class NewsComponent implements OnInit {
   pageSize: number = 5
   totalCount: number = 0
 
+  categoryId?: number
+  tagId?: number
   #destroyRef = inject(DestroyRef)
 
-  constructor(private articlesService: ArticlesService) {
+  constructor(
+    private articlesService: ArticlesService,
+    private activatedRoute: ActivatedRoute
+  ) {
   }
 
   ngOnInit(): void {
-    const params: ListPaginatedArticles = {
+    this.activatedRoute.queryParamMap.subscribe(params => {
+      const catId = params.get('category_id')
+      if (catId !== null && catId.trim() !== '' && !isNaN(parseInt(catId))) {
+        this.categoryId = parseInt(catId)
+      }
+
+      const tagId = params.get('tag_id')
+      if (tagId !== null && tagId.trim() !== '' && !isNaN(parseInt(tagId))) {
+        this.tagId = parseInt(tagId)
+      }
+
+      const endpointParams: ListPaginatedArticles = this.#buildListArticlesParams()
+      this.loadArticles(endpointParams)
+    })
+  }
+
+  #buildListArticlesParams(): ListPaginatedArticles {
+    const endpointParams: ListPaginatedArticles = {
       page: 1,
       page_size: this.pageSize,
       sort_by: 'created_at',
       sort_order: 'desc',
       skip_content: false
     }
-    this.loadArticles(params)
+
+    if (this.categoryId) {
+      endpointParams.category_id = this.categoryId
+    }
+
+    if (this.tagId) {
+      endpointParams.tag_id = this.tagId
+    }
+
+    return endpointParams
   }
 
   loadArticles(params: ListPaginatedArticles): void {
@@ -52,13 +84,11 @@ export class NewsComponent implements OnInit {
   onPageChange(event: PaginatorState): void {
     const { first } = event;
 
-    const params: ListPaginatedArticles = {
-      page: Math.floor((first ?? 0) / this.pageSize) + 1,
-      page_size: this.pageSize,
-      sort_by: 'created_at',
-      sort_order: 'desc',
-      skip_content: false
+    const endpointParams: ListPaginatedArticles = {
+      ...this.#buildListArticlesParams(),
+      page: Math.floor((first ?? 0) / this.pageSize) + 1
     }
-    this.loadArticles(params)
+
+    this.loadArticles(endpointParams)
   }
 }

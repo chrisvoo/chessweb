@@ -39,8 +39,8 @@ export const routes: Routes = [
       .then(m => m.MembershipComponent)
   },
   {
-    path: 'news',
-    title: `${mainTitle} - News`,
+    path: 'notizie',
+    title: `${mainTitle} - Notizie`,
     loadComponent: () => import('./components/main/pages/news/news.component')
       .then(m => m.NewsComponent)
   },

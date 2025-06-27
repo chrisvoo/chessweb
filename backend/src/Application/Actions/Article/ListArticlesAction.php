@@ -36,11 +36,11 @@ class ListArticlesAction extends Action
             ? SortDirection::fromValue($queryParams['sort_order'])
             : SortDirection::ASC;
         $filters->sortBy = $queryParams['sort_by'] ?? 'created_at';
-        $filters->search_text = $queryParams['search_text'] ?? null;
-        $filters->category_id = $queryParams['category_id'] ?? null;
-        $filters->tag_id = $queryParams['tag_id'] ?? null;
-        $filters->created_from = $queryParams['created_from'] ?? null;
-        $filters->created_to = $queryParams['created_to'] ?? null;
+        $filters->searchText = $queryParams['search_text'] ?? null;
+        $filters->categoryId = $queryParams['category_id'] ?? null;
+        $filters->tagId = $queryParams['tag_id'] ?? null;
+        $filters->createdFrom = $queryParams['created_from'] ?? null;
+        $filters->createdTo = $queryParams['created_to'] ?? null;
         $filters->skipContent = !isset($queryParams['skip_content']) ||
                                 $queryParams['skip_content'] === 'true';
 

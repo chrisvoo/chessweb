@@ -80,10 +80,10 @@ SQL,
 
         /* PDO does not allow the same named placeholder to appear more than once in the SQL unless you're using
          * PDO::ATTR_EMULATE_PREPARES = true (which is off by default in many environments for security */
-        if (!empty($filters->search_text)) {
+        if (!empty($filters->searchText)) {
             $wheres[] = "(a.title LIKE :search1 OR a.content LIKE :search2) ";
-            $params['search1'] = "%{$filters->search_text}%";
-            $params['search2'] = "%{$filters->search_text}%";
+            $params['search1'] = "%{$filters->searchText}%";
+            $params['search2'] = "%{$filters->searchText}%";
         }
 
         if (!empty($filters->createdFrom) && !empty($filters->createdTo)) {
@@ -133,10 +133,10 @@ SQL,
 
         /* PDO does not allow the same named placeholder to appear more than once in the SQL unless you're using
          * PDO::ATTR_EMULATE_PREPARES = true (which is off by default in many environments for security */
-        if (!empty($filters->search_text)) {
+        if (!empty($filters->searchText)) {
             $wheres[] = "(a.title LIKE :search1 OR a.content LIKE :search2) ";
-            $params['search1'] = "%{$filters->search_text}%";
-            $params['search2'] = "%{$filters->search_text}%";
+            $params['search1'] = "%{$filters->searchText}%";
+            $params['search2'] = "%{$filters->searchText}%";
         }
 
         if (!empty($filters->createdFrom) && !empty($filters->createdTo)) {

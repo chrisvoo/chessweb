@@ -67,7 +67,7 @@ SQL,
         $sql = "SELECT " . implode(", ", $fields) . " FROM $able a ";
 
         if (!empty($filters->tagId)) {
-            $joins[] = "INNER JOIN article_tag at ON a.id = at.article_id ";
+            $joins[] = "INNER JOIN article_tags at ON a.id = at.article_id ";
             $wheres[] = 'at.tag_id = :tag_id';
             $params['tag_id'] = $filters->tagId;
         }
@@ -120,7 +120,7 @@ SQL,
         $wheres = [];
 
         if (!empty($filters->tagId)) {
-            $joins[] = "INNER JOIN article_tag at ON a.id = at.article_id ";
+            $joins[] = "INNER JOIN article_tags at ON a.id = at.article_id ";
             $wheres[] = 'at.tag_id = :tag_id';
             $params['tag_id'] = $filters->tagId;
         }

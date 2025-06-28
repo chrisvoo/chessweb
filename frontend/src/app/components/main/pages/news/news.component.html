@@ -5,6 +5,9 @@
     <p [innerHTML]="article.content"></p>
     <hr class="major" />
   }
+  @if (articles.length === 0) {
+    <p>{{ noNewsFound() }}</p>
+  }
   <p-paginator
     (onPageChange)="onPageChange($event)"
     [totalRecords]="totalCount"

@@ -40,5 +40,5 @@ interface TagRepositoryInterface extends UniquenessCheckInterface
      */
     public function delete(int $tagId): DatabaseOperation;
 
-    public function getTagCloud(): array;
+    public function getTagCloud(int $limit = 10): array;
 }

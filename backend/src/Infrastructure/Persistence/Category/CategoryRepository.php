@@ -211,6 +211,7 @@ SQL;
              INNER JOIN categories c ON c.id = ac.category_id
             GROUP BY c.name, c.id
             ORDER BY total_count DESC
+            LIMIT {$limit}
 SQL;
         return $this->databaseManager->rows($sql, [], PDO::FETCH_ASSOC);
     }

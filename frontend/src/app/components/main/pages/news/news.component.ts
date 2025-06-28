@@ -23,6 +23,7 @@ export class NewsComponent implements OnInit {
 
   categoryId?: number
   tagId?: number
+  searchText?: string
   #destroyRef = inject(DestroyRef)
 
   constructor(
@@ -41,6 +42,11 @@ export class NewsComponent implements OnInit {
       const tagId = params.get('tag_id')
       if (tagId !== null && tagId.trim() !== '' && !isNaN(parseInt(tagId))) {
         this.tagId = parseInt(tagId)
+      }
+
+      const searchText = params.get('search_text')
+      if (searchText !== null && searchText.trim() !== '') {
+        this.searchText = searchText
       }
 
       const endpointParams: ListPaginatedArticles = this.#buildListArticlesParams()
@@ -65,6 +71,10 @@ export class NewsComponent implements OnInit {
       endpointParams.tag_id = this.tagId
     }
 
+    if (this.searchText) {
+      endpointParams.search_text = this.searchText
+    }
+
     return endpointParams
   }
 
@@ -79,6 +89,23 @@ export class NewsComponent implements OnInit {
       this.articles = res.data.items
       this.totalCount = res.data.total_items
     })
+  }
+
+  noNewsFound() {
+    let message = "Nessuna notizia trovata per "
+    if (this.tagId !== undefined) {
+      message += 'il tag richiesto'
+    }
+
+    if (this.categoryId !== undefined) {
+      message += (this.tagId !== null ? ', ' : '') + 'la categoria richiesta'
+    }
+
+    if (this.searchText !== '') {
+      message += ((this.tagId !== undefined || this.categoryId !== undefined) ? ' e ' : '') + 'la parola chiave richiesta'
+    }
+
+    return message
   }
 
   onPageChange(event: PaginatorState): void {

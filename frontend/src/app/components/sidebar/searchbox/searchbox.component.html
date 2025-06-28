@@ -1,5 +1,22 @@
 <section id="search" class="alt sidebar-section">
-  <form method="post" action="#">
-    <input type="text" name="query" id="query" placeholder="Cerca nelle notizie" />
+  <form #queryForm="ngForm" (ngSubmit)="queryForm.valid && search()">
+    <p-iconfield [ngStyle]="{ 'cursor': (queryForm.valid) ? 'pointer' : 'auto' }">
+      <input
+        type="text"
+        name="query"
+        #queryModel="ngModel"
+        required
+        minlength="3"
+        id="query"
+        placeholder="Cerca nelle notizie"
+        [(ngModel)]="query"
+      />
+      <p-inputicon
+        (click)="search()"
+        styleClass="pi pi-search"
+
+      />
+    </p-iconfield>
+    <small [hidden]="queryModel.valid || !queryModel.touched">Scrivi almeno tre caratteri per abilitare la ricerca</small>
   </form>
 </section>

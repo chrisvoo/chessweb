@@ -1,9 +1,9 @@
-* [ ] Tag cloud and category cloud
-  * [ ] sidebar component
-  * [ ] integration with news page
+* [x] Tag cloud and category cloud
+  * [x] sidebar component
+  * [x] integration with news page
 * [ ] search news from the sidebar component
 * [ ] News component
-  * [ ] must check the query params to understand if a tag or a category has been used
+  * [x] must check the query params to understand if a tag or a category has been used
   * [ ] must check the query params to understand if the user is searching something
 * [ ] Explore and integrate https://chessboardjs.com/v2/examples#1000-empty-board and https://lichess.org/api#tag/Puzzles/operation/apiPuzzleDaily.
 The goal is to avoid using third party iframes which may be unresponsive.

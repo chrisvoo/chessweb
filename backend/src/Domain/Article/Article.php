@@ -54,11 +54,11 @@ class Article extends BaseDomainEntity implements JsonSerializable
 
     public static function getSortableFields(): array
     {
-       return [
+        return [
            'id',
            'title',
            'author_id',
            'created_at'
-       ];
+        ];
     }
 }

@@ -7,10 +7,11 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, throwError} from 'rxjs';
 import {Paginator, PaginatorState} from 'primeng/paginator';
 import {ActivatedRoute} from '@angular/router';
+import {ArticleViewerComponent} from '../../../article-viewer/article-viewer.component';
 
 @Component({
   selector: 'app-news',
-  imports: [PageComponent, Paginator],
+  imports: [PageComponent, Paginator, ArticleViewerComponent],
   templateUrl: './news.component.html',
   standalone: true,
   styleUrl: './news.component.css'

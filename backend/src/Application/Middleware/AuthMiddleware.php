@@ -26,18 +26,27 @@ class AuthMiddleware implements MiddlewareInterface
     {
         $authHeader = $request->getHeader('Authorization');
 
+
         if (
             empty($authHeader) ||
             !preg_match(
                 '/Bearer\s((.*)\.(.*)\.(.*))/',
                 trim($authHeader[0]),
                 $matches
-            ) ||
-            $this->jwtService->verifyToken($matches[1]) === false
+            )
         ) {
             throw new HttpForbiddenException($request, 'Not authorized');
         }
 
-        return $handler->handle($request);
+        $user = $this->jwtService->verifyToken($matches[1]);
+        if ($user === false) {
+            throw new HttpForbiddenException($request, 'Not authorized');
+        }
+
+        // Add the user object (or just the ID) as a request attribute.
+        // This creates a new request instance with the attribute.
+        $requestWithUser = $request->withAttribute('user', $user);
+        // Pass the NEW request object to the next handler in the chain.
+        return $handler->handle($requestWithUser);
     }
 }

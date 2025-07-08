@@ -4,6 +4,7 @@ import { NotFoundComponent } from './components/main/pages/not-found/not-found.c
 import { AdminComponent } from './admin/admin.component';
 import { environment } from '../environments/environment';
 import {isLoggedInGuard} from './guards/auth.guard';
+import {articleResolver} from './resolvers/article.resolver';
 
 const mainTitle = environment.TITLE
 
@@ -58,7 +59,7 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () => import('./admin/admin.component')
-          .then(m => AdminComponent)
+          .then(m => m.AdminComponent)
       },
       {
         path: 'articoli',
@@ -74,6 +75,13 @@ export const routes: Routes = [
             title: `${mainTitle} - Admin > Articoli - Crea nuovo articolo`,
             loadComponent: () => import('./admin/admin-articles/manage-article/manage-article.component')
               .then(m => m.ManageArticleComponent)
+          },
+          {
+            path: 'modifica',
+            title: `${mainTitle} - Admin > Articoli - Modifica articolo`,
+            loadComponent: () => import('./admin/admin-articles/manage-article/manage-article.component')
+              .then(m => m.ManageArticleComponent),
+            resolve: { article: articleResolver }
           }
         ]
       },

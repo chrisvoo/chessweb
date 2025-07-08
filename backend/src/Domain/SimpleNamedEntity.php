@@ -6,14 +6,13 @@ use JsonSerializable;
 
 class SimpleNamedEntity extends BaseDomainEntity implements JsonSerializable
 {
-
     public int $id;
 
     public string $name;
 
-    public string $created_at;
+    public string $created_at = '';
 
-    public ?string $updated_at;
+    public ?string $updated_at = null;
 
     /**
      * Specify data which should be serialized to JSON

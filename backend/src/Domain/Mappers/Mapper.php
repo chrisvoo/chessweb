@@ -11,9 +11,10 @@ class Mapper implements MapperInterface
      * @template T
      * @param array $data An array of key-value pairs whose keys are the names of the object's properties
      * @param class-string<T> $class
+     * @param array<string, array> $mapNestedProperties
      * @return T
      */
-    public function map(array $data, string $class)
+    public function map(array $data, string $class, array $mapNestedProperties = [])
     {
         if (!class_exists($class)) {
             throw new InvalidArgumentException("Class $class does not exist.");
@@ -23,7 +24,21 @@ class Mapper implements MapperInterface
         foreach ($data as $property => $value) {
             // Check if the property exists in the class
             if (property_exists($class, $property)) {
-                $instance->$property = $value;
+                if (isset($mapNestedProperties[$property])) {
+                    $nestedObjectProps = $mapNestedProperties[$property];
+                    if (!class_exists($nestedObjectProps['class'])) {
+                        throw new InvalidArgumentException(
+                            "Class " . $nestedObjectProps['class'] . " does not exist."
+                        );
+                    }
+                    $nestedInstances = [];
+                    foreach ($value as $classProps) {
+                        $nestedInstances[] = $this->map($classProps, $nestedObjectProps['class']);
+                    }
+                    $instance->$property = $nestedInstances;
+                } else {
+                    $instance->$property = $value;
+                }
             }
         }
 

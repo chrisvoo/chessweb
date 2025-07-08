@@ -1,0 +1,55 @@
+<div class="article-content">
+  @switch (imageCount) {
+    @case (1) {
+      <ng-container *ngFor="let part of contentParts">
+        <div *ngIf="part.type === 'text'" [innerHTML]="part.value"></div>
+        <div *ngIf="part.type === 'image' && part.imageAttributes"
+             style="display: flex; justify-content: center; margin: 1rem 0;">
+          <p-image
+            [src]="part.imageAttributes.src"
+            alt="Article Image"
+            [preview]="true"
+            [imageStyle]="{ 'width': '100%', 'height': 'auto', 'cursor': 'pointer' }">
+          </p-image>
+        </div>
+      </ng-container>
+    }
+
+    @default {
+      <ng-container>
+        <p-galleria
+          *ngIf="imageCount > 1"
+          [value]="imagesForGalleria"
+          [circular]="true"
+          [autoPlay]="true"
+          [transitionInterval]="4000"
+          [showItemNavigators]="false"
+          [showThumbnails]="true"
+          [containerStyle]="{ 'max-width': '800px', 'margin': '1rem auto' }"
+        >
+          <ng-template pTemplate="item" let-item>
+            <img
+              [src]="item.itemImageSrc"
+              [alt]="item.alt"
+              style="width: 100%; display: block;"
+            />
+          </ng-template>
+
+          <ng-template pTemplate="thumbnail" let-item>
+            <div class="p-galleria-thumbnail-content">
+              <img
+                [src]="item.thumbnailImageSrc"
+                [alt]="item.alt"
+                style="max-width: 100px; display: block;"
+              />
+            </div>
+          </ng-template>
+        </p-galleria>
+
+        <ng-container *ngFor="let part of contentParts">
+          <div *ngIf="part.type === 'text'" [innerHTML]="part.value"></div>
+        </ng-container>
+      </ng-container>
+    }
+  }
+</div>

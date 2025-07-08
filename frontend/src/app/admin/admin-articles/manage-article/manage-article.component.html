@@ -13,7 +13,13 @@
     </div>
     <div class="bottom-margin">
       <label for="title">Contenuto</label>
+      <small>
+        Se inserisci una sola immagine, verrà centrata e resa responsiva, altrimenti verrà
+        visualizzata una galleria di immagini. Le immagini vengono sempre messe in cima al post
+      </small>
       <p-editor
+        #editor
+        (onInit)="onEditorInit($event)"
         id="content"
         formControlName="content"
         [style]="{ height: '320px' }"
@@ -76,4 +82,61 @@
       (click)="saveArticle()" [disabled]="!articleForm.valid"
     />
   </div>
+
+  @if (error) {
+    <p-message
+      severity="error"
+      icon="fa-solid fa-circle-exclamation"
+      [text]=this.errorMessage>
+    </p-message>
+  }
+
+  <p-dialog
+    [formGroup]="uploadImageForm"
+    header="Carica immagine"
+    [modal]="true"
+    [(visible)]="isDialogVisible"
+    [style]="{ width: '25rem' }"
+  >
+    <div class="bottom-2">
+      <input
+        #fu
+        type="file"
+        (change)="onUpload($event)"
+      >
+<!--      <label for="width">Larghezza</label>-->
+<!--      <input-->
+<!--        formControlName="width"-->
+<!--        pInputText-->
+<!--        id="width"-->
+<!--        class="flex-auto"-->
+<!--      />-->
+
+<!--      <label for="height">Altezza</label>-->
+<!--      <input-->
+<!--        formControlName="height"-->
+<!--        pInputText-->
+<!--        id="height"-->
+<!--        class="flex-auto"-->
+<!--      />-->
+    </div>
+    <div class="row aln-right">
+      <p-button
+        size="small"
+        label="Annulla"
+        severity="secondary"
+        (click)="isDialogVisible = false"
+        raised
+      />
+      <p-button
+        size="small"
+        label="Save"
+        severity="primary"
+        (onClick)="insertImage()"
+        [disabled]="!uploadImageForm.valid"
+        [loading]="loadingResponse"
+        raised
+      />
+    </div>
+  </p-dialog>
 </page>

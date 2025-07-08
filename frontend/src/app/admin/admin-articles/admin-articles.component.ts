@@ -19,7 +19,7 @@ import {ArticlesService} from '../../services/articles/articles.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, throwError} from 'rxjs';
 import {ListPaginatedItemsResponse, ListPaginatedParams} from '../../../types/requests';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {NgStyle} from '@angular/common';
 
 @Component({
@@ -53,7 +53,8 @@ export class AdminArticlesComponent implements OnInit {
     private articlesService: ArticlesService,
     private formBuilder: FormBuilder,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private router: Router
   ) {
     this.articleForm = this.formBuilder.group({
       title: ['', Validators.compose([
@@ -70,6 +71,10 @@ export class AdminArticlesComponent implements OnInit {
   #resetResponseStatusFields(): void {
     this.error = false;
     this.errorMessage = ''
+  }
+
+  hasServerError(): boolean {
+    return this.error && this.errorMessage != ''
   }
 
   ngOnInit(): void {
@@ -110,11 +115,20 @@ export class AdminArticlesComponent implements OnInit {
   }
 
   onModifyArticle(article: Article) {
-
+    this.router.navigate(
+      ['/admin/articoli/modifica'],
+      { queryParams: { id: article.id } }
+    )
   }
 
   onDeleteArticle(article: Article) {
-
+    this.targetArticle = article
+    this.confirmationService.confirm({
+      header: 'Cancellazione articolo',
+      message: `Vuoi cancellare <i>${this.targetArticle.title}?</i>`,
+      accept: this.deleteArticle,
+      icon: 'pi pi-question-circle',
+    })
   }
 
   closeConfirmationService(): void {
@@ -122,8 +136,26 @@ export class AdminArticlesComponent implements OnInit {
   }
 
   deleteArticle(): void {
+    this.#resetResponseStatusFields();
+    this.loadingResponse = true;
 
+    this.articlesService.deleteArticle(this.targetArticle!.id!)
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        catchError(err => {
+          this.error = true
+          this.errorMessage = 'È avvenuto un errore, contattare l\'amministratore'
+          this.loadingResponse = false;
+          return throwError(() => err)
+        })
+      ).subscribe(() => {
+      this.loadArticles({})
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Articolo cancellato con successo'
+      })
+      this.loadingResponse = false;
+      this.closeConfirmationService()
+    })
   }
-
-
 }

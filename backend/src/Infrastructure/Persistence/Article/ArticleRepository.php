@@ -5,8 +5,17 @@ namespace App\Infrastructure\Persistence\Article;
 use App\Application\Actions\Article\Filters\ArticleFilters;
 use App\Domain\Article\Article;
 use App\Domain\Article\ArticleNotFoundException;
+use App\Domain\ArticlesCategories\ArticlesCategories;
+use App\Domain\ArticlesTags\ArticlesTags;
+use App\Domain\Category\Category;
+use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Domain\Operations\DatabaseOperation;
+use App\Domain\Tag\Tag;
+use App\Infrastructure\Persistence\ArticlesCategories\ArticlesCategoriesRepositoryInterface;
+use App\Infrastructure\Persistence\ArticlesTags\ArticlesTagsRepositoryInterface;
+use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
+use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use DateTime;
 use PDO;
 use Psr\Log\LoggerInterface;
@@ -16,7 +25,11 @@ class ArticleRepository implements ArticleRepositoryInterface
 {
     public function __construct(
         private readonly DatabaseManagerInterface $databaseManager,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
+        private readonly ArticlesTagsRepositoryInterface $articlesTagsRepository,
+        private readonly ArticlesCategoriesRepositoryInterface $articlesCategoriesRepository,
+        private readonly TagRepositoryInterface $tagRepository,
+        private readonly CategoryRepositoryInterface $categoryRepository,
     ) {
         $this->databaseManager->connect();
     }
@@ -161,44 +174,134 @@ SQL,
     }
 
     /**
+     * @param Tag[] $tags
+     * @throws DomainRecordNotFoundException
+     */
+    private function checkTags(array $tags): void
+    {
+        foreach ($tags as $tag) {
+            if ($this->tagRepository->findById($tag->id) === false) {
+                throw new DomainRecordNotFoundException(
+                    'Tag not found',
+                    DatabaseOperation::ENTITY_NOT_FOUND
+                );
+            }
+        }
+    }
+
+    /**
+     * @param Category[] $categories
+     * @throws DomainRecordNotFoundException
+     */
+    private function checkCategories(array $categories): void
+    {
+        foreach ($categories as $category) {
+            if ($this->categoryRepository->findById($category->id) === false) {
+                throw new DomainRecordNotFoundException(
+                    'Category not found',
+                    DatabaseOperation::ENTITY_NOT_FOUND
+                );
+            }
+        }
+    }
+
+    /**
      * @inheritDoc
      * @throws ArticleNotFoundException
      */
     public function save(Article $article): DatabaseOperation
     {
-        if (isset($article->id)) {
-            $userExist = $this->findById($article->id);
+        $this->databaseManager->startTransaction();
 
-            if (!$userExist) {
-                throw new ArticleNotFoundException();
+        try {
+            if (isset($article->id)) {
+                $userExist = $this->findById($article->id);
+
+                if (!$userExist) {
+                    throw new ArticleNotFoundException();
+                }
+
+                $affectedRows = $this->databaseManager->update(
+                    $article::TABLE_NAME,
+                    [
+                        'title' => $article->title,
+                        'content' => $article->content,
+                        'author_id' => $article->author_id,
+                        'updated_at' => (new DateTime())->format('Y-m-d H:i:s'),
+                    ],
+                    ['id' => $article->id]
+                );
+
+                if (!empty($article->tags)) {
+                    $this->checkTags($article->tags);
+                    $rows = array_map(fn(Tag $tag) => [$article->id, $tag->id], $article->tags);
+
+                    $this->articlesTagsRepository->deleteTagsForArticle($article->id);
+                    $this->articlesTagsRepository->saveTagsForArticle($article->id, ['article_id', 'tag_id'], $rows);
+                }
+
+                if (!empty($article->categories)) {
+                    $this->checkCategories($article->categories);
+                    $rows = array_map(fn(Category $cat) => [$article->id, $cat->id], $article->categories);
+
+                    $this->articlesCategoriesRepository->deleteCategoriesForArticle($article->id);
+                    $this->articlesCategoriesRepository->saveCategoriesForArticle(
+                        $article->id,
+                        ['article_id', 'category_id'],
+                        $rows
+                    );
+                }
+
+                $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated($article->id);
+                $dbOp->affectedRows = $affectedRows;
+
+                $this->databaseManager->commit();
+
+                return $dbOp;
+            } else {
+                $lastInsertedId = $this->databaseManager->insert(
+                    Article::TABLE_NAME,
+                    [
+                        'title' => $article->title,
+                        'content' => $article->content,
+                        'author_id' => $article->author_id,
+                        'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
+                    ]
+                );
+
+                if (!empty($article->tags)) {
+                    $this->checkTags($article->tags);
+                    $rows = array_map(fn(Tag $tag) => [(int)$lastInsertedId, $tag->id], $article->tags);
+
+                    $this->logger->debug('batch insert tag: ' . json_encode($rows));
+                    $this->articlesTagsRepository->saveTagsForArticle(
+                        (int)$lastInsertedId,
+                        ['article_id', 'tag_id'],
+                        $rows
+                    );
+                }
+
+                if (!empty($article->categories)) {
+                    $this->checkCategories($article->categories);
+                    $rows = array_map(fn(Category $cat) => [$lastInsertedId, $cat->id], $article->categories);
+
+                    $this->articlesCategoriesRepository->saveCategoriesForArticle(
+                        $lastInsertedId,
+                        ['article_id', 'category_id'],
+                        $rows
+                    );
+                }
+
+                $this->databaseManager->commit();
+
+                return DatabaseOperation::newSingleEntitySuccessfullyCreated((int)$lastInsertedId);
             }
-
-            $affectedRows = $this->databaseManager->update(
-                $article::TABLE_NAME,
-                [
-                    'title' => $article->title,
-                    'content' => $article->content,
-                    'author_id' => $article->author_id,
-                    'updated_at' => (new DateTime())->format('Y-m-d H:i:s'),
-                ],
-                ['id' => $article->id]
-            );
-
-            $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated($article->id);
-            $dbOp->affectedRows = $affectedRows;
-            return $dbOp;
-        } else {
-            $lastInsertedId = $this->databaseManager->insert(
-                Article::TABLE_NAME,
-                [
-                    'title' => $article->title,
-                    'content' => $article->content,
-                    'author_id' => $article->author_id,
-                    'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
-                ]
-            );
-
-            return DatabaseOperation::newSingleEntitySuccessfullyCreated((int)$lastInsertedId);
+        } catch (DomainRecordNotFoundException $d) {
+            throw $d;
+        } catch (\Exception $e) {
+            $this->databaseManager->rollback();
+            $this->logger->error($e->getMessage());
+            return DatabaseOperation::failed('', DatabaseOperation::SERVER_ERROR);
         }
     }
 
@@ -211,5 +314,100 @@ SQL,
         $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted($articleId);
         $dbOp->affectedRows = $affectedRows;
         return $dbOp;
+    }
+
+    public function assignTagsToArticle(Article $article, array $tags): DatabaseOperation
+    {
+        if (!empty($article->tags)) {
+            $this->articlesTagsRepository->deleteTagsForArticle($article->id);
+
+            $tagIds = array_map(fn (Tag $tag) => $tag->id, $article->tags);
+            $this->articlesTagsRepository->saveTagsForArticle($article->id, $tagIds);
+            return DatabaseOperation::newSingleEntitySuccessfullyCreated($article->id);
+        }
+
+        return DatabaseOperation::newEntityOperation(
+            'No tags to assign',
+            DatabaseOperation::NOTHING_TO_DO
+        );
+    }
+
+    public function findByIdWithExtraDetails(int $id, bool $withExtraDetails = true): Article|false
+    {
+        if ($withExtraDetails === false) {
+            return $this->findById($id);
+        }
+
+        $articlesTable = Article::TABLE_NAME;
+        $articlesTagsTable = ArticlesTags::TABLE_NAME;
+        $articlesCategoriesTable = ArticlesCategories::TABLE_NAME;
+
+        $sql = <<<SQL
+            SELECT
+                a.id,
+                a.title,
+                a.content,
+                a.author_id,
+                a.created_at,
+                a.updated_at,
+                (
+                    SELECT
+                        COALESCE(
+                            JSON_ARRAYAGG(
+                               JSON_OBJECT('id', t.id, 'name', t.name)
+                            ),
+                            JSON_ARRAY()
+                        )
+                    FROM article_tags AS at
+                    INNER JOIN tags AS t ON at.tag_id = t.id
+                    WHERE at.article_id = a.id
+                ) AS tags,
+                (
+                    SELECT
+                        COALESCE(
+                            JSON_ARRAYAGG(
+                                JSON_OBJECT('id', c.id, 'name', c.name)
+                            ),
+                            JSON_ARRAY()
+                        )
+                    FROM article_categories AS ac
+                    INNER JOIN categories AS c ON ac.category_id = c.id
+                    WHERE ac.article_id = a.id
+                ) AS categories
+            FROM articles AS a
+            WHERE a.id = :id;
+SQL;
+
+        $data = $this->databaseManager->rows($sql, ['id' => $id], PDO::FETCH_ASSOC);
+
+        if (!empty($data)) {
+            $article = new Article();
+            $article->id = $data[0]['id'];
+            $article->title = $data[0]['title'];
+            $article->content = $data[0]['content'];
+            $article->author_id = $data[0]['author_id'];
+            $article->created_at = $data[0]['created_at'];
+            $article->updated_at = $data[0]['updated_at'];
+
+            $tags = json_decode($data[0]['tags'], true);
+            foreach ($tags as $tag) {
+                $theTag = new Tag();
+                $theTag->id = $tag['id'];
+                $theTag->name = $tag['name'];
+                $article->tags[] = $theTag;
+            }
+
+            $categories = json_decode($data[0]['categories'], true);
+            foreach ($categories as $category) {
+                $theCat = new Category();
+                $theCat->id = $category['id'];
+                $theCat->name = $category['name'];
+                $article->categories[] = $theCat;
+            }
+
+            return $article;
+        }
+
+        return false;
     }
 }

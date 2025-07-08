@@ -18,8 +18,8 @@
   background-color: var(--primary-color);
 }
 
-.ql-snow .ql-tooltip {
-  z-index: 1000 !important;
+:host ::ng-deep div.ql-snow > div.ql-tooltip.ql-editing {
+  left: 0 !important;
 }
 
 :host ::ng-deep input[role=combobox]:focus {

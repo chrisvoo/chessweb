@@ -9,8 +9,11 @@ class DatabaseOperation implements JsonSerializable
     public const ENTITY_CREATED = 1;
     public const ENTITY_UPDATED = 2;
     public const ENTITY_DELETED = 3;
+    public const NOTHING_TO_DO = 4;
     // as convention, all error codes must be greater than 100
     public const ENTITY_DUPLICATED = 100;
+    public const SERVER_ERROR = 101;
+    public const ENTITY_NOT_FOUND = 102;
 
     public ?int $entityId;
     public bool $success;
@@ -47,7 +50,7 @@ class DatabaseOperation implements JsonSerializable
         return $this->success;
     }
 
-    private static function newEntityOperation(
+    public static function newEntityOperation(
         string $message,
         int $code,
         ?int $entityId = null,

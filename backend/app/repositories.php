@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 use App\Infrastructure\Persistence\Article\ArticleRepository;
 use App\Infrastructure\Persistence\Article\ArticleRepositoryInterface;
+use App\Infrastructure\Persistence\ArticlesCategories\ArticlesCategoriesRepository;
+use App\Infrastructure\Persistence\ArticlesCategories\ArticlesCategoriesRepositoryInterface;
+use App\Infrastructure\Persistence\ArticlesTags\ArticlesTagsRepository;
+use App\Infrastructure\Persistence\ArticlesTags\ArticlesTagsRepositoryInterface;
 use App\Infrastructure\Persistence\Category\CategoryRepository;
 use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
 use App\Infrastructure\Persistence\Tag\TagRepository;
@@ -20,5 +24,7 @@ return function (ContainerBuilder $containerBuilder) {
         TagRepositoryInterface::class => autowire(TagRepository::class),
         CategoryRepositoryInterface::class => autowire(CategoryRepository::class),
         ArticleRepositoryInterface::class => autowire(ArticleRepository::class),
+        ArticlesTagsRepositoryInterface::class => autowire(ArticlesTagsRepository::class),
+        ArticlesCategoriesRepositoryInterface::class => autowire(ArticlesCategoriesRepository::class),
     ]);
 };

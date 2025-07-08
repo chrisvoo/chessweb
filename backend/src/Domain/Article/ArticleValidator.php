@@ -3,6 +3,7 @@
 namespace App\Domain\Article;
 
 use App\Domain\DomainException\InvalidRequestException;
+use App\Domain\Validators\ListSimpleNamedValidator;
 use Respect\Validation\Validator as v;
 use App\Domain\Validators\ValidationScope;
 use App\Domain\Validators\ValidatorInterface;
@@ -11,6 +12,12 @@ use Slim\Psr7\Request;
 
 class ArticleValidator implements ValidatorInterface
 {
+
+    public function __construct(
+        private ListSimpleNamedValidator $validator
+    )
+    {
+    }
 
     /**
      * Validates a request
@@ -38,6 +45,14 @@ class ArticleValidator implements ValidatorInterface
             }
 
             $chainedValidator->assert($data);
+
+            if (!empty($data['tags'])) {
+                $this->validator->validate($request, $data['tags'], ValidationScope::TAGS);
+            }
+
+            if (!empty($data['categories'])) {
+                $this->validator->validate($request, $data['categories'], ValidationScope::CATEGORIES);
+            }
         } catch (NestedValidationException $e) {
             throw new InvalidRequestException(
                 $request,

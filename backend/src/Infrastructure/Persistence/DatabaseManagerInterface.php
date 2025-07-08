@@ -22,4 +22,10 @@ interface DatabaseManagerInterface
     public function deleteAll(string $table): int;
     public function deleteById(string $table, int $id): int;
     public function deleteByIds(string $table, string $column, string $ids): int;
+    public function batchInsert(string $table, array $fields, array $data): false|PDOStatement;
+
+
+    public function startTransaction(): bool;
+    public function commit(): bool;
+    public function rollback(): bool;
 }

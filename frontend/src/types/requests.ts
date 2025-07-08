@@ -1,4 +1,4 @@
-import { User } from './models';
+import {Article, ArticleWithTagsAndCategories, User} from './models';
 
 export interface LoginResponse {
   statusCode: number
@@ -71,6 +71,11 @@ export interface ManagedEntityResponse {
     affected_rows: number
     entity_id: number
   }
+}
+
+export interface ViewArticleResponse {
+  statusCode: number
+  data: ArticleWithTagsAndCategories
 }
 
 export interface SortParams {

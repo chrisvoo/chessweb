@@ -17,9 +17,9 @@ use Slim\Exception\HttpBadRequestException;
 class ListArticlesAction extends Action
 {
     public function __construct(
-        private ArticleRepositoryInterface $articleRepository,
+        private readonly ArticleRepositoryInterface $articleRepository,
         protected LoggerInterface $logger,
-        private ListArticlesFiltersValidator $validator
+        private readonly ListArticlesFiltersValidator $validator
     ) {
         parent::__construct($logger);
     }

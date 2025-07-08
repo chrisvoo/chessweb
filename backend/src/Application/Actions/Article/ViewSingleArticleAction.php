@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Actions\Article;
 
 use App\Application\Actions\Action;
+use App\Application\Actions\Article\Validators\ExtraInfoValidator;
 use App\Domain\Article\ArticleNotFoundException;
 use App\Infrastructure\Persistence\Article\ArticleRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -14,6 +15,7 @@ class ViewSingleArticleAction extends Action
 {
     public function __construct(
         private readonly ArticleRepositoryInterface $articleRepository,
+        private readonly ExtraInfoValidator $validator,
         protected LoggerInterface $logger
     ) {
         parent::__construct($logger);
@@ -24,8 +26,15 @@ class ViewSingleArticleAction extends Action
      */
     protected function action(): Response
     {
+        $queryParams = $this->request->getQueryParams();
+        $this->validator->validate($this->request, $queryParams);
+
         $articleId = (int) $this->resolveArg('id');
-        $article = $this->articleRepository->findById($articleId);
+
+        $article = $this->articleRepository->findByIdWithExtraDetails(
+            $articleId,
+            isset($queryParams['extra_info']) && in_array($queryParams['extra_info'], ['true', '1'])
+        );
 
         if (!$article) {
             throw new ArticleNotFoundException();

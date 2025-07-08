@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Persistence;
 
+use InvalidArgumentException;
 use PDO;
 use PDOStatement;
 use Psr\Log\LoggerInterface;
@@ -168,6 +169,44 @@ class DatabaseManager implements DatabaseManagerInterface
         return $this->lastInsertId();
     }
 
+    private function placeholders($count = 0): string
+    {
+        $result = [];
+        if ($count > 0) {
+            for ($x = 0; $x < $count; $x++) {
+                $result[] = "?";
+            }
+        }
+
+        return implode(",", $result);
+    }
+
+    public function batchInsert(string $table, array $fields, array $data): false|PDOStatement
+    {
+        if (empty($fields)) {
+            throw new InvalidArgumentException("You must pass the table's fields for the batch insert");
+        }
+
+        if (empty($data)) {
+            throw new InvalidArgumentException("You must pass the data for the batch insert");
+        }
+
+        $insert_values = [];
+        $question_marks = [];
+
+        foreach ($data as $d) {
+            $question_marks[] = '('  . $this->placeholders(sizeof($d)) . ')';
+            array_push($insert_values, ...$d);
+        }
+
+        $sql = "INSERT INTO $table (" .
+                    implode(",", $fields) .
+               ") " .
+               "VALUES " . implode(',', $question_marks);
+        $this->logger->debug('batchInsert: ' . $sql . ' with inserted values: ' . implode(', ', $insert_values));
+        return $this->run($sql, $insert_values);
+    }
+
     /**
      * update record
      *
@@ -277,5 +316,20 @@ class DatabaseManager implements DatabaseManagerInterface
         $stmt = $this->run("DELETE FROM $table WHERE $column IN ($ids)");
 
         return $stmt->rowCount();
+    }
+
+    public function startTransaction(): bool
+    {
+        return $this->pdo->beginTransaction();
+    }
+
+    public function commit(): bool
+    {
+        return $this->pdo->commit();
+    }
+
+    public function rollback(): bool
+    {
+        return $this->pdo->rollBack();
     }
 }

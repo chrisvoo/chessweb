@@ -2,7 +2,11 @@
 
 namespace App\Domain\Validators;
 
-enum ValidationScope {
+enum ValidationScope
+{
     case CREATE;
     case UPDATE;
+
+    case TAGS;
+    case CATEGORIES;
 }

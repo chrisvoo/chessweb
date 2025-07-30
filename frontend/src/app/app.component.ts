@@ -178,77 +178,76 @@ export class AppComponent implements OnInit {
       // Note: If you do anything to change the height of the sidebar's content, be sure to
       // trigger 'resize.sidebar-lock' on $window so stuff doesn't get out of sync.
 
-      $window.on('load.sidebar-lock', function() {
-        // console.log('load.sidebar-lock. $window.scrollTop() = ' + $window.scrollTop())
-        let sh: any, wh: any, st;
-
-        // Reset scroll position to 0 if it's 1.
-        if ($window.scrollTop() == 1) {
-          $window.scrollTop(0);
-        }
-
-        $window
-          .on('scroll.sidebar-lock', function() {
-            // console.log('scroll.sidebar-lock. ' + breakpoints.active('<=large'))
-            let x, y;
-
-            // <=large? Bail.
-            if (breakpoints.active('<=large')) {
-              // console.log('breakpoints.active(\'<=large\')')
-              $sidebar_inner
-                .data('locked', 0)
-                .css('position', '')
-                .css('top', '');
-
-              return;
-
-            }
-
-            // Calculate positions.
-            x = Math.max(sh - wh, 0);
-            // @ts-ignore
-            y = Math.max(0, $window.scrollTop() - x);
-
-            // Lock/unlock.
-            if ($sidebar_inner.data('locked') == 1) {
-              // console.log('locked == 1')
-              if (y <= 0) {
-                // console.log('y <= 0')
-                $sidebar_inner
-                  .data('locked', 0)
-                  .css('position', '')
-                  .css('top', '');
-              } else {
-                // console.log('y > 0')
-                $sidebar_inner
-                  .css('top', -1 * x);
-              }
-
-            }
-            else {
-              // console.log('locked != 1')
-              if (y > 0) {
-                // console.log('y > 0')
-                $sidebar_inner
-                  .data('locked', 1)
-                  .css('position', 'fixed')
-                  .css('top', -1 * x);
-              }
-            }
-          })
-          .on('resize.sidebar-lock', function() {
-            // console.log('resize.sidebar-lock')
-            // Calculate heights.
-            wh = $window.height();
-            // @ts-ignore
-            sh = $sidebar_inner.outerHeight() + 30;
-
-            // Trigger scroll.
-            $window.trigger('scroll.sidebar-lock');
-          })
-          .trigger('resize.sidebar-lock');
-
-      });
+      // $window.on('load.sidebar-lock', function() {
+      //   // console.log('load.sidebar-lock. $window.scrollTop() = ' + $window.scrollTop())
+      //   let sh: any, wh: any, st;
+      //
+      //   // Reset scroll position to 0 if it's 1.
+      //   if ($window.scrollTop() == 1) {
+      //     $window.scrollTop(0);
+      //   }
+      //
+      //   $window
+      //     .on('scroll.sidebar-lock', function() {
+      //       // console.log('scroll.sidebar-lock. ' + breakpoints.active('<=large'))
+      //       let x, y;
+      //
+      //       // <=large? Bail.
+      //       if (breakpoints.active('<=large')) {
+      //         // console.log('breakpoints.active(\'<=large\')')
+      //         $sidebar_inner
+      //           .data('locked', 0)
+      //           .css('position', '')
+      //           .css('top', '');
+      //
+      //         return;
+      //
+      //       }
+      //
+      //       // Calculate positions.
+      //       x = Math.max(sh - wh, 0);
+      //       // @ts-ignore
+      //       y = Math.max(0, $window.scrollTop() - x);
+      //
+      //       // Lock/unlock.
+      //       if ($sidebar_inner.data('locked') == 1) {
+      //         // console.log('locked == 1')
+      //         if (y <= 0) {
+      //           // console.log('y <= 0')
+      //           $sidebar_inner
+      //             .data('locked', 0)
+      //             .css('position', '')
+      //             .css('top', '');
+      //         } else {
+      //           // console.log('y > 0')
+      //           $sidebar_inner
+      //             .css('top', -1 * x);
+      //         }
+      //
+      //       }
+      //       else {
+      //         // console.log('locked != 1')
+      //         if (y > 0) {
+      //           // console.log('y > 0')
+      //           $sidebar_inner
+      //             .data('locked', 1)
+      //             .css('position', 'fixed')
+      //             .css('top', -1 * x);
+      //         }
+      //       }
+      //     })
+      //     .on('resize.sidebar-lock', function() {
+      //       const footerHeight = $('#footer').outerHeight() || 0;
+      //       wh = $window.height();
+      //       // @ts-ignore
+      //       sh = $sidebar_inner.outerHeight() + footerHeight;
+      //
+      //       // Trigger scroll.
+      //       $window.trigger('scroll.sidebar-lock');
+      //     })
+      //     .trigger('resize.sidebar-lock');
+      //
+      // });
 
       // Menu.
       let $menu = $('#menu'), $menu_openers = $menu.children('ul').find('.opener');

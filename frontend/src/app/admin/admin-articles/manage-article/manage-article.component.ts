@@ -1,8 +1,8 @@
-import {AfterViewInit, Component, DestroyRef, inject, OnInit, ViewChild} from '@angular/core';
+import {Component, DestroyRef, inject, ViewChild} from '@angular/core';
 import {PageComponent} from '../../../components/page/page.component';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {noWhiteSpaceOnly} from '../../../validators/no-whitespace-only';
-import {Editor, EditorModule} from 'primeng/editor';
+import {Editor} from 'primeng/editor';
 import {InputText} from 'primeng/inputtext';
 import {Article, NamedEntity, ArticleWithTagsAndCategories} from '../../../../types/models';
 import {CategoriesService} from '../../../services/categories/categories.service';
@@ -29,10 +29,7 @@ import {CustomImageBlot} from './custom-image-blot';
     Editor,
     InputText,
     AutoComplete,
-    ButtonDirective,
-    ButtonLabel,
     Button,
-    NgStyle,
     Dialog,
     Message,
     FileUploadModule
@@ -307,7 +304,7 @@ export class ManageArticleComponent {
       tags,
       categories,
       title,
-      content,
+      content
     }
     console.log("Submit:", { tags, categories, title, content });
 

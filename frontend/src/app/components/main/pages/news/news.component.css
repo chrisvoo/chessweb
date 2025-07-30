@@ -6,3 +6,12 @@ small {
   display: block;
   margin-bottom: 10px
 }
+
+.tag {
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.tag:hover {
+  text-decoration: underline;
+}

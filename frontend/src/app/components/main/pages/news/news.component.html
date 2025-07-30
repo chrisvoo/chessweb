@@ -6,10 +6,25 @@
       [content]="article.content"
     >
     </chess-article-viewer>
+    @for (tag of article.tags; track tag.id) {
+      <p-tag
+        [value]="'#' + tag.name" class="tag"
+        (click)="onTagClick(tag, 'tag_id')"
+      >
+      </p-tag>
+    }
+
+    @for (category of article.categories; track category.id) {
+      <p-tag
+        [value]="'#' + category.name" class="tag"
+        (click)="onTagClick(category, 'category_id')"
+      >
+      </p-tag>
+    }
     <hr class="major" />
   }
   @if (articles.length === 0) {
-    <p>{{ noNewsFound() }}</p>
+    <p>Nessuna notizia trovata per i parametri di ricerca specificati</p>
   }
   <p-paginator
     (onPageChange)="onPageChange($event)"

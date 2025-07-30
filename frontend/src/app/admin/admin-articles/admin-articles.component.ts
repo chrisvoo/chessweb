@@ -13,7 +13,7 @@ import {ConfirmationService, MessageService, PrimeTemplate} from 'primeng/api';
 import {TableLazyLoadEvent, TableModule, TablePageEvent} from 'primeng/table';
 import {Toast} from 'primeng/toast';
 import {Tooltip} from 'primeng/tooltip';
-import {Article} from '../../../types/models';
+import {Article, ArticleWithTagsAndCategories} from '../../../types/models';
 import {noWhiteSpaceOnly} from '../../validators/no-whitespace-only';
 import {ArticlesService} from '../../services/articles/articles.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -25,8 +25,8 @@ import {NgStyle} from '@angular/common';
 @Component({
   selector: 'app-admin-articles',
   imports: [
-    PageComponent, Button, ConfirmDialog, Dialog, Divider, FormsModule, IconField,
-    InputIcon, InputText, Message, PrimeTemplate, ReactiveFormsModule, TableModule,
+    PageComponent, Button, ConfirmDialog, Divider, FormsModule, IconField,
+    InputIcon, InputText, PrimeTemplate, ReactiveFormsModule, TableModule,
     Toast, Tooltip, RouterLink, NgStyle
   ],
   providers: [MessageService, ConfirmationService],
@@ -37,7 +37,7 @@ import {NgStyle} from '@angular/common';
 export class AdminArticlesComponent implements OnInit {
   sortOrder: number = -1
   sortField: string = 'created_at'
-  articles: Article[] = []
+  articles: ArticleWithTagsAndCategories[] = []
   errorMessage: string = ''
   error: boolean = false;
   targetArticle?: Article
@@ -108,7 +108,7 @@ export class AdminArticlesComponent implements OnInit {
         this.errorMessage = 'È avvenuto un errore, contattare l\'amministratore'
         return throwError(() => err)
       })
-    ).subscribe((res: ListPaginatedItemsResponse<Article>) => {
+    ).subscribe((res: ListPaginatedItemsResponse<ArticleWithTagsAndCategories>) => {
       this.articles = res.data.items
       this.totalCount = res.data.total_items
     })

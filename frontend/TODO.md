@@ -1,8 +1,8 @@
 * [x] Tag cloud and category cloud
   * [x] sidebar component
   * [x] integration with news page
-* [ ] search news from the sidebar component
-* [ ] News component
+* [x] search news from the sidebar component
+* [x] News component
   * [x] must check the query params to understand if a tag or a category has been used
   * [ ] must check the query params to understand if the user is searching something
 * [ ] Explore and integrate https://chessboardjs.com/v2/examples#1000-empty-board and https://lichess.org/api#tag/Puzzles/operation/apiPuzzleDaily.

@@ -23,7 +23,7 @@ export class SearchboxComponent {
   query = ''
 
   search() {
-    if (this.query.trim().length > 3) {
+    if (this.query.trim().length >= 3) {
       void this.router.navigate(
         ['/notizie'],
         {

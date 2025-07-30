@@ -43,6 +43,7 @@ class ListArticlesAction extends Action
         $filters->createdTo = $queryParams['created_to'] ?? null;
         $filters->skipContent = !isset($queryParams['skip_content']) ||
                                 $queryParams['skip_content'] === 'true';
+        $filters->extraInfo = isset($queryParams['extra_info']) && $queryParams['extra_info'] === 'true';
 
         $page = $queryParams['page'] ?? 1;
         $page_size = $queryParams['page_size'] ?? 10;

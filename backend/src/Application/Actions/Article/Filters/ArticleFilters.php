@@ -16,4 +16,5 @@ class ArticleFilters
     public ?string $createdFrom;
     public ?string $createdTo;
     public ?bool $skipContent;
+    public ?bool $extraInfo;
 }

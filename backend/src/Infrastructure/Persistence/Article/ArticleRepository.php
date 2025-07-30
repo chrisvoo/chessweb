@@ -77,6 +77,35 @@ SQL,
             $fields[] = "content";
         }
 
+        if ($filters->extraInfo) {
+            $fields[] = <<<SQL
+                (
+                    SELECT
+                        COALESCE(
+                            JSON_ARRAYAGG(
+                                JSON_OBJECT('id', t.id, 'name', t.name)
+                            ),
+                            JSON_ARRAY()
+                        )
+                    FROM article_tags AS at
+                    INNER JOIN tags AS t ON at.tag_id = t.id
+                    WHERE at.article_id = a.id
+                ) AS tags,
+                (
+                    SELECT
+                        COALESCE(
+                            JSON_ARRAYAGG(
+                                JSON_OBJECT('id', c.id, 'name', c.name)
+                            ),
+                            JSON_ARRAY()
+                        )
+                    FROM article_categories AS ac
+                    INNER JOIN categories AS c ON ac.category_id = c.id
+                    WHERE ac.article_id = a.id
+                ) AS categories
+SQL;
+        }
+
         $sql = "SELECT " . implode(", ", $fields) . " FROM $able a ";
 
         if (!empty($filters->tagId)) {
@@ -92,9 +121,12 @@ SQL,
         }
 
         /* PDO does not allow the same named placeholder to appear more than once in the SQL unless you're using
-         * PDO::ATTR_EMULATE_PREPARES = true (which is off by default in many environments for security */
+         * PDO::ATTR_EMULATE_PREPARES = true (which is off by default in many environments for security.
+         * We also need to strip tags before searching for keywords in content, since the tags and blob data may match
+         * the user's request */
         if (!empty($filters->searchText)) {
-            $wheres[] = "(a.title LIKE :search1 OR a.content LIKE :search2) ";
+            $wheres[] = "(LOWER(a.title) LIKE :search1 OR " .
+                        "REPLACE(REGEXP_REPLACE(LOWER(a.content), '<[^>]*>+', ''), '&nbsp;', ' ') LIKE :search2) ";
             $params['search1'] = "%{$filters->searchText}%";
             $params['search2'] = "%{$filters->searchText}%";
         }
@@ -116,12 +148,47 @@ SQL,
         $sql .= "ORDER BY $orderBy $orderDirection LIMIT $limit OFFSET $offset";
         $this->logger->debug('list SQL', ['sql' => $sql, 'params' => $params]);
 
-        return $this->databaseManager->rows(
-            $sql,
-            $params,
-            PDO::FETCH_CLASS,
-            Article::class
-        );
+        if (!$filters->extraInfo) {
+            return $this->databaseManager->rows(
+                $sql,
+                $params,
+                PDO::FETCH_CLASS,
+                Article::class
+            );
+        }
+
+        $articles = $this->databaseManager->rows($sql, $params, PDO::FETCH_ASSOC);
+        $items = [];
+
+        foreach ($articles as $articleItem) {
+            $article = new Article();
+            $article->id = $articleItem['id'];
+            $article->title = $articleItem['title'];
+            $article->content = $articleItem['content'] ?? '';
+            $article->author_id = $articleItem['author_id'];
+            $article->created_at = $articleItem['created_at'];
+            $article->updated_at = $articleItem['updated_at'];
+
+            $tags = json_decode($articleItem['tags'], true);
+            foreach ($tags as $tag) {
+                $theTag = new Tag();
+                $theTag->id = $tag['id'];
+                $theTag->name = $tag['name'];
+                $article->tags[] = $theTag;
+            }
+
+            $categories = json_decode($articleItem['categories'], true);
+            foreach ($categories as $category) {
+                $theCat = new Category();
+                $theCat->id = $category['id'];
+                $theCat->name = $category['name'];
+                $article->categories[] = $theCat;
+            }
+
+            $items[] = $article;
+        }
+
+        return $items;
     }
 
     public function count(ArticleFilters $filters): int
@@ -358,7 +425,7 @@ SQL,
                             ),
                             JSON_ARRAY()
                         )
-                    FROM article_tags AS at
+                    FROM $articlesTagsTable AS at
                     INNER JOIN tags AS t ON at.tag_id = t.id
                     WHERE at.article_id = a.id
                 ) AS tags,
@@ -370,11 +437,11 @@ SQL,
                             ),
                             JSON_ARRAY()
                         )
-                    FROM article_categories AS ac
+                    FROM $articlesCategoriesTable AS ac
                     INNER JOIN categories AS c ON ac.category_id = c.id
                     WHERE ac.article_id = a.id
                 ) AS categories
-            FROM articles AS a
+            FROM $articlesTable AS a
             WHERE a.id = :id;
 SQL;
 

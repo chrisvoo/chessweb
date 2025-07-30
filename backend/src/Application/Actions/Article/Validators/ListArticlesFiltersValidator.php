@@ -33,6 +33,7 @@ class ListArticlesFiltersValidator implements ValidatorInterface
                 v::key('tag_id', v::numericVal()->notEmpty(), false),
                 v::key('category_id', v::numericVal()->notEmpty(), false),
                 v::key('skip_content', v::boolVal()->notEmpty(), false),
+                v::key('extra_info', v::boolVal()->notEmpty(), false),
                 v::key('created_from', V::dateTime('Y-m-d H:i:s')->notEmpty(), false),
                 v::key('created_to', V::dateTime('Y-m-d H:i:s')->notEmpty(), false)
             )->assert($data);

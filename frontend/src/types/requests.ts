@@ -97,6 +97,7 @@ export type ListArticlesFilters = {
   skip_content?: boolean
   category_id?: number
   tag_id?: number
+  extra_info?: boolean
 }
 export type ListPaginatedArticles = ListPaginatedParams & ListArticlesFilters
 

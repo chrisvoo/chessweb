@@ -24,8 +24,8 @@ export class ArticlesService {
     private readonly authService: AuthService,
   ) { }
 
-  listArticles(params: ListPaginatedParams): Observable<ListPaginatedItemsResponse<Article>> {
-    return this.http.get<ListPaginatedItemsResponse<Article>>(
+  listArticles(params: ListPaginatedParams): Observable<ListPaginatedItemsResponse<ArticleWithTagsAndCategories>> {
+    return this.http.get<ListPaginatedItemsResponse<ArticleWithTagsAndCategories>>(
       this.LIST_ENDPOINT,
       {
         params: { ...params }
@@ -35,9 +35,9 @@ export class ArticlesService {
         return {
           statusCode: res.statusCode,
           data: {
-            items: res.data.items.map((article: Article) => {
+            items: res.data.items.map((article: ArticleWithTagsAndCategories) => {
               const { created_at, updated_at } = article;
-              const createdAtFormatted = created_at !== "0000-00-00 00:00:00"
+              const createdAtFormatted = created_at !== "0000-00-00 00:00:00" && created_at
                                                 ? formatDate(parseISO(created_at),  'dd-MM-yyyy') : '';
               const updatedAtFormatted = updated_at
                                                 ? formatDate(parseISO(updated_at),  'dd-MM-yyyy') : ''

@@ -3,6 +3,7 @@
 namespace App\Application\Actions\Article;
 
 use App\Application\Actions\Action;
+use App\Application\Actions\Article\Formatters\ContentFormatter;
 use App\Domain\Article\Article;
 use App\Domain\Article\ArticleValidator;
 use App\Domain\Mappers\Mapper;
@@ -17,7 +18,8 @@ class UpdateArticleAction extends Action
     public function __construct(
         private readonly ArticleRepositoryInterface $articleRepository,
         protected LoggerInterface $logger,
-        private ArticleValidator $validator
+        private readonly ArticleValidator $validator,
+        private readonly ContentFormatter $contentFormatter,
     ) {
         parent::__construct($logger);
     }
@@ -27,13 +29,15 @@ class UpdateArticleAction extends Action
      */
     protected function action(): Response
     {
+        $user = $this->request->getAttribute('user');
         $body = $this->request->getParsedBody() ?? [];
         $body['id'] = $this->resolveArg('id');
 
         $this->validator->validate($this->request, $body, ValidationScope::UPDATE);
 
         $article = (new Mapper())->map($body, Article::class);
-        $article->author_id = 1; // @TODO Fix when user is logged
+        $article->author_id = $user->id;
+        $this->contentFormatter->formatOnSave($article);
         $op = $this->articleRepository->save($article);
 
         $this->logger->info("Article updated", ['id' => $op->entityId]);

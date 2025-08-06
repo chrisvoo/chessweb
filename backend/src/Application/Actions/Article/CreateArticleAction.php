@@ -3,6 +3,7 @@
 namespace App\Application\Actions\Article;
 
 use App\Application\Actions\Action;
+use App\Application\Actions\Article\Formatters\ContentFormatter;
 use App\Domain\Article\Article;
 use App\Domain\Article\ArticleValidator;
 use App\Domain\Category\Category;
@@ -19,7 +20,8 @@ class CreateArticleAction extends Action
     public function __construct(
         private readonly ArticleRepositoryInterface $articleRepository,
         protected LoggerInterface $logger,
-        private readonly ArticleValidator $validator
+        private readonly ArticleValidator $validator,
+        private readonly ContentFormatter $contentFormatter,
     ) {
         parent::__construct($logger);
     }
@@ -42,6 +44,7 @@ class CreateArticleAction extends Action
             ]
         );
         $article->author_id = $user->id;
+        $this->contentFormatter->formatOnSave($article);
         $op = $this->articleRepository->save($article);
 
         $this->logger->info("Article created", [

@@ -1,0 +1,17 @@
+{
+    "name": "christian.castelli/deployment",
+    "description": "Deploys the website for scacchilatorre.it",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "ChristianCastelli\\Deployment\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Christian Castelli",
+            "email": "christian.castelli@docebo.com"
+        }
+    ],
+    "require": {}
+}

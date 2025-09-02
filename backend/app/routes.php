@@ -17,6 +17,7 @@ use App\Application\Actions\Category\ListCategoriesAction;
 use App\Application\Actions\Category\UpdateCategoryAction;
 use App\Application\Actions\Files\StreamFileAction;
 use App\Application\Actions\Files\UploadAction;
+use App\Application\Actions\Health\StatusAction;
 use App\Application\Actions\Tag\CreateTagAction;
 use App\Application\Actions\Tag\DeleteTagAction;
 use App\Application\Actions\Tag\ListTagsAction;
@@ -34,7 +35,10 @@ use App\Infrastructure\Components\JWTServiceInterface;
 //use Psr\Http\Server\RequestHandlerInterface;
 //use Psr\Log\LoggerInterface;
 use Slim\App;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
 return function (App $app) {
     /*
@@ -64,6 +68,7 @@ return function (App $app) {
     });*/
 
     $app->group('/api', function (Group $group) {
+        $group->get('/status', StatusAction::class);
         $group->get('/user/{id}', ViewSingleUserAction::class);
 
         $group->get('/tags', ListTagsAction::class);
@@ -111,5 +116,16 @@ return function (App $app) {
                 $group->getContainer()->get(JWTServiceInterface::class)
             )
         );
+    });
+
+    $app->get('/{routes:.+}', function (Request $request, Response $response, $args) {
+        $indexHtmlPath = __DIR__ . '/../public/index.html';
+        if (file_exists($indexHtmlPath)) {
+            $body = file_get_contents($indexHtmlPath);
+            $response->getBody()->write($body);
+            return $response;
+        }
+
+        throw new HttpNotFoundException($request);
     });
 };

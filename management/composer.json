@@ -1,0 +1,23 @@
+{
+    "name": "scacchilatorre/management",
+    "description": "Migration and deployments utilities",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Scacchilatorre\\Management\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Christian Castelli",
+            "email": "christian.castelli@docebo.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6",
+        "symfony/console": "^7.3"
+    },
+    "scripts": {
+        "migrate": "php src/migration/index.php"
+    }
+}

@@ -1,22 +1,20 @@
 <?php
 
-namespace Scacchilatorre\Management\Commands;
+namespace Scacchilatorre\Management\Services;
 
-class FtpDump implements DumpInterface
+interface DumpInterface extends IOInterface
 {
     public const HOST = 'host';
     public const USER = 'user';
     public const PASSWORD = 'password';
     public const PORT = 'port';
     public const REMOTE_PATH = 'remote_path';
+    public const LOCAL_PATH = 'local_path';
 
     /**
      * It downloads a website from a source
      * @param array $options Parameters useful for the implementor
      * @return array
      */
-    public function dump(array $options = []): array
-    {
-        // TODO: Implement dump() method.
-    }
+    public function dump(array $options = []): array;
 }

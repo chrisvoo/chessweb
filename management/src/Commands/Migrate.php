@@ -3,6 +3,7 @@
 namespace Scacchilatorre\Management\Commands;
 
 use Dotenv\Dotenv;
+use Scacchilatorre\Management\Services\DumpInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -20,6 +21,12 @@ TXT
 )]
 class Migrate extends Command
 {
+    public function __construct(
+        private readonly DumpInterface $dumper
+    ) {
+        parent::__construct('migrate');
+    }
+
     public function __invoke(
         SymfonyStyle $io,
         #[Option(
@@ -30,8 +37,21 @@ class Migrate extends Command
     ): int
     {
         Dotenv::createImmutable(__DIR__ . '/../../')->load();
-        $io->write(var_export($_ENV, true));
-        $io->write('Dump website: ' . $dump);
+
+        if ($dump) {
+            $io->writeln('Dumping files from ' . $_ENV['FTP_HOST'] . '...');
+            $this
+                ->dumper
+                ->withIO($io)
+                ->dump([
+                    DumpInterface::HOST => $_ENV['FTP_HOST'],
+                    DumpInterface::USER => $_ENV['FTP_USER'],
+                    DumpInterface::PASSWORD => $_ENV['FTP_PASS'],
+                    DumpInterface::PORT => $_ENV['FTP_PORT'],
+                    DumpInterface::REMOTE_PATH => $_ENV['FTP_REMOTE_PATH'],
+                    DumpInterface::LOCAL_PATH => $_ENV['LOCAL_DUMP_PATH'],
+                ]);
+        }
 
 //        $term1 = rand(1, 10);
 //        $term2 = rand(1, 10);

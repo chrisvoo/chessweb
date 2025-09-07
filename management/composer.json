@@ -18,7 +18,9 @@
         "symfony/console": "^7.3",
         "symfony/dependency-injection": "^7.3",
         "ext-ftp": "*",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-libxml": "*",
+        "ext-dom": "*"
     },
     "scripts": {
         "migrate": "php src/migration/index.php"

@@ -4,6 +4,7 @@ namespace Scacchilatorre\Management\Commands;
 
 use Dotenv\Dotenv;
 use Scacchilatorre\Management\Services\DumpInterface;
+use Scacchilatorre\Management\Services\ImporterService;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -22,7 +23,8 @@ TXT
 class Migrate extends Command
 {
     public function __construct(
-        private readonly DumpInterface $dumper
+        private readonly DumpInterface $dumper,
+        private readonly ImporterService $importerService,
     ) {
         parent::__construct('migrate');
     }
@@ -36,10 +38,8 @@ class Migrate extends Command
         )] bool $dump = false//, #[Argument] string $name, #[Option] bool $activate = false,
     ): int
     {
-        Dotenv::createImmutable(__DIR__ . '/../../')->load();
-
         if ($dump) {
-            $io->writeln('Dumping files from ' . $_ENV['FTP_HOST'] . '...');
+            $io->writeln('- Dumping files from ' . $_ENV['FTP_HOST'] . '...');
             $this
                 ->dumper
                 ->withIO($io)
@@ -53,17 +53,14 @@ class Migrate extends Command
                 ]);
         }
 
-//        $term1 = rand(1, 10);
-//        $term2 = rand(1, 10);
-//        $result = $term1 + $term2;
-//
-//        $answer = (int) $io->ask(sprintf('What is %s + %s?', $term1, $term2));
-//
-//        if ($answer === $result) {
-//            $io->success('Well done!');
-//        } else {
-//            $io->error(sprintf('Aww, so close. The answer was %s', $result));
-//        }
+        $this
+            ->importerService
+            ->withIO($io)
+            ->import(
+                $_ENV['LOCAL_DUMP_PATH'] . '/www'
+            );
+
+        $io->success('Procedure completed');
 
         return Command::SUCCESS;
     }

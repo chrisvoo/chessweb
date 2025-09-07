@@ -2,7 +2,10 @@
 
 namespace Scacchilatorre\Management\Services;
 
+use FTP\Connection;
 use InvalidArgumentException;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class FtpDump implements DumpInterface
@@ -56,6 +59,7 @@ class FtpDump implements DumpInterface
     public function dump(array $options = []): array
     {
         $this->validate($options);
+        $this->io->info('FTP download started');
 
         try {
             $ftp = ftp_connect($options[self::HOST], $options[self::PORT]);
@@ -65,27 +69,89 @@ class FtpDump implements DumpInterface
                 return [];
             }
 
-            $login_result = ftp_login($ftp, $options[self::USER], $options[self::PASSWORD]);
+            $login_result = @ftp_login($ftp, $options[self::USER], $options[self::PASSWORD]);
 
             if (!$login_result) {
                 $this->io->error('Invalid FTP credentials!');
                 return [];
             }
 
-            $this->cleanLocalPath($options[self::LOCAL_PATH]);
+            $this->io->writeln('- Connection established');
 
-            $this->io->writeln('Closing connection');
+            // Enable passive mode (usually necessary for firewalls)
+            ftp_pasv($ftp, true);
+
+            $this->cleanLocalPath($options[self::LOCAL_PATH]);
+            $this->download($ftp, $options[self::REMOTE_PATH], $options[self::LOCAL_PATH]);
+
+            $this->io->info('- Done, closing connection');
             ftp_close($ftp);
         } catch (\Exception $e) {
-
+            $this->io->error($e->getMessage() . ' at line ' . $e->getLine());
+        } finally {
+            ftp_close($ftp);
         }
 
         return [];
     }
 
+    private function download(Connection $ftp, string $remoteDir, string $localDir): void
+    {
+        // Get list of items in the current remote directory
+        $contents = ftp_nlist($ftp, ".");
+        if ($contents === false) {
+            return; // Could not list directory contents
+        }
+
+        foreach ($contents as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $localItemPath = $localDir . DIRECTORY_SEPARATOR . $item;
+            // A common trick: ftp_size returns -1 for directories
+            if (ftp_size($ftp, $item) === -1) {
+                // This is a directory
+                if (!is_dir($localItemPath)) {
+                    mkdir($localItemPath);
+                }
+
+                // Go into the subdirectory and recurse
+                ftp_chdir($ftp, $item);
+                $this->download($ftp, $remoteDir . '/' . $item, $localItemPath);
+                ftp_chdir($ftp, '..'); // Go back up to the parent directory
+            } else {
+                // This is a file, download it
+                if (!ftp_get($ftp, $localItemPath, $item, FTP_BINARY)) {
+                    $this->io->writeln("- <fg=yellow>Failed to download file: {$item}</>");
+                }
+            }
+        }
+    }
+
     private function cleanLocalPath(string $localPath): void
     {
-        $this->io->writeln('Cleaning local files from ' . $localPath);
+        $this->io->writeln('- Cleaning local files from ' . $localPath);
+
+        // Use a recursive iterator to find all files and directories
+        // CHILD_FIRST ensures we delete files inside a directory before the directory itself
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($localPath, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($files as $fileinfo) {
+            // Do not delete the .gitignore file
+            if ($fileinfo->getFilename() === '.gitignore') {
+                continue;
+            }
+
+            if ($fileinfo->isDir()) {
+                rmdir($fileinfo->getRealPath());
+            } else {
+                unlink($fileinfo->getRealPath());
+            }
+        }
     }
 
     public function withIO(SymfonyStyle $io): IOInterface

@@ -3,8 +3,11 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
+use Dotenv\Dotenv;
 use Scacchilatorre\Management\Commands\Migrate;
 use Symfony\Component\Console\Application;
+
+Dotenv::createImmutable(__DIR__ . '/..')->load();
 
 $container = require __DIR__.'/../config/container.php';
 

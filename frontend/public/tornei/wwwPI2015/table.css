@@ -1,0 +1,137 @@
+/* adapted from a css found on http://icant.co.uk/csstablegallery/
+Spearmint 
+*/
+.shadow {
+  -webkit-box-shadow: 6px 0px 20px #756F6F; /* Saf3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+     -moz-box-shadow: 6px 0px 20px #756F6F; /* FF3.5 - 3.6 */
+          box-shadow: 6px 0px 20px #756F6F; /* Opera 10.5, IE9, FF4+, Chrome 6+, iOS 5 */
+}
+
+/* table */
+table {
+	margin: 0 0 1em;
+	background: #FFF;
+	border-collapse: collapse;
+	border-top: 1px solid #363;
+	border-bottom: 2px solid #363;
+	border-left: 0px solid #363;
+	border-right: 0px solid #363;
+}
+
+/* caption = table title/heading */
+caption {
+	text-align: left;
+	font: bold small-caps 120%/1.3 "trebuchet ms",Helvetica,Arial,Sans-Serif;
+	color: #363;
+	margin: .3em 0;
+}
+
+/* reduced font size to save space */
+tr { font-size: 100%; }
+
+/* tinted rows */
+tr.odd {
+	background: #DFD;
+}
+
+tr.even {
+	background: #FFF;
+}
+
+td.odd {
+	background: #DFD;
+}
+
+/* round robin game against himself */
+td.hole {
+	background:url(hole.gif) no-repeat; 
+}
+
+/* table cells */
+th {
+	font-weight: normal;
+	padding: .5em .7em;
+	text-align: center;
+	vertical-align: middle;
+}
+
+td {
+	font-weight: normal;
+	padding: .2em .9em;
+	text-align: left;
+	vertical-align: middle;
+}
+
+div.cb {
+background-color: black;
+color: white;
+font-size: 80%;
+text-align: center;
+border-bottom: 1px solid black;
+border-top: 1px solid black;
+border-left: 1px solid black;
+border-right: 1px solid black;
+}
+
+div.cw {
+//background-color: white;
+font-size: 80%; 
+text-align: center;
+border-bottom: 1px solid black;
+border-top: 1px solid black;
+border-left: 1px solid black;
+border-right: 1px solid black;
+}
+
+div.cf {
+text-align: center;
+font-size: 80%;
+background-color: #FFFF66;
+border-bottom: 1px solid black;
+border-top: 1px solid black;
+border-left: 1px solid black;
+border-right: 1px solid black;
+}
+div.res {
+font-weight: bold;
+text-align: center;	
+font-size: 100%; 
+}
+td.result {
+	font-weight: bold;
+	text-align: center;	
+	font-size: 120%; 
+}
+td.score {
+	font-weight: bold;
+	text-align: right;	
+	font-size: 140%; 
+}
+td.name {
+	text-align: center;	
+}
+
+/* borders to separate body sections */
+tbody tr:first-child th,
+tbody tr:first-child td,
+tfoot tr:first-child th,
+tfoot tr:first-child td {
+	border-top: 2px solid #363;
+}
+
+/* color for column headings */
+thead {
+	background: #9C9;
+	white-space: nowrap;
+}
+
+/* color for footer */
+tfoot {
+	background: #ADA;
+}
+
+/* bold text for footer */
+tfoot th,
+tfoot td {
+	font-weight: bold;
+}

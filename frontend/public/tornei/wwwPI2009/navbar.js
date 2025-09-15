@@ -1,0 +1,15 @@
+document.write("<P align=center>"); 
+document.write(" Home :: ".link("http://www.scacchilatorre.it/")  ); 
+document.write(" Tabellone :: ".link("crosstbl.html")  ); 
+document.write(" Classifica :: ".link("index.html")  ); 
+document.write(" Cartellino giocatore".link("playercard.html")  ); 
+document.write("  :: Variazioni Elo FIDE".link("felovar.html")  ); 
+document.write("  :: Variazioni Elo-Italia".link("nelovar.html")  ); 
+document.write(" <P align=center>"); 
+document.write(" Abbinamenti/Risultati: ");
+document.write(" [1]".link("pairs1.html") ); 
+document.write(" [2]".link("pairs2.html") ); 
+document.write(" [3]".link("pairs3.html") ); 
+document.write(" [4]".link("pairs4.html") ); 
+document.write(" [5]".link("pairs5.html") ); 
+document.write(" [6]".link("pairs6.html") ); 

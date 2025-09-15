@@ -1,0 +1,1 @@
+document.write (' <b>Abbinamento:</b><br> <a href="pairs1.html">[1]</a> <a href="pairs2.html">[2]</a> <a href="pairs3.html">[3]</a> <a href="pairs4.html">[4]</a> <a href="pairs5.html">[5]</a> <a href="pairs6.html">[6]</a> <a href="pairs7.html">[7]</a> <a href="pairs8.html">[8]</a> <a href="pairs9.html">[9]</a> ')

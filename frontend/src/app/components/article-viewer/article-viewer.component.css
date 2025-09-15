@@ -1,0 +1,10 @@
+:host ::ng-deep .collegamentograndecentrato {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+:host ::ng-deep p {
+  margin: 0 0 1em 0;
+}

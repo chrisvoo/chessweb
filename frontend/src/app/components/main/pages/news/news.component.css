@@ -8,6 +8,7 @@ small {
 }
 
 .tag {
+  margin-top: 7px;
   margin-right: 5px;
   cursor: pointer;
 }

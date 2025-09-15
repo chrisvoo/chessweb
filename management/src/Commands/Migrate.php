@@ -2,15 +2,11 @@
 
 namespace Scacchilatorre\Management\Commands;
 
-use Dotenv\Dotenv;
 use Scacchilatorre\Management\Services\DumpInterface;
 use Scacchilatorre\Management\Services\ImporterService;
-use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
@@ -35,7 +31,12 @@ class Migrate extends Command
             description: 'Dumps the website from FTP',
             name: 'dump',
             shortcut: 'd'
-        )] bool $dump = false//, #[Argument] string $name, #[Option] bool $activate = false,
+        )] bool $dump = false,
+        #[Option(
+            description: 'Dry run, for debug purposes, it does not insert anything into the database',
+            name: 'dry-run',
+            shortcut: 'r'
+        )] bool $dryRun = false
     ): int
     {
         if ($dump) {
@@ -56,12 +57,12 @@ class Migrate extends Command
         $this
             ->importerService
             ->withIO($io)
+            ->setDryRun($dryRun)
             ->import(
                 $_ENV['LOCAL_DUMP_PATH'] . '/www'
             );
 
         $io->success('Procedure completed');
-
         return Command::SUCCESS;
     }
 }

@@ -46,6 +46,12 @@ export const routes: Routes = [
       .then(m => m.NewsComponent)
   },
   {
+    path: 'safeguarding',
+    title: `${mainTitle} - Safeguarding`,
+    loadComponent: () => import('./components/main/pages/safeguarding/safeguarding.component')
+      .then(m => m.SafeguardingComponent)
+  },
+  {
     path: 'login',
     title: `${mainTitle} - Login`,
     loadComponent: () => import('./components/main/pages/login/login.component')

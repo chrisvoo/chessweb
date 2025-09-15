@@ -2,7 +2,7 @@
 
 namespace Scacchilatorre\Management\Services;
 
-interface DumpInterface extends IOInterface
+interface DumpInterface extends Service
 {
     public const HOST = 'host';
     public const USER = 'user';

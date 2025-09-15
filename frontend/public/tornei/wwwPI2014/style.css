@@ -1,0 +1,60 @@
+body {margin:15px; font:12px Verdana,Arial; background:#fff}
+
+.box_shadow {
+  -webkit-box-shadow: 0px 0px 20px #756F6F; /* Saf3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+     -moz-box-shadow: 0px 0px 20px #756F6F; /* FF3.5 - 3.6 */
+          box-shadow: 0px 0px 20px #756F6F; /* Opera 10.5, IE9, FF4+, Chrome 6+, iOS 5 */
+}
+
+/*tournament name table menu */ 
+tr.name {
+        background-color: #009933; 
+}
+
+/*cell of header table menu */ 
+td.nametour {	
+   font-family: Arial, Helvetica, sans-serif; 
+   font-size: 14pt; 
+   color: #FFFFFF; 
+   text-align: center; 
+}
+
+
+/*extern link table menu */ 
+tr.extern{
+        background:url(extern.png) repeat; 
+}
+
+/*header menu of table menu */ 
+tr.menu {
+        background:url(header.png) repeat; 
+}
+
+/*background row of table menu */ 
+tr.trm {
+       background-color: #CCFFCC; 
+}
+
+
+/*cell of header table menu */ 
+td.tdm {	
+         color: #fff; 
+         font-weight: bold; 
+         text-align: center;
+}
+
+/*cell of pairing table menu */ 
+td.tdp {	
+         color: #000; 
+         font-weight: bold; 
+         text-align: center;
+}
+
+/*cell of table*/ 
+td.tdc {	
+         text-align: center;
+}
+
+
+
+

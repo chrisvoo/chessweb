@@ -1,16 +1,22 @@
 <?php
 
+use Scacchilatorre\Management\Commands\Collect;
+use Scacchilatorre\Management\Commands\Deploy;
 use Scacchilatorre\Management\Commands\Migrate;
+use Scacchilatorre\Management\Services\Crawler;
 use Scacchilatorre\Management\Services\DbService;
+use Scacchilatorre\Management\Services\ExtractorService;
 use Scacchilatorre\Management\Services\FtpDump;
 use Scacchilatorre\Management\Services\ImporterService;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 $containerBuilder = new ContainerBuilder();
-$containerBuilder->register('ftp_dump', FtpDump::class);
+$containerBuilder->register(FtpDump::class, FtpDump::class);
+$containerBuilder->register(ExtractorService::class, ExtractorService::class);
+$containerBuilder->register(Crawler::class, Crawler::class);
 
-$containerBuilder->register('db_service', DbService::class)
+$containerBuilder->register(DbService::class, DbService::class)
     ->addArgument([
         DbService::HOST => $_ENV['LOCAL_DB_HOST'],
         DbService::DB_NAME => $_ENV['LOCAL_DB_NAME'],
@@ -18,13 +24,19 @@ $containerBuilder->register('db_service', DbService::class)
         DbService::PASSWORD => $_ENV['LOCAL_DB_PASS'],
     ]);
 
-$containerBuilder->register('import', ImporterService::class)
-    ->addArgument(new Reference('db_service'));
+$containerBuilder->register(ImporterService::class, ImporterService::class)
+    ->addArgument(new Reference(DbService::class))
+    ->addArgument(new Reference(ExtractorService::class));
 
+// commands
 $containerBuilder->register(Migrate::class, Migrate::class)
-    ->addArgument(new Reference('ftp_dump'))
-    ->addArgument(new Reference('import'))
+    ->addArgument(new Reference(FtpDump::class))
+    ->addArgument(new Reference(ImporterService::class))
     ->addTag('console.command');
 
+$containerBuilder->register(Collect::class, Collect::class)
+    ->addArgument(new Reference(Crawler::class));
+
+$containerBuilder->register(Deploy::class, Deploy::class);
 
 return $containerBuilder;

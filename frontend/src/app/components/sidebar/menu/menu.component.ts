@@ -1,7 +1,7 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject } from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 
 @Component({

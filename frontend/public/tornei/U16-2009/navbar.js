@@ -1,0 +1,11 @@
+document.write("<P align=center>"); 
+document.write(" Cross Table :: ".link("crosstbl.html")  ); 
+document.write(" Standing :: ".link("index.html")  ); 
+document.write(" Player Card".link("playercard.html")  ); 
+document.write(" <P align=center>"); 
+document.write(" Pairings/Results: ");
+document.write(" [1]".link("pairs1.html") ); 
+document.write(" [2]".link("pairs2.html") ); 
+document.write(" [3]".link("pairs3.html") ); 
+document.write(" [4]".link("pairs4.html") ); 
+document.write(" [5]".link("pairs5.html") ); 

@@ -10,6 +10,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class FtpDump implements DumpInterface
 {
+    private bool $dryRun = false;
     private SymfonyStyle $io;
 
     private function validate(array $options): void
@@ -154,9 +155,15 @@ class FtpDump implements DumpInterface
         }
     }
 
-    public function withIO(SymfonyStyle $io): IOInterface
+    public function withIO(SymfonyStyle $io): ServiceInterface
     {
         $this->io = $io;
+        return $this;
+    }
+
+    public function setDryRun(bool $dryRun): ServiceInterface
+    {
+        $this->dryRun = $dryRun;
         return $this;
     }
 }

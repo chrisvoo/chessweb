@@ -1,0 +1,54 @@
+SEMILAMPO CITTA DI PISA
+PISA                - 30/11/2008, 30/11/2008
+
+ Tabellone al turno 9
+
+ ID NAME                 Rtg  Tit Fed  Pts |   1     2     3     4     5     6     7     8     9  
+--------------------------------------------------------------------------------------------------
+  1 DJURIC Stefan        2610  GM  PT  8.5 | +B24  +W16  +B8   +W4   =B2   +W6   +B14  +W10  +B9   
+  2 CAPOSCIUTTI Maurizio 2335  FM  GR  6.5 | +W25  +B15  +W9   =B6   =W1   =B5   +W8   -B4   +W3   
+  3 EVANGELISTI Claudio  2260   M  PI  5.5 | -B26  +B25  +W27  =W12  +B17  -W14  +B22  +W7   -B2   
+  4 SCIORTINO Massimo    2231  FM  PT  7.0 | +W27  +B17  +W11  -B1   -W15  +B23  +W16  +W2   +B10  
+  5 NELLI Luca           2191   M  MS  6.5 | +B28  +W18  -B10  +W20  +B12  =W2   +B6   -W9   +B15  
+  6 RINALDI Francesco Sa 2157   M  PI  5.0 | +W29  +B21  +W42  =W2   +B7   -B1   -W5   -W15  =B36  
+  7 METRANGOLO Antonio   2138  CM  PI  5.5 | +B30  +W22  =B12  +W10  -W6   -B9   +W19  -B3   +W32  
+  8 CECCARINI Marco      2091  CM  LI  6.5 | +W31  +B23  -W1   +B19  =W9   +B11  -B2   +W14  +W16  
+  9 FRANCESCHI Riccardo  2089  CM  LI  6.5 | +B32  +W26  -B2   +W22  =B8   +W7   +B15  +B5   -W1   
+ 10 BERNARDINI Luca      2018  1N  LU  5.5 | +W33  +B43  +W5   -B7   +W16  =B15  +W31  -B1   -W4   
+ 11 TAGLIAGAMBE Stefano  2002  CM  GR  5.0 | +B34  +W36  -B4   -W23  +B28  -W8   =B26  =W21  +B25  
+ 12 DI TRANI Sabino      1974  2N  BA  4.0 | +W35  +B47  =W7   =B3   -W5   -B31  +W27  -B26  -W33  
+ 13 CALEFFI Cesare       1970  1N  SP  4.5 | -B36  -B33  +W39  +B29  -W31  +W34  -B24  =W17  +B30  
+ 14 LASIO Millo          1963  CM  MS  5.5 | +W37  -B42  +W29  +B21  +W23  +B3   -W1   -B8   =W26  
+ 15 PAOLINELLI Giacomo   1934  CM  LU  5.5 | +B38  -W2   +B24  +W36  +B4   =W10  -W9   +B6   -W5   
+ 16 ONESTI Luca          1874  1N  LU  5.0 | +W39  -B1   +W31  +B42  -B10  +W24  -B4   +W36  -B8   
+ 17 LANDI Andrea         1863  1N  PI  4.5 | +B40  -W4   =B26  +W18  -W3   +B21  -W36  =B13  =W38  
+ 18 TAFFI Andrea         1761  1N  PI  4.0 | +W41  -B5   =W33  -B17  =B25  +W29  -B32  -W37  +B45  
+ 19 PITIMADA Mirko       1748  1N  FI  4.5 | -B42  +W34  +B28  -W8   +B32  =W26  -B7   -W25  +B23  
+ 20 BARDI Giuliano       1727  1N  FI  4.0 | -W43  +B37  +W46  -B5   -W33  +B38  +W23  -B31  -W42  
+ 21 GUIDI Marco          1700  1N  FI  4.0 | +B44  -W6   +B32  -W14  =B36  -W17  +B30  =B11  -W22  
+ 22 NEUBAUER Kai         1687  CM  PI  5.0 | +W45  -B7   +W43  -B9   +W37  +B33  -W3   -B32  +B21  
+ 23 LEONE Valerio        1652  2N  LI  3.0 | +B46  -W8   +W47  +B11  -B14  -W4   -B20  -B38  -W19  
+ 24 MOSCHINI Franco      1646  CM  FI  5.5 | -W1   +B39  -W15  +B46  +W42  -B16  +W13  +W43  =B31  
+ 25 BOLETTIERI Giuseppe  1644  3N  PI  4.5 | -B2   -W3   +B30  -B31  =W18  +W42  +B45  +B19  -W11  
+ 26 DI CANDIA Roberto    1637  1N  FG  5.5 | +W3   -B9   =W17  =B33  +W38  =B19  =W11  +W12  =B14  
+ 27 TRAVERSO Alfonso     1606  3N  SP  4.0 | -B4   +W38  -B3   -B37  +W44  +W40  -B12  -B33  +W35  
+ 28 AGOSTINELLI Massimo  1601  2N  LU  3.0 | -W5   +B41  -W19  +B47  -W11  -B43  -W37  -B35  +BYE  
+ 29 RUSTICHELLI Sandro   1586  2N  PI  3.5 | -B6   +W40  -B14  -W13  +B41  -B18  -W46  =W45  +B39  
+ 30 GNETTI Paolo         1581  2N  SP  3.5 | -W7   =B45  -W25  +B35  +W43  -B36  -W21  +B46  -W13  
+ 31 VENTURINO Federico   1575  1N  AT  5.5 | -B8   +W44  -B16  +W25  +B13  +W12  -B10  +W20  =W24  
+ 32 TAGLIONE Stefano     1565  2N  LI  5.0 | -W9   +B35  -W21  +B44  -W19  +B37  +W18  +W22  -B7   
+ 33 ROSSI Paolo Antonio  1509  3N  FR  5.0 | -B10  +W13  =B18  =W26  +B20  -W22  -B43  +W27  +B12  
+ 34 GHEZZANI Claudio     1491  NC  LI  4.0 | -W11  -B19  +W41  -B43  +W46  -B13  +W47  -B42  +W40  
+ 35 ZINNO Mimmo          1484  2N  PI  3.0 | -B12  -W32  -B38  -W30  -B45  +BYE  +B41  +W28  -B27  
+ 36 RANUCCI Marcello     1482  NC  PI  5.0 | +W13  -B11  +W45  -B15  =W21  +W30  +B17  -B16  =W6   
+ 37 GNETTI Pietro        1460  2N  SP  4.0 | -B14  -W20  +B40  +W27  -B22  -W32  +B28  +B18  -W43  
+ 38 MAZZEO Gabriele      1455  3N  PT  4.5 | -W15  -B27  +W35  +B45  -B26  -W20  +B40  +W23  =B17  
+ 39 PONZECCHI Riccardo   1449  NC  PO  3.0 | -B16  -W24  -B13  -W40  +BYE  -B46  +W44  +B47  -W29  
+ 40 GARGIULO Michael Ant 1440  NC  PI  3.0 | -W17  -B29  -W37  +B39  +W47  -B27  -W38  +BYE  -B34  
+ 41 GHIONE Sergio        1440  NC  PI  1.0 | -B18  -W28  -B34  +BYE  -W29  -B47  -W35  -B44  -W46  
+ 42 NERVI Mauro          1440  NC  PI  5.0 | +W19  +W14  -B6   -W16  -B24  -B25  +BYE  +W34  +B20  
+ 43 PETRUCCI Alessandro  1440  NC  LU  5.0 | +B20  -W10  -B22  +W34  -B30  +W28  +W33  -B24  +B37  
+ 44 PETRUCCI Daniel      1440  NC  LU  2.0 | -W21  -B31  +BYE  -W32  -B27  -W45  -B39  +W41  -B47  
+ 45 SCANDONE Raffaele    1440  NC  PI  3.0 | -B22  =W30  -B36  -W38  +W35  +B44  -W25  =B29  -W18  
+ 46 MENICHELLA Mario     1428  NC  PI  4.0 | -W23  +BYE  -B20  -W24  -B34  +W39  +B29  -W30  +B41  
+ 47 FERRARI Paolo        1167  NC  FI  3.0 | +BYE  -W12  -B23  -W28  -B40  +W41  -B34  -W39  +W44  

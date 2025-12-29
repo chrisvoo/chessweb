@@ -1,8 +1,7 @@
-import {Component, DestroyRef, inject, OnDestroy} from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
-import { WindowMaximizeIcon } from 'primeng/icons';
 import { Ripple } from 'primeng/ripple';
 import { Message } from 'primeng/message';
 import { AuthService } from '../../../../services/auth/auth.service';
@@ -18,7 +17,6 @@ import {PageComponent} from '../../../page/page.component';
     FormsModule,
     InputText,
     ReactiveFormsModule,
-    WindowMaximizeIcon,
     ButtonIcon,
     ButtonLabel,
     ButtonDirective,

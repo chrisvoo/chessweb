@@ -1,5 +1,5 @@
-import { definePreset } from '@primeng/themes';
-import Aura from '@primeng/themes/aura';
+import { definePreset } from '@primeuix/themes';
+import Aura from '@primeuix/themes/aura';
 
 export default definePreset(Aura, {
   semantic: {
@@ -50,37 +50,31 @@ export default definePreset(Aura, {
   components: {
     editor: {
       toolbar: {
-        border: {
-          color: '#cbd5e1'
-        }
+        borderColor: '#cbd5e1'
       },
       content: {
-        border: {
-          color: '#cbd5e1'
-        },
+        borderColor: '#cbd5e1',
         color: 'var(--primary-color-text)'
       }
     },
     tooltip: {
-      padding: '5px',
+      root: {
+        padding: '5px',
+      },
       css: () => `
-      .p-tooltip {
-        font-size: 12px;
-      }
-      .p-tooltip-text {
-        white-space: nowrap;
-        width: fit-content;
-      }
+          .p-tooltip {
+            font-size: 12px;
+          }
+          .p-tooltip-text {
+            white-space: nowrap;
+            width: fit-content;
+          }
       `
     },
     inputtext: {
-      focus: {
-        border: {
-          color: '#f56a6a'
-        }
-      },
-      border: {
-        color: '#cbd5e1'
+      root: {
+        focusBorderColor: '#f56a6a',
+        borderColor: '#cbd5e1'
       }
     },
     divider: {
@@ -99,8 +93,8 @@ export default definePreset(Aura, {
       }
     },
     autocomplete: {
-      padding: {
-        x: 0, y: 0
+      option: {
+        padding: "0"
       }
     }
   }

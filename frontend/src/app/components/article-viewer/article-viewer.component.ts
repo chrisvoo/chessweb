@@ -1,7 +1,7 @@
 import {Component, input, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {Image} from 'primeng/image';
-import {NgForOf, NgIf} from '@angular/common';
+
 import {GalleriaModule} from 'primeng/galleria';
 
 type ContentPart = {
@@ -21,10 +21,8 @@ type GalleriaImage = {
   selector: 'chess-article-viewer',
   imports: [
     Image,
-    NgIf,
-    NgForOf,
     GalleriaModule
-  ],
+],
   templateUrl: './article-viewer.component.html',
   styleUrl: './article-viewer.component.css',
   standalone: true,

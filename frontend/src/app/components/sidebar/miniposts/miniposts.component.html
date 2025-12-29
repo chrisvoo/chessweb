@@ -1,12 +1,13 @@
-<sidebar-item title="Notizie per tag" *ngIf="tagCloudItems.length > 0">
-  <div class="mini-posts">
-    <article>
-      <ul class="cloud" role="listbox" aria-label="Tag cloud">
-        @for(tagCloudItem of tagCloudItems; track tagCloudItem.tag_id) {
-          <li>
-            <p-overlaybadge [value]="tagCloudItem.total_count" badgeSize="small">
-              <a
-                [attr.data-weight]="tagCloudItem.weight"
+@if (tagCloudItems.length > 0) {
+  <sidebar-item title="Notizie per tag">
+    <div class="mini-posts">
+      <article>
+        <ul class="cloud" role="listbox" aria-label="Tag cloud">
+          @for(tagCloudItem of tagCloudItems; track tagCloudItem.tag_id) {
+            <li>
+              <p-overlaybadge [value]="tagCloudItem.total_count" badgeSize="small">
+                <a
+                  [attr.data-weight]="tagCloudItem.weight"
                 [href]="'/notizie?tag_id=' + tagCloudItem.tag_id"
               >
                 {{ tagCloudItem.name }}
@@ -18,7 +19,9 @@
     </article>
   </div>
 </sidebar-item>
-<sidebar-item title="Notizie per categorie" *ngIf="categoryStatsItems.length > 0">
+}
+@if (categoryStatsItems.length > 0) {
+<sidebar-item title="Notizie per categorie">
   <div class="mini-posts">
     <article>
       <ul class="alt">
@@ -34,6 +37,7 @@
     </article>
   </div>
 </sidebar-item>
+}
 <sidebar-item title="Puzzle del giorno">
   <div class="mini-posts">
     <article class="puzzle">

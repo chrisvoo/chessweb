@@ -4,7 +4,7 @@ import { SidebarItemComponent } from '../sidebar-item/sidebar-item.component';
 import {CategoryStatsItem, TagCloudItem} from '../../../../types/requests';
 import {map} from 'rxjs';
 import {TagsService} from '../../../services/tags/tags.service';
-import {NgIf} from '@angular/common';
+
 import {CategoriesService} from '../../../services/categories/categories.service';
 import {Badge} from 'primeng/badge';
 
@@ -12,10 +12,9 @@ import {Badge} from 'primeng/badge';
   selector: 'app-miniposts',
   imports: [
     SidebarItemComponent,
-    NgIf,
     OverlayBadgeModule,
     Badge
-  ],
+],
   standalone: true,
   templateUrl: './miniposts.component.html',
   styleUrl: './miniposts.component.css'

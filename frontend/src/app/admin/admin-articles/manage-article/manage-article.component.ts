@@ -10,8 +10,7 @@ import {TagsService} from '../../../services/tags/tags.service';
 import {ListAllItemsParams, ViewArticleResponse} from '../../../../types/requests';
 import {catchError, map, throwError} from 'rxjs';
 import {AutoComplete} from 'primeng/autocomplete';
-import {Button, ButtonDirective, ButtonLabel} from 'primeng/button';
-import {NgStyle} from '@angular/common';
+import {Button} from 'primeng/button';
 import Quill from 'quill';
 import {Dialog} from 'primeng/dialog';
 import {Message} from 'primeng/message';
@@ -85,18 +84,7 @@ export class ManageArticleComponent {
     })
 
     // upload image form
-    this.uploadImageForm = this.formBuilder.group({
-      // width: ['', Validators.compose([
-      //   Validators.pattern("^[0-9]*$"),
-      //   Validators.min(25),
-      //   Validators.max(2000),
-      // ])],
-      // height: ['', Validators.compose([
-      //   Validators.pattern("^[0-9]*$"),
-      //   Validators.min(25),
-      //   Validators.max(2000),
-      // ])],
-    })
+    this.uploadImageForm = this.formBuilder.group({})
   }
 
   onEditorInit(event: any) {
@@ -200,19 +188,19 @@ export class ManageArticleComponent {
         const range = this.quill!.getSelection(true);
         // Insert the full-size image into the editor
         this.quill!.insertEmbed(range.index, 'image', base64String);
-        // Move cursor past the image
-        this.quill!.setSelection(range.index + 1);
-        // Find the image we just inserted and apply styles and a class
-        // This is the key change: we apply style for editor preview
-        // and a class for identification in the viewer component.
+        this.quill!.formatText(range.index, 1, {
+          style: 'max-width: 400px; height: auto; cursor: pointer;',
+          class: 'article-image-preview'
+        });
+
         setTimeout(() => {
-          const editorElement = this.quill!.root as HTMLElement;
-          const img = editorElement.querySelector(`img[src="${base64String}"]`);
-          if (img) {
-            img.setAttribute('style', 'max-width: 400px; height: auto; cursor: pointer;');
-            img.classList.add('article-image-preview');
-          }
-        }, 100);
+          // force update content of the form
+          const htmlContent = this.quill!.root.innerHTML;
+          this.articleForm.controls['content'].setValue(htmlContent);
+          this.articleForm.controls['content'].markAsDirty();
+          // Move cursor past the image
+          this.quill!.setSelection(range.index + 1);
+        }, 0);
       }
       reader.readAsDataURL(this.imgFile);
     }

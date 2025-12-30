@@ -1,4 +1,4 @@
-<page title="Admin - Crea nuovo articolo">
+<page [title]="isEditMode ? 'Admin - Modifica articolo' : 'Admin - Crea nuovo articolo'">
   <form [formGroup]="articleForm">
     <div class="bottom-margin">
       <label for="title">Titolo</label>
@@ -77,9 +77,10 @@
   <div class="save-btn">
     <p-button
       size="small"
-      label="Pubblica"
+      [label]="isEditMode ? 'Salva modifiche' : 'Pubblica'"
       severity="primary"
       raised
+      [loading]="loadingResponse"
       (click)="saveArticle()" [disabled]="!articleForm.valid"
     />
   </div>
@@ -88,7 +89,8 @@
     <p-message
       severity="error"
       icon="fa-solid fa-circle-exclamation"
-      [text]=this.errorMessage>
+    >
+      {{ this.errorMessage }}
     </p-message>
   }
 
@@ -105,21 +107,6 @@
         type="file"
         (change)="onUpload($event)"
       >
-<!--      <label for="width">Larghezza</label>-->
-<!--      <input-->
-<!--        formControlName="width"-->
-<!--        pInputText-->
-<!--        id="width"-->
-<!--        class="flex-auto"-->
-<!--      />-->
-
-<!--      <label for="height">Altezza</label>-->
-<!--      <input-->
-<!--        formControlName="height"-->
-<!--        pInputText-->
-<!--        id="height"-->
-<!--        class="flex-auto"-->
-<!--      />-->
     </div>
     <div class="row aln-right">
       <p-button
@@ -131,7 +118,7 @@
       />
       <p-button
         size="small"
-        label="Save"
+        label="Inserisci immagine"
         severity="primary"
         (onClick)="insertImage()"
         [disabled]="!uploadImageForm.valid"

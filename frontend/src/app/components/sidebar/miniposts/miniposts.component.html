@@ -21,22 +21,22 @@
 </sidebar-item>
 }
 @if (categoryStatsItems.length > 0) {
-<sidebar-item title="Notizie per categorie">
-  <div class="mini-posts">
-    <article>
-      <ul class="alt">
-        @for(catItem of categoryStatsItems; track catItem.category_id) {
-          <li>
-            <a [href]="'/notizie?category_id=' + catItem.category_id">
-              {{ catItem.name }}
-            </a>
-            <p-badge [value]="catItem.total_count" severity="warn" />
-          </li>
-        }
-      </ul>
-    </article>
-  </div>
-</sidebar-item>
+  <sidebar-item title="Notizie per categorie">
+    <div class="mini-posts">
+      <article>
+        <ul class="alt">
+          @for(catItem of categoryStatsItems; track catItem.category_id) {
+            <li>
+              <a [href]="'/notizie?category_id=' + catItem.category_id">
+                {{ catItem.name }}
+              </a>
+              <p-badge [value]="catItem.total_count" severity="warn" />
+            </li>
+          }
+        </ul>
+      </article>
+    </div>
+  </sidebar-item>
 }
 <sidebar-item title="Puzzle del giorno">
   <div class="mini-posts">

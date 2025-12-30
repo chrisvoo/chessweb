@@ -54,7 +54,7 @@ export class ArticlesService {
     )
   }
 
-  updateArticle(article: Article): Observable<ManagedEntityResponse> {
+  updateArticle(article: ArticleWithTagsAndCategories): Observable<ManagedEntityResponse> {
     return this.http.put<ManagedEntityResponse>(
       this.MANAGE_SINGLE_ARTICLE_ENDPOINT.replace(':id', `${article.id}`),
       { ...article },

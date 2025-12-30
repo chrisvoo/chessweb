@@ -7,8 +7,8 @@ import {InputText} from 'primeng/inputtext';
 import {Article, NamedEntity, ArticleWithTagsAndCategories} from '../../../../types/models';
 import {CategoriesService} from '../../../services/categories/categories.service';
 import {TagsService} from '../../../services/tags/tags.service';
-import {ListAllItemsParams, ViewArticleResponse} from '../../../../types/requests';
-import {catchError, map, throwError} from 'rxjs';
+import {ListAllItemsParams, ManagedEntityResponse, ViewArticleResponse} from '../../../../types/requests';
+import {catchError, map, Observable, throwError} from 'rxjs';
 import {AutoComplete} from 'primeng/autocomplete';
 import {Button} from 'primeng/button';
 import Quill from 'quill';
@@ -43,6 +43,8 @@ export class ManageArticleComponent {
   errorMessage: string = ''
   error: boolean = false;
   targetArticle?: Article
+  // Track the ID to determine if we are editing
+  articleId: number | null = null;
 
   #destroyRef = inject(DestroyRef);
 
@@ -55,8 +57,6 @@ export class ManageArticleComponent {
 
   uploadImageForm: FormGroup
   isDialogVisible = false
-  maxWidth = 350
-  maxHeight = 350
   imgFile?: File
 
   constructor(
@@ -87,6 +87,11 @@ export class ManageArticleComponent {
     this.uploadImageForm = this.formBuilder.group({})
   }
 
+  // Helper to determine UI state
+  get isEditMode(): boolean {
+    return !!this.articleId;
+  }
+
   onEditorInit(event: any) {
     // The event object contains the quill instance
     this.quill = event.editor;
@@ -105,78 +110,17 @@ export class ManageArticleComponent {
     if (resolvedData && resolvedData['article']) {
       const articleResponse = resolvedData['article'] as ViewArticleResponse
       if (articleResponse.statusCode === 200) {
-        const { title, content, categories, tags } = articleResponse.data
+        const { id, title, content, categories, tags } = articleResponse.data
+
+        // Store the ID to enable Edit Mode
+        this.articleId = id ?? null;
+
         this.articleForm.controls['title'].setValue(title)
         this.articleForm.controls['content'].setValue(content)
         this.articleForm.controls['tags'].setValue(tags ?? [])
         this.articleForm.controls['categories'].setValue(categories ?? [])
       }
     }
-  }
-
-  insertImageWithResize() {
-    const theFinalMaxWidth = this.uploadImageForm.get('width')?.value !== ''
-      ? this.uploadImageForm.get('width')?.value : this.maxWidth
-    const theFinalMaHeight = this.uploadImageForm.get('height')?.value !== ''
-      ? this.uploadImageForm.get('height')?.value : this.maxHeight
-
-    if (this.imgFile) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        const img = document.createElement('img');
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-
-          // Calculate new dimensions while maintaining aspect ratio
-          if (width > height) {
-            if (width > theFinalMaxWidth) {
-              height *= theFinalMaxWidth / width;
-              width = theFinalMaxWidth;
-            }
-          } else {
-            if (height > theFinalMaHeight) {
-              width *= theFinalMaHeight / height;
-              height = theFinalMaHeight;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-
-            // Get the resized image as a base64 string
-            const base64String = canvas.toDataURL(this.imgFile!.type);
-
-            // Insert the image into the editor
-            const range = this.quill!.getSelection(true);
-            this.quill!.insertEmbed(range.index, 'image', base64String);
-
-            // Apply the CSS classes
-            // This is a bit of a workaround as Quill doesn't directly support adding classes to the image embed.
-            // We find the image we just inserted and set its class.
-            setTimeout(() => {
-              const editorElement = this.quill!.root as HTMLElement;
-              const images = editorElement.getElementsByTagName('img');
-              for (let i = 0; i < images.length; i++) {
-                if (images[i].src === base64String) {
-                  images[i].className = 'responsive';
-                  break;
-                }
-              }
-            }, 100); // A small delay to ensure the image is in the DOM
-          }
-        }
-        img.src = e.target.result;
-      }
-      reader.readAsDataURL(this.imgFile);
-    }
-
-    this.isDialogVisible = false;
   }
 
   insertImage() {
@@ -288,7 +232,7 @@ export class ManageArticleComponent {
     }
 
     const { tags, categories, title, content } = this.articleForm.value;
-    const newArticle: ArticleWithTagsAndCategories = {
+    const articlePayload: ArticleWithTagsAndCategories = {
       tags,
       categories,
       title,
@@ -296,16 +240,32 @@ export class ManageArticleComponent {
     }
     console.log("Submit:", { tags, categories, title, content });
 
-    this.articleService.createArticle(newArticle)
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        catchError(err => {
-          this.error = true
-          this.errorMessage = 'È avvenuto un errore, contattare l\'amministratore'
-          return throwError(() => err)
-        })
-      ).subscribe(res => {
-        this.router.navigate(['/admin/articoli'])
+    let request$: Observable<ManagedEntityResponse>;
+
+    if (this.isEditMode && this.articleId) {
+      const updatePayload: ArticleWithTagsAndCategories = {
+        ...articlePayload,
+        id: this.articleId
+      };
+
+      request$ = this.articleService.updateArticle(updatePayload);
+    } else {
+      request$ = this.articleService.createArticle(articlePayload);
+    }
+
+    this.loadingResponse = true;
+
+    request$.pipe(
+      takeUntilDestroyed(this.#destroyRef),
+      catchError(err => {
+        this.loadingResponse = false;
+        this.error = true;
+        this.errorMessage = 'È avvenuto un errore, contattare l\'amministratore';
+        return throwError(() => err);
       })
+    ).subscribe(res => {
+      this.loadingResponse = false;
+      this.router.navigate(['/admin/articoli']);
+    });
   }
 }

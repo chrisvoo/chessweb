@@ -282,9 +282,9 @@ SQL;
 
         try {
             if (isset($article->id)) {
-                $userExist = $this->findById($article->id);
+                $articleExist = $this->findById($article->id);
 
-                if (!$userExist) {
+                if (!$articleExist) {
                     throw new ArticleNotFoundException();
                 }
 

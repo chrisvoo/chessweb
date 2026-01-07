@@ -38,7 +38,6 @@
   </php>
   <coverage
     processUncoveredFiles="true"
-    pathCoverage="true"
   >
     <include>
       <directory suffix=".php">./src/</directory>

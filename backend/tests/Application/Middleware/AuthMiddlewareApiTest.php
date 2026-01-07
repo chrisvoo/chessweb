@@ -11,9 +11,9 @@ use Slim\Psr7\Headers;
 use Slim\Psr7\Request;
 use Slim\Psr7\Uri;
 use Tests\Helper\RequestHandlerHelper;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class AuthMiddlewareTest extends TestCase
+class AuthMiddlewareApiTest extends ApiTestCase
 {
     public function testMissingHeaderThrowsException(): void
     {
@@ -22,7 +22,6 @@ class AuthMiddlewareTest extends TestCase
         $request = new Request('POST', $uri, new Headers(), [], [], $stream);
 
         $middleware = new AuthMiddleware(
-            $this->createMock(LoggerInterface::class),
             $this->createMock(JWTServiceInterface::class)
         );
         $handler = new RequestHandlerHelper();
@@ -42,7 +41,6 @@ class AuthMiddlewareTest extends TestCase
         $request = new Request('POST', $uri, $headers, [], [], $stream);
 
         $middleware = new AuthMiddleware(
-            $this->createMock(LoggerInterface::class),
             $this->createMock(JWTServiceInterface::class)
         );
         $handler = new RequestHandlerHelper();
@@ -68,7 +66,6 @@ class AuthMiddlewareTest extends TestCase
         $jwtService->method('verifyToken')->willReturn(false);
 
         $middleware = new AuthMiddleware(
-            $this->createMock(LoggerInterface::class),
             $jwtService
         );
         $handler = new RequestHandlerHelper();

@@ -1,20 +1,20 @@
 <?php
 
-namespace Tests\Domain\Category;
+namespace Tests\Domain\Tag;
 
-use App\Domain\Category\Category;
-use Tests\TestCase;
+use App\Domain\Tag\Tag;
+use Tests\ApiTestCase;
 
-class CategoryTest extends TestCase
+class TagApiTest extends ApiTestCase
 {
     public function testJsonSerialize(): void
     {
         $id = 1;
-        $name = "tournaments";
+        $name = "a_good_tag";
         $createdAt = '2021-01-01 00:00:00';
         $updatedAt = '2021-01-01 00:00:00';
 
-        $tag = new Category();
+        $tag = new Tag();
         $tag->id = $id;
         $tag->name = $name;
         $tag->created_at = $createdAt;

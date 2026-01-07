@@ -28,18 +28,29 @@ class Faker
                 $value = null;
                 $valueInited = true;
             } elseif ($type->isBuiltin()) {
-                switch($type->getName()) {
+                switch ($type->getName()) {
                     case 'string':
-                    {
                         $value = str_contains($property->name, 'email') ? 'email@example.it' : "abc";
                         $valueInited = true;
                         break;
-                    }
-                    case 'int': $value = 123; $valueInited = true; break;
-                    case 'float': $value = 123.123; $valueInited = true; break;
-                    case 'bool': $value = true; $valueInited = true; break;
-                    case 'array': $value = []; $valueInited = true; break;
-                    default: echo 'Skipping type: ' . $type->getName();
+                    case 'int':
+                        $value = 123;
+                        $valueInited = true;
+                        break;
+                    case 'float':
+                        $value = 123.123;
+                        $valueInited = true;
+                        break;
+                    case 'bool':
+                        $value = true;
+                        $valueInited = true;
+                        break;
+                    case 'array':
+                        $value = [];
+                        $valueInited = true;
+                        break;
+                    default:
+                        echo 'Skipping type: ' . $type->getName();
                 }
             }
 

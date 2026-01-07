@@ -1,28 +1,30 @@
 <?php
 
-namespace Tests\Application\Actions\Tag;
+namespace Tests\Application\Actions\Article;
 
 use App\Application\Actions\ActionPayload;
+use App\Domain\Article\Article;
 use App\Domain\Tag\Tag;
+use App\Infrastructure\Persistence\Article\ArticleRepositoryInterface;
 use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use Tests\Helper\Faker;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class ListTagsActionTest extends TestCase
+class ListArticlesActionApiTest extends ApiTestCase
 {
     public function testListTagsSuccess(): void
     {
-        $repo = $this->mockRepository(TagRepositoryInterface::class);
+        $repo = $this->mockRepository(ArticleRepositoryInterface::class);
         for ($i = 0; $i < 7; $i++) {
-            $tags[] = Faker::fakeData(Tag::class);
+            $articles[] = Faker::fakeData(Article::class);
         }
 
         $repo->method('count')->withAnyParameters()->willReturn(7);
-        $repo->method('list')->withAnyParameters()->willReturn($tags);
+        $repo->method('list')->withAnyParameters()->willReturn($articles);
 
         $request = $this->createRequest(
             'GET',
-            '/api/tags',
+            '/api/articles',
             http_build_query([
                 'page' => 1,
                 'page_size' => 3
@@ -34,7 +36,7 @@ class ListTagsActionTest extends TestCase
         $expectedPayload = new ActionPayload(
             200,
             [
-                'items' => array_slice($tags, 0, 3),
+                'items' => array_slice($articles, 0, 3),
                 'total_items' => 7,
                 'total_pages' => 3,
                 'has_more_items' => true,
@@ -45,7 +47,5 @@ class ListTagsActionTest extends TestCase
         $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
 
         $this->assertEquals($serializedPayload, $payload);
-
     }
-
 }

@@ -6,9 +6,9 @@ use App\Domain\DomainException\InvalidRequestException;
 use App\Domain\Validators\ValidationScope;
 use App\Domain\Validators\ValidatorInterface;
 use Slim\Psr7\Request;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class BaseValidator extends TestCase
+class BaseValidator extends ApiTestCase
 {
     /**
      * @param array $payload

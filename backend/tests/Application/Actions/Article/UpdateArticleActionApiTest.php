@@ -2,45 +2,50 @@
 
 declare(strict_types=1);
 
-namespace Tests\Application\Actions\Tag;
+namespace Tests\Application\Actions\Article;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
+use App\Domain\Article\Article;
+use App\Domain\Article\ArticleNotFoundException;
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\Tag\Tag;
 use App\Domain\Tag\TagNotFoundException;
 use App\Domain\User\User;
 use App\Domain\User\UserNotFoundException;
+use App\Infrastructure\Persistence\Article\ArticleRepositoryInterface;
 use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use App\Infrastructure\Persistence\User\UserRepositoryInterface;
 use Tests\Helper\Faker;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class UpdateTagActionTest extends TestCase
+class UpdateArticleActionApiTest extends ApiTestCase
 {
-    private function getFakeTag(): array
+    private function getFakeArticle(): array
     {
-        $tag = Faker::fakeData(Tag::class)->jsonSerialize();
-        unset($tag['created_at']);
-        unset($tag['updated_at']);
-        unset($tag['id']);
+        $article = Faker::fakeData(Article::class)->jsonSerialize();
+        unset($article['created_at']);
+        unset($article['updated_at']);
+        unset($article['id']);
+        unset($article['tags']);
+        unset($article['categories']);
 
-        return $tag;
+        return $article;
     }
 
     /**
      * @throws \ReflectionException
      */
-    public function testUpdateTagSuccess(): void
+    public function testUpdateArticleSuccess(): void
     {
-        $repo = $this->mockRepository(TagRepositoryInterface::class);
+        $repo = $this->mockRepository(ArticleRepositoryInterface::class);
         $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated(1);
         $repo->method('save')->willReturn($dbOp);
 
         $request = $this->createRequest(
             'PUT',
-            '/api/tag/1'
-        )->withParsedBody($this->getFakeTag());
+            '/api/article/1'
+        )->withParsedBody($this->getFakeArticle());
 
         $response = $this->app->handle($request);
 
@@ -53,17 +58,17 @@ class UpdateTagActionTest extends TestCase
 
     public function testUpdateTagNotFoundException(): void
     {
-        $repo = $this->mockRepository(TagRepositoryInterface::class);
-        $repo->method('save')->willThrowException(new TagNotFoundException());
+        $repo = $this->mockRepository(ArticleRepositoryInterface::class);
+        $repo->method('save')->willThrowException(new ArticleNotFoundException());
 
         $request = $this->createRequest(
             'PUT',
-            '/api/tag/1'
-        )->withParsedBody($this->getFakeTag());
+            '/api/article/1'
+        )->withParsedBody($this->getFakeArticle());
         $response = $this->app->handle($request);
         $payload = (string) $response->getBody();
 
-        $expectedError = new ActionError(ActionError::RESOURCE_NOT_FOUND, "Tag not found");
+        $expectedError = new ActionError(ActionError::RESOURCE_NOT_FOUND, "Article not found");
         $expectedPayload = new ActionPayload(404, null, $expectedError);
         $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
         $this->assertEquals($serializedPayload, $payload);

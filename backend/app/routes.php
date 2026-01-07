@@ -34,6 +34,7 @@ use App\Infrastructure\Components\JWTServiceInterface;
 //use Psr\Http\Message\ServerRequestInterface;
 //use Psr\Http\Server\RequestHandlerInterface;
 //use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
@@ -41,6 +42,20 @@ use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
 return function (App $app) {
+    $container = $app->getContainer();
+
+    set_error_handler(function ($severity, $message, $file, $line) use ($container) {
+        // Check if the error is the specific deprecation from Respect/Validation
+        if ($severity === E_DEPRECATED) {
+            $deprecationMessage = "Deprecation Message: $message in $file line $line";
+            $container->get(LoggerInterface::class)->warning($deprecationMessage);
+            return true;
+        }
+
+        // Return false to let the normal PHP/Slim error handler handle everything else
+        return false;
+    });
+
     /*
     $app->add(function (
         ServerRequestInterface $request,

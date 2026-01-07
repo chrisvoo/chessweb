@@ -2,27 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Tests\Application\Actions\Tag;
+namespace Tests\Application\Actions\User;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
 use App\Domain\Operations\DatabaseOperation;
-use App\Domain\Tag\TagNotFoundException;
-use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
-use Tests\TestCase;
+use App\Domain\User\User;
+use App\Domain\User\UserNotFoundException;
+use App\Infrastructure\Persistence\User\UserRepositoryInterface;
+use Tests\Helper\Faker;
+use Tests\ApiTestCase;
 
-class DeleteTagActionTest extends TestCase
+class DeleteUserActionApiTest extends ApiTestCase
 {
     /**
      * @throws \ReflectionException
      */
-    public function testDeleteUserSuccess(): void
+    public function testGetSingleUserSuccess(): void
     {
-        $repo = $this->mockRepository(TagRepositoryInterface::class);
+        $repo = $this->mockRepository(UserRepositoryInterface::class);
         $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted(1);
         $repo->method('delete')->willReturn($dbOp);
 
-        $request = $this->createRequest('DELETE', '/api/tag/1');
+        $request = $this->createRequest('DELETE', '/api/user/1');
         $response = $this->app->handle($request);
 
         $payload = (string) $response->getBody();
@@ -32,16 +34,16 @@ class DeleteTagActionTest extends TestCase
         $this->assertEquals($serializedPayload, $payload);
     }
 
-    public function testDeleteUserNotFoundException(): void
+    public function testGetSingleUserNotFoundException(): void
     {
-        $repo = $this->mockRepository(TagRepositoryInterface::class);
-        $repo->method('delete')->willThrowException(new TagNotFoundException());
+        $repo = $this->mockRepository(UserRepositoryInterface::class);
+        $repo->method('delete')->willThrowException(new UserNotFoundException());
 
-        $request = $this->createRequest('DELETE', '/api/tag/1');
+        $request = $this->createRequest('DELETE', '/api/user/1');
         $response = $this->app->handle($request);
         $payload = (string) $response->getBody();
 
-        $expectedError = new ActionError(ActionError::RESOURCE_NOT_FOUND, "Tag not found");
+        $expectedError = new ActionError(ActionError::RESOURCE_NOT_FOUND, "User not found");
         $expectedPayload = new ActionPayload(404, null, $expectedError);
         $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
         $this->assertEquals($serializedPayload, $payload);

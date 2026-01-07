@@ -233,7 +233,7 @@ SQL;
             $sql .= 'WHERE ' . implode(' AND ', $wheres) . ' ';
         }
 
-        $this->logger->debug('list SQL', ['sql' => $sql, 'params' => $params]);
+        $this->logger->debug('count SQL', ['sql' => $sql, 'params' => $params]);
         return $this->databaseManager->count(
             $sql,
             $params
@@ -389,7 +389,7 @@ SQL;
             $this->articlesTagsRepository->deleteTagsForArticle($article->id);
 
             $tagIds = array_map(fn (Tag $tag) => $tag->id, $article->tags);
-            $this->articlesTagsRepository->saveTagsForArticle($article->id, $tagIds);
+            $this->articlesTagsRepository->saveTagsForArticle($article->id, ['article_id', 'tag_id'], $tagIds);
             return DatabaseOperation::newSingleEntitySuccessfullyCreated($article->id);
         }
 

@@ -1,15 +1,59 @@
 <?xml version="1.0"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" backupGlobals="false" backupStaticAttributes="false" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutChangesToGlobalState="true" beStrictAboutOutputDuringTests="true" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="tests/bootstrap.php">
-  <coverage processUncoveredFiles="true">
+<phpunit
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+  backupGlobals="false"
+  backupStaticAttributes="false"
+  beStrictAboutTestsThatDoNotTestAnything="true"
+  beStrictAboutChangesToGlobalState="true"
+  beStrictAboutOutputDuringTests="true"
+  colors="true"
+  convertErrorsToExceptions="true"
+  convertNoticesToExceptions="true"
+  convertWarningsToExceptions="true"
+  processIsolation="false"
+  stopOnFailure="false"
+  bootstrap="tests/bootstrap.php"
+>
+  <php>
+    <env name="CREATE_TEST_DATABASE" value="false" />
+    <!-- specific for the app -->
+    <env name="PROJECT_ROOT" value="/Users/christian.castelli/GitHub/scacchilatorre/backend" />
+    <env name="PRODUCTION" value="false" />
+    <env name="JWT_SECRET" value="328a9cdbf9ccf3bc6a7a5f250484d736746e58775920b080e810edbb0cb27bba" />
+    <env name="JWT_TTL" value="60" />
+    <env name="JWT_REFRESH_TTL" value="120" />
+    <env name="JWT_ISSUER" value="http://localhost:9000" />
+    <env name="COOKIE_RT_NAME" value="rt" />
+    <env name="LOG_ERRORS" value="true" />
+    <env name="LOG_ERROR_DETAILS" value="true" />
+    <env name="LOGGER_NAME" value="chess-app-test" />
+    <env name="LOGGER_PATH" value="/Users/christian.castelli/GitHub/scacchilatorre/backend//logs/app.log" />
+    <env name="LOGGER_LEVEL" value="DEBUG" />
+    <env name="DB_HOST" value="localhost" />
+    <env name="DB_NAME" value="chess_test" />
+    <env name="DB_PORT" value="3306" />
+    <env name="DB_USER" value="root" />
+    <env name="DB_PASS" value="test" />
+  </php>
+  <coverage
+    processUncoveredFiles="true"
+    pathCoverage="true"
+  >
     <include>
       <directory suffix=".php">./src/</directory>
     </include>
+    <report>
+      <html
+        outputDirectory="html-coverage"
+        lowUpperBound="50"
+        highLowerBound="90"
+      />
+    </report>
   </coverage>
   <testsuites>
     <testsuite name="Test Suite">
       <directory>./tests/</directory>
     </testsuite>
   </testsuites>
-  <php>
-  </php>
 </phpunit>

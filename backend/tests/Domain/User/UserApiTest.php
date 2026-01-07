@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Domain\User;
 
 use App\Domain\User\User;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class UserTest extends TestCase
+class UserApiTest extends ApiTestCase
 {
     public function testJsonSerialize()
     {

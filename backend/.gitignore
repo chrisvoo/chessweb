@@ -1,6 +1,6 @@
 .idea/
 .vscode/
-/coverage/
+/html-coverage/
 /vendor/
 /logs/*
 !/logs/README.md

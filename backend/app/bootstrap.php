@@ -1,6 +1,7 @@
 <?php
 
 return function () {
+    throw new Exception('sono qui');
     $dotenv = Dotenv\Dotenv::createImmutable(join('/', [__DIR__, '..']));
     $dotenv->load(); // throws an exception if the .env does not exist
     $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS'])->notEmpty();

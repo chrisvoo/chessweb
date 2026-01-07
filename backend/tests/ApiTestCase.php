@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Tests;
 
 use App\Application\Handlers\HttpErrorHandler;
+use App\Domain\User\User;
 use App\Infrastructure\Components\JWTServiceInterface;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use DI\Container;
 use DI\ContainerBuilder;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
 use Slim\Middleware\ErrorMiddleware;
@@ -21,16 +23,10 @@ use Slim\Psr7\Headers;
 use Slim\Psr7\Request as SlimRequest;
 use Slim\Psr7\Uri;
 
-class TestCase extends PHPUnit_TestCase
+class ApiTestCase extends TestCase
 {
     protected ?App $app;
     protected DatabaseManagerInterface|MockObject $databaseManager;
-
-    public static function setUpBeforeClass(): void
-    {
-        $bootstrap = require __DIR__ . '/../app/bootstrap.php';
-        $bootstrap();
-    }
 
     public function setUp(): void
     {
@@ -43,11 +39,14 @@ class TestCase extends PHPUnit_TestCase
 
     protected function mockAuthentication(): MockObject|JWTServiceInterface
     {
+        $mockUser = new User();
+        $mockUser->id = 123;
+
         $jwtService = $this->getMockBuilder(JWTServiceInterface::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['verifyToken', 'issueToken'])
             ->getMock();
-        $jwtService->method('verifyToken')->willReturn(true);
+        $jwtService->method('verifyToken')->willReturn($mockUser);
 
         return $jwtService;
     }
@@ -112,7 +111,11 @@ class TestCase extends PHPUnit_TestCase
 
         $callableResolver = $app->getCallableResolver();
         $responseFactory = $app->getResponseFactory();
-        $errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+        $errorHandler = new HttpErrorHandler(
+            $callableResolver,
+            $responseFactory,
+            $this->createMock(LoggerInterface::class)
+        );
         $errorMiddleware = new ErrorMiddleware($callableResolver, $responseFactory, true, false, false);
         $errorMiddleware->setDefaultErrorHandler($errorHandler);
         $app->add($errorMiddleware);

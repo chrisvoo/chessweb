@@ -3,9 +3,9 @@
 namespace Tests\Domain\Article;
 
 use App\Domain\Article\Article;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class ArticleTest extends TestCase
+class ArticleApiTest extends ApiTestCase
 {
     public function testJsonSerialize(): void
     {

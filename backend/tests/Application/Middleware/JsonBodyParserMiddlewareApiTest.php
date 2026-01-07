@@ -9,9 +9,9 @@ use Slim\Psr7\Headers;
 use Slim\Psr7\Request;
 use Slim\Psr7\Uri;
 use Tests\Helper\RequestHandlerHelper;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class JsonBodyParserMiddlewareTest extends TestCase
+class JsonBodyParserMiddlewareApiTest extends ApiTestCase
 {
     public function testDoesNothingWithoutContentType(): void
     {

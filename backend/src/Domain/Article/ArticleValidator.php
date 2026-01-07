@@ -12,13 +12,6 @@ use Slim\Psr7\Request;
 
 class ArticleValidator implements ValidatorInterface
 {
-
-    public function __construct(
-        private ListSimpleNamedValidator $validator
-    )
-    {
-    }
-
     /**
      * Validates a request
      * @param Request $request The request

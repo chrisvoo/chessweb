@@ -6,9 +6,9 @@ use App\Application\Actions\ActionPayload;
 use App\Domain\User\User;
 use App\Infrastructure\Persistence\User\UserRepositoryInterface;
 use Tests\Helper\Faker;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class ListUsesActionTest extends TestCase
+class ListUsesActionApiTest extends ApiTestCase
 {
     public function testUsersListSuccess(): void
     {

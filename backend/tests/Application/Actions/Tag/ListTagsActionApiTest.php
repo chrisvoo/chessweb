@@ -1,20 +1,20 @@
 <?php
 
-namespace Tests\Application\Actions\Category;
+namespace Tests\Application\Actions\Tag;
 
 use App\Application\Actions\ActionPayload;
-use App\Domain\Category\Category;
-use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
+use App\Domain\Tag\Tag;
+use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use Tests\Helper\Faker;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class ListCategoriesActionTest extends TestCase
+class ListTagsActionApiTest extends ApiTestCase
 {
-    public function testListCategoriesSuccess(): void
+    public function testListTagsSuccess(): void
     {
-        $repo = $this->mockRepository(CategoryRepositoryInterface::class);
+        $repo = $this->mockRepository(TagRepositoryInterface::class);
         for ($i = 0; $i < 7; $i++) {
-            $tags[] = Faker::fakeData(Category::class);
+            $tags[] = Faker::fakeData(Tag::class);
         }
 
         $repo->method('count')->withAnyParameters()->willReturn(7);
@@ -22,7 +22,7 @@ class ListCategoriesActionTest extends TestCase
 
         $request = $this->createRequest(
             'GET',
-            '/api/categories',
+            '/api/tags',
             http_build_query([
                 'page' => 1,
                 'page_size' => 3

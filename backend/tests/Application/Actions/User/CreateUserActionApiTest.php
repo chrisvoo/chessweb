@@ -11,23 +11,32 @@ use App\Domain\User\User;
 use App\Domain\User\UserNotFoundException;
 use App\Infrastructure\Persistence\User\UserRepositoryInterface;
 use Tests\Helper\Faker;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class UpdateUserActionTest extends TestCase
+class CreateUserActionApiTest extends ApiTestCase
 {
+    private function getFakeUser(): array
+    {
+        $user = Faker::fakeData(User::class)->jsonSerialize();
+        $user['password'] = 'password';
+        unset($user['id']);
+
+        return $user;
+    }
+
     /**
      * @throws \ReflectionException
      */
-    public function testUpdateUserSuccess(): void
+    public function testCreateUserSuccess(): void
     {
         $repo = $this->mockRepository(UserRepositoryInterface::class);
-        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated(1);
+        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyCreated(1);
         $repo->method('save')->willReturn($dbOp);
 
         $request = $this->createRequest(
-            'PUT',
-            '/api/user/1'
-        )->withParsedBody((Faker::fakeData(User::class))->jsonSerialize());
+            'POST',
+            '/api/user'
+        )->withParsedBody($this->getFakeUser());
 
         $response = $this->app->handle($request);
 
@@ -44,9 +53,9 @@ class UpdateUserActionTest extends TestCase
         $repo->method('save')->willThrowException(new UserNotFoundException());
 
         $request = $this->createRequest(
-            'PUT',
-            '/api/user/1'
-        )->withParsedBody(Faker::fakeData(User::class)->jsonSerialize());
+            'POST',
+            '/api/user'
+        )->withParsedBody($this->getFakeUser());
         $response = $this->app->handle($request);
         $payload = (string) $response->getBody();
 

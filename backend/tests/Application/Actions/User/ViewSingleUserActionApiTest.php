@@ -6,56 +6,38 @@ namespace Tests\Application\Actions\User;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
-use App\Domain\Operations\DatabaseOperation;
 use App\Domain\User\User;
-use App\Domain\User\UserNotFoundException;
 use App\Infrastructure\Persistence\User\UserRepositoryInterface;
 use Tests\Helper\Faker;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class CreateUserActionTest extends TestCase
+class ViewSingleUserActionApiTest extends ApiTestCase
 {
-    private function getFakeUser(): array
-    {
-        $user = Faker::fakeData(User::class)->jsonSerialize();
-        $user['password'] = 'password';
-        unset($user['id']);
-
-        return $user;
-    }
-
     /**
      * @throws \ReflectionException
      */
-    public function testCreateUserSuccess(): void
+    public function testGetSingleUserSuccess(): void
     {
         $repo = $this->mockRepository(UserRepositoryInterface::class);
-        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyCreated(1);
-        $repo->method('save')->willReturn($dbOp);
+        $user = Faker::fakeData(User::class);
+        $repo->method('findById')->willReturn($user);
 
-        $request = $this->createRequest(
-            'POST',
-            '/api/user'
-        )->withParsedBody($this->getFakeUser());
-
+        $request = $this->createRequest('GET', '/api/user/1');
         $response = $this->app->handle($request);
 
         $payload = (string) $response->getBody();
-        $expectedPayload = new ActionPayload(200, $dbOp);
+        $expectedPayload = new ActionPayload(200, $user);
         $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
 
         $this->assertEquals($serializedPayload, $payload);
     }
 
-    public function testUpdateUserNotFoundException(): void
+    public function testGetSingleUserNotFoundException(): void
     {
         $repo = $this->mockRepository(UserRepositoryInterface::class);
-        $repo->method('save')->willThrowException(new UserNotFoundException());
+        $repo->method('findById')->willReturn(false);
 
-        $request = $this->createRequest(
-            'POST',
-            '/api/user'
-        )->withParsedBody($this->getFakeUser());
+        $request = $this->createRequest('GET', '/api/user/1');
         $response = $this->app->handle($request);
         $payload = (string) $response->getBody();
 

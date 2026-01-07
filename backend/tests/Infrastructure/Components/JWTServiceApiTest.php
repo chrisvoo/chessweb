@@ -9,9 +9,9 @@ use DateTimeImmutable;
 use Lcobucci\Clock\FrozenClock;
 use Lcobucci\Clock\SystemClock;
 use Tests\Helper\Faker;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class JWTServiceTest extends TestCase
+class JWTServiceApiTest extends ApiTestCase
 {
     public function testIssueToken(): void
     {

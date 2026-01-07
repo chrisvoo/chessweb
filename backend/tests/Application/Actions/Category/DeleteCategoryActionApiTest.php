@@ -6,39 +6,25 @@ namespace Tests\Application\Actions\Category;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
-use App\Domain\Category\Category;
 use App\Domain\Category\CategoryNotFoundException;
 use App\Domain\Operations\DatabaseOperation;
+use App\Domain\Tag\TagNotFoundException;
 use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
-use Tests\Helper\Faker;
-use Tests\TestCase;
+use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
+use Tests\ApiTestCase;
 
-class CreateCategoryActionTest extends TestCase
+class DeleteCategoryActionApiTest extends ApiTestCase
 {
-    private function getFakeCategory(): array
-    {
-        $category = Faker::fakeData(Category::class)->jsonSerialize();
-        unset($category['created_at']);
-        unset($category['updated_at']);
-        unset($category['id']);
-
-        return $category;
-    }
-
     /**
      * @throws \ReflectionException
      */
-    public function testCreateTagSuccess(): void
+    public function testGetSingleUserSuccess(): void
     {
         $repo = $this->mockRepository(CategoryRepositoryInterface::class);
-        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyCreated(1);
-        $repo->method('save')->willReturn($dbOp);
+        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted(1);
+        $repo->method('delete')->willReturn($dbOp);
 
-        $request = $this->createRequest(
-            'POST',
-            '/api/category'
-        )->withParsedBody($this->getFakeCategory());
-
+        $request = $this->createRequest('DELETE', '/api/category/1');
         $response = $this->app->handle($request);
 
         $payload = (string) $response->getBody();
@@ -48,15 +34,12 @@ class CreateCategoryActionTest extends TestCase
         $this->assertEquals($serializedPayload, $payload);
     }
 
-    public function testUpdateTagNotFoundException(): void
+    public function testGetSingleUserNotFoundException(): void
     {
         $repo = $this->mockRepository(CategoryRepositoryInterface::class);
-        $repo->method('save')->willThrowException(new CategoryNotFoundException());
+        $repo->method('delete')->willThrowException(new CategoryNotFoundException());
 
-        $request = $this->createRequest(
-            'POST',
-            '/api/category'
-        )->withParsedBody($this->getFakeCategory());
+        $request = $this->createRequest('DELETE', '/api/category/1');
         $response = $this->app->handle($request);
         $payload = (string) $response->getBody();
 

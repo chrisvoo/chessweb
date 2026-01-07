@@ -11,9 +11,9 @@ use App\Domain\Article\ArticleNotFoundException;
 use App\Domain\Operations\DatabaseOperation;
 use App\Infrastructure\Persistence\Article\ArticleRepositoryInterface;
 use Tests\Helper\Faker;
-use Tests\TestCase;
+use Tests\ApiTestCase;
 
-class CreateArticleActionTest extends TestCase
+class CreateArticleActionApiTest extends ApiTestCase
 {
     private function getFakeArticle(): array
     {

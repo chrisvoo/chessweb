@@ -56,6 +56,8 @@
     },
     "scripts": {
         "start": "php -S localhost:8080 -t public",
-        "test": "phpunit"
+        "test": "phpunit",
+        "migrate": "php migrations/index.php",
+        "migrate:test": "php migrations/index.php -t"
     }
 }

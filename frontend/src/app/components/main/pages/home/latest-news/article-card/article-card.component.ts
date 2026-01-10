@@ -1,8 +1,11 @@
 import {Component, input} from '@angular/core';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'chess-article-card',
-  imports: [],
+  imports: [
+    RouterLink
+  ],
   templateUrl: './article-card.component.html',
   styleUrl: './article-card.component.css',
   standalone: true,
@@ -26,5 +29,6 @@ export class ArticleCardComponent {
   })
   title = input.required<string>()
   id = input.required<number>()
+  slug = input.required<string>()
   createdAt = input('')
 }

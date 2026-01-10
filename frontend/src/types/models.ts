@@ -28,6 +28,7 @@ export interface ArticleWithTagsAndCategories {
   id?: number
   title: string
   content: string
+  slug?: string
   created_at?: string
   updated_at?: string|null
   tags?: NamedEntity[]

@@ -436,4 +436,11 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $this->assertEmpty($op->message);
         $this->assertEquals(DatabaseOperation::SERVER_ERROR, $op->code);
     }
+
+    public function testDeleteSuccess(): void
+    {
+        $op = $this->articleRepository->delete(1093);
+        $this->assertEquals(DatabaseOperation::ENTITY_DELETED, $op->code);
+        $this->assertEquals('Entity deleted', $op->message);
+    }
 }

@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './components/main/pages/home/home.component';
 import { NotFoundComponent } from './components/main/pages/not-found/not-found.component';
-import { AdminComponent } from './admin/admin.component';
 import { environment } from '../environments/environment';
 import {isLoggedInGuard} from './guards/auth.guard';
 import {articleResolver} from './resolvers/article.resolver';
@@ -43,7 +42,16 @@ export const routes: Routes = [
     path: 'notizie',
     title: `${mainTitle} - Notizie`,
     loadComponent: () => import('./components/main/pages/news/news.component')
-      .then(m => m.NewsComponent)
+      .then(m => m.NewsComponent),
+    children: [
+      {
+        path: 'modifica',
+        title: `${mainTitle} - Notizie > `,
+        loadComponent: () => import('./admin/admin-articles/manage-article/manage-article.component')
+          .then(m => m.ManageArticleComponent),
+        resolve: { article: articleResolver }
+      }
+    ]
   },
   {
     path: 'safeguarding',

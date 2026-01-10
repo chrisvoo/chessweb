@@ -1,4 +1,4 @@
-import {Article, ArticleWithTagsAndCategories, User} from './models';
+import {ArticleWithTagsAndCategories, User} from './models';
 
 export interface LoginResponse {
   statusCode: number

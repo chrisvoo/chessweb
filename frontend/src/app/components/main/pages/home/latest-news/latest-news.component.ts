@@ -4,7 +4,7 @@ import {ArticlesService} from '../../../../../services/articles/articles.service
 import {ListPaginatedArticles, ListPaginatedItemsResponse, ListPaginatedParams} from '../../../../../../types/requests';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, throwError} from 'rxjs';
-import {Article, ArticleWithTagsAndCategories} from '../../../../../../types/models';
+import {ArticleWithTagsAndCategories} from '../../../../../../types/models';
 import {ArticleCardComponent} from './article-card/article-card.component';
 import $ from 'jquery';
 

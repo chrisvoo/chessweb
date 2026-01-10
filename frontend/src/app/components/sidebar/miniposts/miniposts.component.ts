@@ -7,14 +7,16 @@ import {TagsService} from '../../../services/tags/tags.service';
 
 import {CategoriesService} from '../../../services/categories/categories.service';
 import {Badge} from 'primeng/badge';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-miniposts',
   imports: [
     SidebarItemComponent,
     OverlayBadgeModule,
-    Badge
-],
+    Badge,
+    RouterLink
+  ],
   standalone: true,
   templateUrl: './miniposts.component.html',
   styleUrl: './miniposts.component.css'

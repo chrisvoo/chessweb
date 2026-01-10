@@ -5,7 +5,9 @@
   <p>{{ content() }}</p>
   @if (isContentTruncated) {
     <ul class="actions">
-      <li><a href="#" class="button">More</a></li>
+      <li>
+        <a [routerLink]="['/notizie', slug()]" class="button">Continua a leggere...</a>
+      </li>
     </ul>
   }
 </article>

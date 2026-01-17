@@ -7,11 +7,9 @@ use JsonSerializable;
 class SimpleNamedEntity extends BaseDomainEntity implements JsonSerializable
 {
     public int $id;
-
     public string $name;
-
+    public string $slug;
     public string $created_at = '';
-
     public ?string $updated_at = null;
 
     /**
@@ -26,6 +24,7 @@ class SimpleNamedEntity extends BaseDomainEntity implements JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'slug' => $this->slug,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];

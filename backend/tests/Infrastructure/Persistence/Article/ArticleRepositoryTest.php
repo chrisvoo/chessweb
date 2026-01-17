@@ -50,14 +50,15 @@ class ArticleRepositoryTest extends IntegrationTestCase
 
     public function testFindById(): void
     {
-        $article = $this->articleRepository->findById(1093);
-        $this->assertEquals(1093, $article->id);
+        $article = $this->articleRepository->findById(2437);
+        $this->assertEquals(2437, $article->id);
         $this->assertEquals(1, $article->author_id);
-        $this->assertEquals('new', $article->title);
-        $this->assertStringContainsString('<p>hih oh</p><p><img src="data:image/jpeg', $article->content);
+        $this->assertEquals('Campionato interprovinciale di Pisa e Livorno 2019', $article->title);
+        $this->assertEquals('campionato-interprovinciale-di-pisa-e-livorno-2019-2437', $article->slug);
+        $this->assertStringContainsString('<b>Massimo Bardi</b> (3,5/5), terzo classificato', $article->content);
         $this->assertEmpty($article->categories);
         $this->assertEmpty($article->tags);
-        $this->assertEquals("2025-12-30 16:26:42", $article->created_at);
+        $this->assertEquals("2019-01-22 00:00:00", $article->created_at);
         $this->assertNull($article->updated_at);
     }
 
@@ -67,14 +68,34 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $this->assertFalse($article);
     }
 
+    public function testFindBySlug(): void
+    {
+        $article = $this->articleRepository->findBySlug('campionato-interprovinciale-di-pisa-e-livorno-2019-2437');
+        $this->assertEquals(2437, $article->id);
+        $this->assertEquals(1, $article->author_id);
+        $this->assertEquals('Campionato interprovinciale di Pisa e Livorno 2019', $article->title);
+        $this->assertEquals('campionato-interprovinciale-di-pisa-e-livorno-2019-2437', $article->slug);
+        $this->assertStringContainsString('<b>Massimo Bardi</b> (3,5/5), terzo classificato', $article->content);
+        $this->assertEmpty($article->categories);
+        $this->assertEmpty($article->tags);
+        $this->assertEquals("2019-01-22 00:00:00", $article->created_at);
+        $this->assertNull($article->updated_at);
+    }
+
+    public function testFindBySlugNotFound(): void
+    {
+        $article = $this->articleRepository->findBySlug('gnagna');
+        $this->assertFalse($article);
+    }
+
     public function testListWithDefaultFilters(): void
     {
         $filters = new ArticleFilters();
         $filters->sortOrder = SortDirection::ASC;
         $filters->sortBy = 'created_at';
         $filters->searchText = null;
-        $filters->categoryId = null;
-        $filters->tagId = null;
+        $filters->tagSlug = null;
+        $filters->categorySlug = null;
         $filters->createdFrom = null;
         $filters->createdTo = null;
         $filters->skipContent = true;
@@ -84,7 +105,7 @@ class ArticleRepositoryTest extends IntegrationTestCase
 
         $articles = $this->articleRepository->list($filters);
         $this->assertCount(11, $articles);
-        $this->assertEquals(1000, $articles[0]->id);
+        $this->assertEquals(2372, $articles[0]->id);
     }
 
     public function testListWithFilters(): void
@@ -93,8 +114,8 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $filters->sortOrder = SortDirection::DESC;
         $filters->sortBy = 'created_at';
         $filters->searchText = "Campi Bisenzio";
-        $filters->categoryId = 44;
-        $filters->tagId = 1;
+        $filters->categorySlug = 'tornei';
+        $filters->tagSlug = 'chess';
         $filters->createdFrom = "2025-05-01 00:00:00";
         $filters->createdTo = "2025-05-07 00:00:00";
         $filters->skipContent = false;
@@ -105,18 +126,20 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $articles = $this->articleRepository->list($filters);
         $this->assertCount(1, $articles);
         $article = $articles[0];
-        $this->assertEquals(967, $article->id);
+        $this->assertEquals(2337, $article->id);
         $this->assertStringContainsString('Campi Bisenzio', $article->content);
         $this->assertEquals('2025-05-06 00:00:00', $article->created_at);
 
+        $this->assertCount(1, $article->categories);
         $category = $article->categories[0];
-        $this->assertEquals(44, $category->id);
+        $this->assertEquals(103, $category->id);
         $this->assertEquals('Tornei', $category->name);
+        $this->assertEquals('tornei', $category->slug);
 
         $this->assertCount(2, $article->tags);
         $tag = $article->tags[0];
         $this->assertEquals(1, $tag->id);
-        $this->assertEquals('chess', $tag->name);
+        $this->assertEquals('Chess', $tag->name);
     }
 
     public function testCount(): void
@@ -125,8 +148,8 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $filters->sortOrder = SortDirection::DESC;
         $filters->sortBy = 'created_at';
         $filters->searchText = "Campi Bisenzio";
-        $filters->categoryId = 44;
-        $filters->tagId = 1;
+        $filters->categorySlug = 'tornei';
+        $filters->tagSlug = 'chess';
         $filters->createdFrom = "2025-05-01 00:00:00";
         $filters->createdTo = "2025-05-07 00:00:00";
         $filters->skipContent = false;
@@ -155,7 +178,7 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $this->expectExceptionCode(DatabaseOperation::ENTITY_NOT_FOUND);
 
         $article = new Article();
-        $article->id = 1093;
+        $article->id = 2337;
         $article->content = "<p>Hello!</p>";
         $article->title = "Updated article";
         $article->author_id = 1;
@@ -179,7 +202,7 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $this->expectExceptionCode(DatabaseOperation::ENTITY_NOT_FOUND);
 
         $article = new Article();
-        $article->id = 1093;
+        $article->id = 2337;
         $article->content = "<p>Hello!</p>";
         $article->title = "Updated article";
         $article->author_id = 1;
@@ -224,7 +247,7 @@ class ArticleRepositoryTest extends IntegrationTestCase
     public function testUpdateSuccess(): void
     {
         $article = new Article();
-        $article->id = 1093;
+        $article->id = 2437;
         $article->content = "<p>Hello!</p>";
         $article->title = "Updated article";
         $article->author_id = 1;
@@ -283,14 +306,14 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $this->assertInstanceOf(DatabaseOperation::class, $op);
         $this->assertEquals(1, $op->affectedRows);
         $this->assertEquals('Entity updated', $op->message);
-        $this->assertEquals(1093, $op->entityId);
+        $this->assertEquals(2437, $op->entityId);
 
-        $updatedArticle = $this->articleRepository->findById(1093);
-        $this->assertEquals(1093, $updatedArticle->id);
+        $updatedArticle = $this->articleRepository->findById(2437);
+        $this->assertEquals(2437, $updatedArticle->id);
         $this->assertEquals(1, $updatedArticle->author_id);
         $this->assertEquals("Updated article", $updatedArticle->title);
         $this->assertEquals("<p>Hello!</p>", $updatedArticle->content);
-        $this->assertEquals("2025-12-30 16:26:42", $updatedArticle->created_at);
+        $this->assertEquals("2019-01-22 00:00:00", $updatedArticle->created_at);
         $this->assertNotNull($updatedArticle->updated_at);
     }
 
@@ -408,6 +431,7 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $this->assertEquals(1, $newArticle->author_id);
         $this->assertEquals("Created article", $newArticle->title);
         $this->assertEquals("<p>Hello!</p>", $newArticle->content);
+        $this->assertStringStartsWith('created-article-', $newArticle->slug);
         $this->assertNotNull($newArticle->created_at);
         $this->assertNull($newArticle->updated_at);
     }
@@ -442,5 +466,103 @@ class ArticleRepositoryTest extends IntegrationTestCase
         $op = $this->articleRepository->delete(1093);
         $this->assertEquals(DatabaseOperation::ENTITY_DELETED, $op->code);
         $this->assertEquals('Entity deleted', $op->message);
+    }
+
+    public function testFindByIdWithoutExtraDetails(): void
+    {
+        $article = $this->articleRepository->findByIdWithExtraDetails(2337, false);
+        $this->assertEquals(2337, $article->id);
+        $this->assertEquals(1, $article->author_id);
+        $this->assertEquals('Il Circolo promuove due squadre in serie C al CIS 2025', $article->title);
+        $this->assertStringContainsString(
+            '2–4 maggio 2025) al quale abbiamo preso parte con tre squadre',
+            $article->content
+        );
+        $this->assertEmpty($article->categories);
+        $this->assertEmpty($article->tags);
+        $this->assertEquals('il-circolo-promuove-due-squadre-in-serie-c-al-cis-2025-2337', $article->slug);
+        $this->assertEquals("2025-05-06 00:00:00", $article->created_at);
+        $this->assertNull($article->updated_at);
+    }
+
+    public function testFindByIdWithExtraDetails(): void
+    {
+        $article = $this->articleRepository->findByIdWithExtraDetails(2337);
+        $this->assertEquals(2337, $article->id);
+        $this->assertEquals(1, $article->author_id);
+        $this->assertEquals('Il Circolo promuove due squadre in serie C al CIS 2025', $article->title);
+        $this->assertStringContainsString('2–4 maggio 2025) al quale abbiamo preso parte con tre squadre', $article->content);
+        $this->assertEquals('il-circolo-promuove-due-squadre-in-serie-c-al-cis-2025-2337', $article->slug);
+
+        $category = $article->categories[0];
+        $this->assertEquals(103, $category->id);
+        $this->assertEquals('Tornei', $category->name);
+
+        $this->assertCount(2, $article->tags);
+        $tag = $article->tags[0];
+        $this->assertEquals(1, $tag->id);
+        $this->assertEquals('Chess', $tag->name);
+
+        $this->assertEquals("2025-05-06 00:00:00", $article->created_at);
+        $this->assertNull($article->updated_at);
+    }
+
+    public function testFindByIdWithExtraDetailsArticleNotFound(): void
+    {
+        $article = $this->articleRepository->findByIdWithExtraDetails(9999);
+        $this->assertFalse($article);
+    }
+
+    public function testFindBySlugWithoutExtraDetails(): void
+    {
+        $article = $this->articleRepository->findBySlugWithExtraDetails(
+            'il-circolo-promuove-due-squadre-in-serie-c-al-cis-2025-2337',
+            false
+        );
+        $this->assertEquals(2337, $article->id);
+        $this->assertEquals(1, $article->author_id);
+        $this->assertEquals('Il Circolo promuove due squadre in serie C al CIS 2025', $article->title);
+        $this->assertStringContainsString(
+            '2–4 maggio 2025) al quale abbiamo preso parte con tre squadre',
+            $article->content
+        );
+        $this->assertEmpty($article->categories);
+        $this->assertEmpty($article->tags);
+        $this->assertEquals('il-circolo-promuove-due-squadre-in-serie-c-al-cis-2025-2337', $article->slug);
+        $this->assertEquals("2025-05-06 00:00:00", $article->created_at);
+        $this->assertNull($article->updated_at);
+    }
+
+    public function testFindBySlugWithExtraDetails(): void
+    {
+        $article = $this->articleRepository->findBySlugWithExtraDetails(
+            'il-circolo-promuove-due-squadre-in-serie-c-al-cis-2025-2337'
+        );
+        $this->assertEquals(2337, $article->id);
+        $this->assertEquals(1, $article->author_id);
+        $this->assertEquals('Il Circolo promuove due squadre in serie C al CIS 2025', $article->title);
+        $this->assertStringContainsString(
+            '2–4 maggio 2025) al quale abbiamo preso parte con tre squadre',
+            $article->content
+        );
+        $this->assertEquals('il-circolo-promuove-due-squadre-in-serie-c-al-cis-2025-2337', $article->slug);
+
+        $category = $article->categories[0];
+        $this->assertEquals(103, $category->id);
+        $this->assertEquals('Tornei', $category->name);
+
+        $this->assertCount(2, $article->tags);
+        $tag = $article->tags[0];
+        $this->assertEquals(1, $tag->id);
+        $this->assertEquals('Chess', $tag->name);
+
+        $this->assertEquals("2025-05-06 00:00:00", $article->created_at);
+        $this->assertNull($article->updated_at);
+    }
+
+    public function testFindBySlugWithExtraDetailsArticleNotFound(): void
+    {
+        $article = $this->articleRepository->findBySlugWithExtraDetails("slug-not-found");
+        $this->assertFalse($article);
     }
 }

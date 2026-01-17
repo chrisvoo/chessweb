@@ -38,11 +38,12 @@ class ImporterService implements Service
 
         $categoriesCache = [];
         $connection = $this->dbService->getConnection();
-        $stmtPosts = $connection->prepare("INSERT INTO articles (author_id, title, content, created_at) VALUES (?, ?, ?, ?)");
-        $stmtCategories = $connection->prepare("INSERT INTO categories (name, created_at) VALUES (?, CURRENT_TIMESTAMP)");
+        $stmtPosts = $connection->prepare("INSERT INTO articles (author_id, title, content, slug, created_at) VALUES (?, ?, ?, ?, ?)");
+        $stmtCategories = $connection->prepare("INSERT INTO categories (name, slug, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)");
         $stmtPostsCategories = $connection->prepare("INSERT INTO article_categories (article_id, category_id) VALUES (?, ?)");
 
         try {
+            $postsWithoutDate = [];
             foreach($fileList['file_list_iterator'] as $file) {
                 $year = (int)substr($file, 0, 4);
 
@@ -56,8 +57,36 @@ class ImporterService implements Service
 
                     if (!$this->dryRun) {
                         foreach ($posts as $post) {
+                            $creationDate = $post['creation_date'] ?? '0000-00-00 00:00:00';
+
+                            if ($creationDate === '0000-00-00 00:00:00') {
+                                if ($year === 2012) {
+                                    $date = substr($post['title'], 0, strpos($post['title'], ':'));
+                                    $creationDate = $this->extractorService->extractDate(2012, $date);
+                                    if (is_null($creationDate)) {
+                                        throw new Exception('Returned null for ' . $date . ". Post title: " . $post['title']);
+                                    }
+                                } else {
+                                    switch ($post['title']) {
+                                        case 'Riprendono gli incontri del circolo!':
+                                            $creationDate = '2017-01-08 00:00:00'; break;
+                                        case 'Campionato interprovinciale di Pisa e Livorno 2017':
+                                            $creationDate = '2017-02-06 00:00:00'; break;
+                                        case 'Torneo promozionale e simultanea alla Stazione Leopolda (23-24 febbraio 2013)':
+                                            $creationDate = '2013-02-10 00:00:00'; break;
+                                        case 'Slam scacchistico':
+                                            $creationDate = '2023-05-02 00:00:00'; break;
+                                        case 'Campionato interprovinciale di Pisa e Livorno 2019':
+                                            $creationDate = '2019-01-22 00:00:00'; break;
+                                        default:
+                                            $postsWithoutDate[] = ['title' => $post['title'], 'year' => $year];
+                                    }
+                                }
+                            }
+
+                            $slug = Slugger::generate($post['title']);
                             $stmtPosts->execute(
-                                [1, $post['title'], $post['content'], $post['creation_date'] ?? '0000-00-00 00:00:00']
+                                [1, $post['title'], $post['content'], $slug, $creationDate]
                             );
                             $postId = $connection->lastInsertId();
                             $categories = $this->extractorService->deriveCategories(
@@ -66,8 +95,9 @@ class ImporterService implements Service
                             $this->io->writeln('    - ' . $post['title'] . ' - ' . json_encode($categories));
 
                             foreach ($categories as $category) {
+                                $slug = Slugger::generate($category);
                                 if (!in_array($category, array_keys($categoriesCache))) {
-                                    $stmtCategories->execute([$category]);
+                                    $stmtCategories->execute([$category, $slug]);
                                     $categoryId = $connection->lastInsertId();
                                     $categoriesCache[$category] = $categoryId;
                                 } else {
@@ -84,8 +114,13 @@ class ImporterService implements Service
                     $this->io->writeln('- Skipping ' . $year . ' in ' . $file);
                 }
             }
+
+            if (!empty($postsWithoutDate)) {
+                $this->io->warning('Posts without date!');
+                $this->io->table(['title', 'year'], $postsWithoutDate);
+            }
         } catch (Exception $e) {
-            $this->io->error($e->getMessage());
+            $this->io->error($e->getMessage() . ' ' . $e->getTraceAsString());
         } finally {
             $stmtPosts = null;
             $stmtCategories = null;

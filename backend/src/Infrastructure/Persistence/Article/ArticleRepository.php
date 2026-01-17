@@ -8,6 +8,7 @@ use App\Domain\Article\ArticleNotFoundException;
 use App\Domain\ArticlesCategories\ArticlesCategories;
 use App\Domain\ArticlesTags\ArticlesTags;
 use App\Domain\Category\Category;
+use App\Domain\Common\Slugger;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\Tag\Tag;
@@ -42,12 +43,29 @@ class ArticleRepository implements ArticleRepositoryInterface
          */
         $result = $this->databaseManager->row(
             <<<SQL
-            SELECT id, title, author_id, content, created_at, updated_at
+            SELECT id, title, author_id, content, slug, created_at, updated_at
             FROM $table
             WHERE id = :id
 SQL,
             Article::class,
             ['id' => $id]
+        );
+
+        return $result;
+    }
+
+    public function findBySlug(string $slug): Article|false
+    {
+        $table = Article::TABLE_NAME;
+        /**
+         * @var Article|false $result
+         */
+        $result = $this->databaseManager->row(
+            <<<SQL
+            SELECT * FROM $table WHERE slug = :slug
+SQL,
+            Article::class,
+            ['slug' => $slug]
         );
 
         return $result;
@@ -70,7 +88,7 @@ SQL,
 
         $able = Article::TABLE_NAME;
         $fields = [
-            "id", "title", "author_id", "created_at", "updated_at"
+            "a.id", "a.title", "a.slug", "author_id", "a.created_at", "a.updated_at"
         ];
 
         if (!$filters->skipContent) {
@@ -83,7 +101,7 @@ SQL,
                     SELECT
                         COALESCE(
                             JSON_ARRAYAGG(
-                                JSON_OBJECT('id', t.id, 'name', t.name)
+                                JSON_OBJECT('id', t.id, 'name', t.name, 'slug', t.slug)
                             ),
                             JSON_ARRAY()
                         )
@@ -95,7 +113,7 @@ SQL,
                     SELECT
                         COALESCE(
                             JSON_ARRAYAGG(
-                                JSON_OBJECT('id', c.id, 'name', c.name)
+                                JSON_OBJECT('id', c.id, 'name', c.name, 'slug', c.slug)
                             ),
                             JSON_ARRAY()
                         )
@@ -108,16 +126,18 @@ SQL;
 
         $sql = "SELECT " . implode(", ", $fields) . " FROM $able a ";
 
-        if (!empty($filters->tagId)) {
+        if (!empty($filters->tagSlug)) {
             $joins[] = "INNER JOIN article_tags at ON a.id = at.article_id ";
-            $wheres[] = 'at.tag_id = :tag_id';
-            $params['tag_id'] = $filters->tagId;
+            $joins[] = "INNER JOIN tags t ON at.tag_id = t.id ";
+            $wheres[] = 't.slug = :tag_slug';
+            $params['tag_slug'] = $filters->tagSlug;
         }
 
-        if (!empty($filters->categoryId)) {
+        if (!empty($filters->categorySlug)) {
             $joins[] = "INNER JOIN article_categories ac ON a.id = ac.article_id ";
-            $wheres[] = 'ac.category_id = :category_id';
-            $params['category_id'] = $filters->categoryId;
+            $joins[] = "INNER JOIN categories c ON ac.category_id = c.id ";
+            $wheres[] = 'c.slug = :cat_slug';
+            $params['cat_slug'] = $filters->categorySlug;
         }
 
         /* PDO does not allow the same named placeholder to appear more than once in the SQL unless you're using
@@ -165,6 +185,7 @@ SQL;
             $article->id = $articleItem['id'];
             $article->title = $articleItem['title'];
             $article->content = $articleItem['content'] ?? '';
+            $article->slug = $articleItem['slug'];
             $article->author_id = $articleItem['author_id'];
             $article->created_at = $articleItem['created_at'];
             $article->updated_at = $articleItem['updated_at'];
@@ -174,6 +195,7 @@ SQL;
                 $theTag = new Tag();
                 $theTag->id = $tag['id'];
                 $theTag->name = $tag['name'];
+                $theTag->slug = $tag['slug'];
                 $article->tags[] = $theTag;
             }
 
@@ -182,6 +204,7 @@ SQL;
                 $theCat = new Category();
                 $theCat->id = $category['id'];
                 $theCat->name = $category['name'];
+                $theCat->slug = $category['slug'];
                 $article->categories[] = $theCat;
             }
 
@@ -194,21 +217,23 @@ SQL;
     public function count(ArticleFilters $filters): int
     {
         $able = Article::TABLE_NAME;
-        $sql = "SELECT id FROM $able a ";
+        $sql = "SELECT a.id FROM $able a ";
         $params = [];
         $joins = [];
         $wheres = [];
 
-        if (!empty($filters->tagId)) {
+        if (!empty($filters->tagSlug)) {
             $joins[] = "INNER JOIN article_tags at ON a.id = at.article_id ";
-            $wheres[] = 'at.tag_id = :tag_id';
-            $params['tag_id'] = $filters->tagId;
+            $joins[] = "INNER JOIN tags t ON at.tag_id = t.id ";
+            $wheres[] = 't.slug = :cat_slug';
+            $params['cat_slug'] = $filters->tagSlug;
         }
 
-        if (!empty($filters->categoryId)) {
+        if (!empty($filters->categorySlug)) {
             $joins[] = "INNER JOIN article_categories ac ON a.id = ac.article_id ";
-            $wheres[] = 'ac.category_id = :category_id';
-            $params['category_id'] = $filters->categoryId;
+            $joins[] = "INNER JOIN categories c ON ac.category_id = c.id ";
+            $wheres[] = 'c.slug = :tag_slug';
+            $params['tag_slug'] = $filters->categorySlug;
         }
 
         /* PDO does not allow the same named placeholder to appear more than once in the SQL unless you're using
@@ -293,6 +318,7 @@ SQL;
                     [
                         'title' => $article->title,
                         'content' => $article->content,
+                        'slug' => Slugger::generate($article->title) . '-' . $article->id,
                         'author_id' => $article->author_id,
                         'updated_at' => (new DateTime())->format('Y-m-d H:i:s'),
                     ],
@@ -326,14 +352,23 @@ SQL;
 
                 return $dbOp;
             } else {
+                $now = (new DateTime())->format('Y-m-d H:i:s');
                 $lastInsertedId = $this->databaseManager->insert(
                     Article::TABLE_NAME,
                     [
                         'title' => $article->title,
                         'content' => $article->content,
+                        'slug' => Slugger::generate($article->title . '-' . $now),
                         'author_id' => $article->author_id,
-                        'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
+                        'created_at' => $now,
                     ]
+                );
+                $this->databaseManager->update(
+                    $article::TABLE_NAME,
+                    [
+                        'slug' => Slugger::generate($article->title) . '-' . $lastInsertedId,
+                    ],
+                    ['id' => $lastInsertedId]
                 );
 
                 if (!empty($article->tags)) {
@@ -383,22 +418,6 @@ SQL;
         return $dbOp;
     }
 
-    public function assignTagsToArticle(Article $article, array $tags): DatabaseOperation
-    {
-        if (!empty($article->tags)) {
-            $this->articlesTagsRepository->deleteTagsForArticle($article->id);
-
-            $tagIds = array_map(fn (Tag $tag) => $tag->id, $article->tags);
-            $this->articlesTagsRepository->saveTagsForArticle($article->id, ['article_id', 'tag_id'], $tagIds);
-            return DatabaseOperation::newSingleEntitySuccessfullyCreated($article->id);
-        }
-
-        return DatabaseOperation::newEntityOperation(
-            'No tags to assign',
-            DatabaseOperation::NOTHING_TO_DO
-        );
-    }
-
     public function findByIdWithExtraDetails(int $id, bool $withExtraDetails = true): Article|false
     {
         if ($withExtraDetails === false) {
@@ -414,6 +433,7 @@ SQL;
                 a.id,
                 a.title,
                 a.content,
+                a.slug,
                 a.author_id,
                 a.created_at,
                 a.updated_at,
@@ -421,7 +441,7 @@ SQL;
                     SELECT
                         COALESCE(
                             JSON_ARRAYAGG(
-                               JSON_OBJECT('id', t.id, 'name', t.name)
+                               JSON_OBJECT('id', t.id, 'name', t.name, 'slug', t.slug)
                             ),
                             JSON_ARRAY()
                         )
@@ -433,7 +453,7 @@ SQL;
                     SELECT
                         COALESCE(
                             JSON_ARRAYAGG(
-                                JSON_OBJECT('id', c.id, 'name', c.name)
+                                JSON_OBJECT('id', c.id, 'name', c.name, 'slug', c.slug)
                             ),
                             JSON_ARRAY()
                         )
@@ -452,6 +472,7 @@ SQL;
             $article->id = $data[0]['id'];
             $article->title = $data[0]['title'];
             $article->content = $data[0]['content'];
+            $article->slug = $data[0]['slug'];
             $article->author_id = $data[0]['author_id'];
             $article->created_at = $data[0]['created_at'];
             $article->updated_at = $data[0]['updated_at'];
@@ -461,6 +482,7 @@ SQL;
                 $theTag = new Tag();
                 $theTag->id = $tag['id'];
                 $theTag->name = $tag['name'];
+                $theTag->slug = $tag['slug'];
                 $article->tags[] = $theTag;
             }
 
@@ -469,6 +491,90 @@ SQL;
                 $theCat = new Category();
                 $theCat->id = $category['id'];
                 $theCat->name = $category['name'];
+                $theCat->slug = $category['slug'];
+                $article->categories[] = $theCat;
+            }
+
+            return $article;
+        }
+
+        return false;
+    }
+
+    public function findBySlugWithExtraDetails(string $slug, bool $withExtraDetails = true): Article|false
+    {
+        if ($withExtraDetails === false) {
+            return $this->findBySlug($slug);
+        }
+
+        $articlesTable = Article::TABLE_NAME;
+        $articlesTagsTable = ArticlesTags::TABLE_NAME;
+        $articlesCategoriesTable = ArticlesCategories::TABLE_NAME;
+
+        $sql = <<<SQL
+            SELECT
+                a.id,
+                a.title,
+                a.content,
+                a.slug,
+                a.author_id,
+                a.created_at,
+                a.updated_at,
+                (
+                    SELECT
+                        COALESCE(
+                            JSON_ARRAYAGG(
+                               JSON_OBJECT('id', t.id, 'name', t.name, 'slug', t.slug)
+                            ),
+                            JSON_ARRAY()
+                        )
+                    FROM $articlesTagsTable AS at
+                    INNER JOIN tags AS t ON at.tag_id = t.id
+                    WHERE at.article_id = a.id
+                ) AS tags,
+                (
+                    SELECT
+                        COALESCE(
+                            JSON_ARRAYAGG(
+                                JSON_OBJECT('id', c.id, 'name', c.name, 'slug', c.slug)
+                            ),
+                            JSON_ARRAY()
+                        )
+                    FROM $articlesCategoriesTable AS ac
+                    INNER JOIN categories AS c ON ac.category_id = c.id
+                    WHERE ac.article_id = a.id
+                ) AS categories
+            FROM $articlesTable AS a
+            WHERE a.slug = :slug;
+SQL;
+
+        $data = $this->databaseManager->rows($sql, ['slug' => $slug], PDO::FETCH_ASSOC);
+
+        if (!empty($data)) {
+            $article = new Article();
+            $article->id = $data[0]['id'];
+            $article->title = $data[0]['title'];
+            $article->content = $data[0]['content'];
+            $article->slug = $data[0]['slug'];
+            $article->author_id = $data[0]['author_id'];
+            $article->created_at = $data[0]['created_at'];
+            $article->updated_at = $data[0]['updated_at'];
+
+            $tags = json_decode($data[0]['tags'], true);
+            foreach ($tags as $tag) {
+                $theTag = new Tag();
+                $theTag->id = $tag['id'];
+                $theTag->name = $tag['name'];
+                $theTag->slug = $tag['slug'];
+                $article->tags[] = $theTag;
+            }
+
+            $categories = json_decode($data[0]['categories'], true);
+            foreach ($categories as $category) {
+                $theCat = new Category();
+                $theCat->id = $category['id'];
+                $theCat->name = $category['name'];
+                $theCat->slug = $category['slug'];
                 $article->categories[] = $theCat;
             }
 

@@ -12,6 +12,7 @@ class ArticleApiTest extends ApiTestCase
         $id = 1;
         $title = "A good article";
         $content = "<h1>Content</h1>";
+        $slug = "a-good-article";
         $createdAt = '2021-01-01 00:00:00';
         $updatedAt = '2021-01-01 00:00:00';
 
@@ -19,6 +20,7 @@ class ArticleApiTest extends ApiTestCase
         $article->id = $id;
         $article->title = $title;
         $article->content = $content;
+        $article->slug = $slug;
         $article->author_id = $id;
         $article->created_at = $createdAt;
         $article->updated_at = $updatedAt;
@@ -27,6 +29,7 @@ class ArticleApiTest extends ApiTestCase
             'id' => $id,
             'title' => $title,
             'content' => $content,
+            'slug' => $slug,
             'author_id' => $id,
             'created_at' => $createdAt,
             'updated_at' => $updatedAt,

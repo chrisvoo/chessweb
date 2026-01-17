@@ -37,8 +37,8 @@ class ListArticlesAction extends Action
             : SortDirection::ASC;
         $filters->sortBy = $queryParams['sort_by'] ?? 'created_at';
         $filters->searchText = $queryParams['search_text'] ?? null;
-        $filters->categoryId = $queryParams['category_id'] ?? null;
-        $filters->tagId = $queryParams['tag_id'] ?? null;
+        $filters->categorySlug = $queryParams['cat_slug'] ?? null;
+        $filters->tagSlug = $queryParams['tag_slug'] ?? null;
         $filters->createdFrom = $queryParams['created_from'] ?? null;
         $filters->createdTo = $queryParams['created_to'] ?? null;
         $filters->skipContent = !isset($queryParams['skip_content']) ||

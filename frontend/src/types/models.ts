@@ -11,6 +11,7 @@ export interface User {
 export interface NamedEntity {
   id: number|null
   name: string
+  slug: string
   created_at: string
   updated_at: string|null
 }

@@ -20,9 +20,10 @@
         "ext-ftp": "*",
         "ext-pdo": "*",
         "ext-libxml": "*",
-        "ext-dom": "*"
+        "ext-dom": "*",
+        "ext-intl": "*"
     },
     "scripts": {
-        "migrate": "php src/migration/index.php"
+        "migrate": "php bin/chess migrate"
     }
 }

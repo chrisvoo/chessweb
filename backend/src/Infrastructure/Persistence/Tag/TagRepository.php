@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Persistence\Tag;
 
+use App\Domain\Common\Slugger;
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\Pagination\SimpleNamedFilters;
 use App\Domain\Tag\Tag;
@@ -57,7 +58,7 @@ SQL,
         $limit = $filters->limit ?? 10;
 
         $sql = <<<SQL
-            SELECT id, name, created_at, updated_at
+            SELECT id, name, slug, created_at, updated_at
             FROM $table
             $whereCondition
             ORDER BY $orderBy $orderDirection
@@ -98,6 +99,7 @@ SQL;
                 Tag::TABLE_NAME,
                 [
                     'name' => $tag->name,
+                    'slug' => Slugger::generate($tag->name),
                     'updated_at' => (new DateTime())->format('Y-m-d H:i:s'),
                 ],
                 ['id' => $tag->id]
@@ -118,6 +120,7 @@ SQL;
                 Tag::TABLE_NAME,
                 [
                     'name' => $tag->name,
+                    'slug' => Slugger::generate($tag->name),
                     'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
                 ]
             );
@@ -147,12 +150,31 @@ SQL;
          */
         $result = $this->databaseManager->row(
             <<<SQL
-            SELECT id, name, created_at, updated_at
+            SELECT id, name, slug, created_at, updated_at
             FROM $table
             WHERE id = :id
 SQL,
             Tag::class,
             ['id' => $id]
+        );
+
+        return $result;
+    }
+
+    public function findBySlug(string $slug): Tag|false
+    {
+        $table = Tag::TABLE_NAME;
+        /**
+         * @var Category|false $result
+         */
+        $result = $this->databaseManager->row(
+            <<<SQL
+            SELECT id, name, slug, created_at, updated_at
+            FROM $table
+            WHERE slug = :slug
+SQL,
+            Tag::class,
+            ['slug' => $slug]
         );
 
         return $result;
@@ -186,7 +208,7 @@ SQL;
     public function getTagCloud(int $limit = 10): array
     {
         $sql = <<<SQL
-            SELECT t.name, t.id AS tag_id, COUNT(at.tag_id) AS total_count
+            SELECT t.name, t.slug, t.id AS tag_id, COUNT(at.tag_id) AS total_count
             FROM article_tags at
             INNER JOIN tags t ON t.id = at.tag_id
             GROUP BY t.name, t.id

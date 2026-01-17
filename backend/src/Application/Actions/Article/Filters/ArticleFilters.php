@@ -11,8 +11,8 @@ class ArticleFilters
     use PaginationTrait;
 
     public ?string $searchText;
-    public ?int $categoryId;
-    public ?int $tagId;
+    public ?string $tagSlug;
+    public ?string $categorySlug;
     public ?string $createdFrom;
     public ?string $createdTo;
     public ?bool $skipContent;

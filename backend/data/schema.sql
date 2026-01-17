@@ -20,26 +20,33 @@ CREATE TABLE articles (
     author_id BIGINT UNSIGNED NOT NULL,
     title VARCHAR(255) NOT NULL,
     content LONGTEXT NOT NULL,
+    slug VARCHAR(255) NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME,
     PRIMARY KEY (id),
-    FOREIGN KEY (author_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE NO ACTION
+    FOREIGN KEY (author_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    CONSTRAINT uk_articles_slug UNIQUE (slug)
 );
 
 CREATE TABLE tags (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL UNIQUE,
+    slug VARCHAR(255) NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT uk_tags_slug UNIQUE (slug)
 );
 
 CREATE TABLE categories (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL UNIQUE,
+    slug VARCHAR(255) NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT uk_categories_slug UNIQUE (slug)
 );
 
 DROP TABLE IF EXISTS article_tags;

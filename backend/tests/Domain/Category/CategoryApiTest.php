@@ -11,18 +11,21 @@ class CategoryApiTest extends ApiTestCase
     {
         $id = 1;
         $name = "tournaments";
+        $slug = "tournaments";
         $createdAt = '2021-01-01 00:00:00';
         $updatedAt = '2021-01-01 00:00:00';
 
         $tag = new Category();
         $tag->id = $id;
         $tag->name = $name;
+        $tag->slug = $slug;
         $tag->created_at = $createdAt;
         $tag->updated_at = $updatedAt;
 
         $expectedPayload = json_encode([
             'id' => $id,
             'name' => $name,
+            'slug' => $slug,
             'created_at' => $createdAt,
             'updated_at' => $updatedAt,
         ]);

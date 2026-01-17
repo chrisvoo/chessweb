@@ -11,7 +11,11 @@ interface ArticleRepositoryInterface
 {
     public function findById(int $id): Article|false;
 
+    public function findBySlug(string $slug): Article|false;
+
     public function findByIdWithExtraDetails(int $id, bool $withExtraDetails = true): Article|false;
+
+    public function findBySlugWithExtraDetails(string $slug, bool $withExtraDetails = true): Article|false;
 
     /**
      * List articles and eventually filter them.
@@ -34,11 +38,4 @@ interface ArticleRepositoryInterface
      * @return DatabaseOperation
      */
     public function delete(int $articleId): DatabaseOperation;
-
-    /**
-     * @param Article $article
-     * @param Tag[] $tags
-     * @return DatabaseOperation
-     */
-    public function assignTagsToArticle(Article $article, array $tags): DatabaseOperation;
 }

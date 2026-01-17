@@ -4,6 +4,7 @@ namespace App\Infrastructure\Persistence\Category;
 
 use App\Domain\Category\Category;
 use App\Domain\Category\CategoryNotFoundException;
+use App\Domain\Common\Slugger;
 use App\Domain\Operations\DatabaseOperation;
 use App\Domain\Pagination\SimpleNamedFilters;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
@@ -58,7 +59,7 @@ SQL,
         $limit = $filters->limit ?? 10;
 
         $sql = <<<SQL
-            SELECT id, name, created_at, updated_at
+            SELECT id, name, slug, created_at, updated_at
             FROM $table
             $whereCondition
             ORDER BY $orderBy $orderDirection
@@ -74,7 +75,7 @@ SQL;
         );
     }
 
-    public function findByName(string $name): Category|false
+    public function findBySlug(string $slug): Category|false
     {
         $table = Category::TABLE_NAME;
         /**
@@ -82,12 +83,12 @@ SQL;
          */
         $result = $this->databaseManager->row(
             <<<SQL
-            SELECT id, name, created_at, updated_at
+            SELECT id, name, slug, created_at, updated_at
             FROM $table
-            WHERE LOWER(name) = :name
+            WHERE slug = :slug
 SQL,
             Category::class,
-            ['name' => strtolower($name)]
+            ['slug' => $slug]
         );
 
         return $result;
@@ -137,6 +138,7 @@ SQL,
                 Category::TABLE_NAME,
                 [
                     'name' => $category->name,
+                    'slug' => Slugger::generate($category->name),
                     'updated_at' => (new DateTime())->format('Y-m-d H:i:s'),
                 ],
                 ['id' => $category->id]
@@ -157,6 +159,7 @@ SQL,
                 Category::TABLE_NAME,
                 [
                     'name' => $category->name,
+                    'slug' => Slugger::generate($category->name),
                     'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
                 ]
             );
@@ -206,7 +209,7 @@ SQL;
     public function getCategoryCloud(int $limit = 10): array
     {
         $sql = <<<SQL
-            SELECT c.name, c.id AS category_id, COUNT(ac.category_id) AS total_count
+            SELECT c.name, c.slug, c.id AS category_id, COUNT(ac.category_id) AS total_count
             FROM article_categories ac
              INNER JOIN categories c ON c.id = ac.category_id
             GROUP BY c.name, c.id

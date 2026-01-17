@@ -27,7 +27,8 @@
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
         "vlucas/phpdotenv": "^5.6",
-        "ext-fileinfo": "*"
+        "ext-fileinfo": "*",
+        "ext-intl": "*"
     },
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",

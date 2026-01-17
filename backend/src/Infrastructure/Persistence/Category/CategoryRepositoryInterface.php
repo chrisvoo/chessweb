@@ -24,6 +24,8 @@ interface CategoryRepositoryInterface extends UniquenessCheckInterface
 
     public function findById(int $id): Category|false;
 
+    public function findBySlug(string $slug): Category|false;
+
     /**
      * Upsert of a category
      * @param Category $category

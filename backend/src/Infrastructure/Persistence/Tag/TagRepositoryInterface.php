@@ -26,6 +26,8 @@ interface TagRepositoryInterface extends UniquenessCheckInterface
 
     public function findById(int $id): Tag|false;
 
+    public function findBySlug(string $slug): Tag|false;
+
     /**
      * Upsert of a tag
      * @param Tag $tag

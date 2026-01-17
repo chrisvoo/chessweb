@@ -41,15 +41,30 @@ export const routes: Routes = [
   {
     path: 'notizie',
     title: `${mainTitle} - Notizie`,
-    loadComponent: () => import('./components/main/pages/news/news.component')
-      .then(m => m.NewsComponent),
     children: [
       {
-        path: 'modifica',
-        title: `${mainTitle} - Notizie > `,
-        loadComponent: () => import('./admin/admin-articles/manage-article/manage-article.component')
-          .then(m => m.ManageArticleComponent),
+        path: ':news_slug',
+        loadComponent: () => import('./components/main/pages/news/single-new/single-new.component')
+          .then(m => m.SingleNewComponent),
         resolve: { article: articleResolver }
+      },
+      {
+        path: 'categoria/:cat_slug',
+        title: `${mainTitle} - Notizie per categoria`,
+        loadComponent: () => import('./components/main/pages/news/news.component')
+          .then(m => m.NewsComponent)
+      },
+      {
+        path: 'tags/:tag_slug',
+        title: `${mainTitle} - Notizie per tag`,
+        loadComponent: () => import('./components/main/pages/news/news.component')
+          .then(m => m.NewsComponent)
+      },
+      {
+        path: '',
+        title: `${mainTitle} - Notizie`,
+        loadComponent: () => import('./components/main/pages/news/news.component')
+          .then(m => m.NewsComponent)
       }
     ]
   },

@@ -122,6 +122,7 @@ export class AdminCategoriesComponent implements OnInit {
     this.targetCategory = {
       id: null,
       name: '',
+      slug: '',
       created_at: '',
       updated_at: '',
     }

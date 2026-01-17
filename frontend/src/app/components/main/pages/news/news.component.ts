@@ -6,13 +6,14 @@ import {ListPaginatedArticles, ListPaginatedItemsResponse} from '../../../../../
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, throwError} from 'rxjs';
 import {Paginator, PaginatorState} from 'primeng/paginator';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ArticleViewerComponent} from '../../../article-viewer/article-viewer.component';
 import {Tag} from 'primeng/tag';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-news',
-  imports: [PageComponent, Paginator, ArticleViewerComponent, Tag],
+  imports: [PageComponent, Paginator, ArticleViewerComponent, Tag, RouterLink, DatePipe],
   templateUrl: './news.component.html',
   standalone: true,
   styleUrl: './news.component.css'
@@ -25,8 +26,8 @@ export class NewsComponent implements OnInit {
   pageSize: number = 5
   totalCount: number = 0
 
-  categoryId?: number
-  tagId?: number
+  categorySlug?: string
+  tagSlug?: string
   searchText?: string
   #destroyRef = inject(DestroyRef)
 
@@ -38,19 +39,24 @@ export class NewsComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.queryParamMap.subscribe(params => {
-      const catId = params.get('category_id')
-      if (catId !== null && catId.trim() !== '' && !isNaN(parseInt(catId))) {
-        this.categoryId = parseInt(catId)
-      }
-
-      const tagId = params.get('tag_id')
-      if (tagId !== null && tagId.trim() !== '' && !isNaN(parseInt(tagId))) {
-        this.tagId = parseInt(tagId)
-      }
-
       const searchText = params.get('search_text')
       if (searchText !== null && searchText.trim() !== '') {
         this.searchText = searchText
+      }
+
+      const endpointParams: ListPaginatedArticles = this.#buildListArticlesParams()
+      this.loadArticles(endpointParams)
+    })
+
+    this.activatedRoute.paramMap.subscribe(params => {
+      const catSlug = params.get('cat_slug')
+      if (catSlug !== null) {
+        this.categorySlug = catSlug
+      }
+
+      const tagSlug = params.get('tag_slug')
+      if (tagSlug !== null) {
+        this.tagSlug = tagSlug
       }
 
       const endpointParams: ListPaginatedArticles = this.#buildListArticlesParams()
@@ -68,12 +74,12 @@ export class NewsComponent implements OnInit {
       extra_info: true
     }
 
-    if (this.categoryId) {
-      endpointParams.category_id = this.categoryId
+    if (this.tagSlug) {
+      endpointParams.tag_slug = this.tagSlug
     }
 
-    if (this.tagId) {
-      endpointParams.tag_id = this.tagId
+    if (this.categorySlug) {
+      endpointParams.cat_slug = this.categorySlug
     }
 
     if (this.searchText) {
@@ -105,16 +111,5 @@ export class NewsComponent implements OnInit {
     }
 
     this.loadArticles(endpointParams)
-  }
-
-  onTagClick(namedEntity: NamedEntity, type: 'tag_id' | 'category_id'): void {
-    void this.router.navigate(
-      ['/notizie'],
-      {
-        queryParams: {
-          [type]: namedEntity.id
-        }
-      }
-    )
   }
 }

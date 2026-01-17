@@ -1,7 +1,7 @@
 <page title="Notizie">
   @for (article of articles; track article.id) {
     <h3>{{ article.title }}</h3>
-    <small>{{ article.created_at }}</small>
+    <small>{{ article.created_at | date:'dd MMMM yyyy' }}</small>
     <chess-article-viewer
       [content]="article.content"
     >
@@ -9,7 +9,7 @@
     @for (tag of article.tags; track tag.id) {
       <p-tag
         [value]="'#' + tag.name" class="tag"
-        (click)="onTagClick(tag, 'tag_id')"
+        [routerLink]="['/notizie', 'tags', tag.slug]"
       >
       </p-tag>
     }
@@ -17,7 +17,7 @@
     @for (category of article.categories; track category.id) {
       <p-tag
         [value]="'#' + category.name" class="tag"
-        (click)="onTagClick(category, 'category_id')"
+        [routerLink]="['/notizie', 'categoria', category.slug]"
       >
       </p-tag>
     }

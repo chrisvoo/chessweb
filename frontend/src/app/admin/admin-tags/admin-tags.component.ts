@@ -122,6 +122,7 @@ export class AdminTagsComponent implements OnInit {
     this.targetTag = {
       id: null,
       name: '',
+      slug: '',
       created_at: '',
       updated_at: '',
     }

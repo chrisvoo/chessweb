@@ -8,7 +8,7 @@ import {
   ViewArticleResponse
 } from '../../../types/requests';
 import {map, Observable} from 'rxjs';
-import {Article, NamedEntity, ArticleWithTagsAndCategories} from '../../../types/models';
+import {ArticleWithTagsAndCategories} from '../../../types/models';
 import {formatDate, parseISO} from 'date-fns';
 
 @Injectable({
@@ -16,7 +16,7 @@ import {formatDate, parseISO} from 'date-fns';
 })
 export class ArticlesService {
   LIST_ENDPOINT = '/api/articles'
-  MANAGE_SINGLE_ARTICLE_ENDPOINT = '/api/article/:id';
+  VIEW_SINGLE_ARTICLE_ENDPOINT = '/api/article/:ref';
   CREATE_ENDPOINT = '/api/article';
 
   constructor(
@@ -35,14 +35,7 @@ export class ArticlesService {
         return {
           statusCode: res.statusCode,
           data: {
-            items: res.data.items.map((article: ArticleWithTagsAndCategories) => {
-              const { created_at, updated_at } = article;
-              const createdAtFormatted = created_at !== "0000-00-00 00:00:00" && created_at
-                                                ? formatDate(parseISO(created_at),  'dd-MM-yyyy') : '';
-              const updatedAtFormatted = updated_at
-                                                ? formatDate(parseISO(updated_at),  'dd-MM-yyyy') : ''
-              return { ...article, created_at: createdAtFormatted, updated_at: updatedAtFormatted }
-            }),
+            items: res.data.items,
             total_items: res.data.total_items,
             total_pages: res.data.total_pages,
             page: res.data.page,
@@ -56,7 +49,7 @@ export class ArticlesService {
 
   updateArticle(article: ArticleWithTagsAndCategories): Observable<ManagedEntityResponse> {
     return this.http.put<ManagedEntityResponse>(
-      this.MANAGE_SINGLE_ARTICLE_ENDPOINT.replace(':id', `${article.id}`),
+      this.VIEW_SINGLE_ARTICLE_ENDPOINT.replace(':id', `${article.id}`),
       { ...article },
       {
         headers: {
@@ -66,9 +59,9 @@ export class ArticlesService {
     )
   }
 
-  viewArticle(articleId: number, extraInfo: boolean = false): Observable<ViewArticleResponse> {
+  viewArticleByRef(slugOrId: number|string, extraInfo: boolean = false): Observable<ViewArticleResponse> {
     return this.http.get<ViewArticleResponse>(
-      this.MANAGE_SINGLE_ARTICLE_ENDPOINT.replace(':id', `${articleId}`),
+      this.VIEW_SINGLE_ARTICLE_ENDPOINT.replace(':ref', `${slugOrId}`),
       {
         params: {
           extra_info: extraInfo
@@ -79,7 +72,7 @@ export class ArticlesService {
 
   deleteArticle(articleId: number): Observable<ManagedEntityResponse> {
     return this.http.delete<ManagedEntityResponse>(
-      this.MANAGE_SINGLE_ARTICLE_ENDPOINT.replace(':id', `${articleId}`),
+      this.VIEW_SINGLE_ARTICLE_ENDPOINT.replace(':id', `${articleId}`),
       {
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`

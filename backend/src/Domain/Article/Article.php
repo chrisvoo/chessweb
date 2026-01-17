@@ -15,6 +15,7 @@ class Article extends BaseDomainEntity implements JsonSerializable
     public int $author_id;
     public string $title;
     public string $content;
+    public string $slug;
 
     /** @var Category[] the categories that the article belongs to */
     public array $categories = [];
@@ -36,6 +37,7 @@ class Article extends BaseDomainEntity implements JsonSerializable
             'id' => $this->id,
             'title' => $this->title,
             'content' => $this->content ?? '',
+            'slug' => $this->slug ?? '',
             'author_id' => $this->author_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at

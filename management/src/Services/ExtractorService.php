@@ -16,6 +16,21 @@ class ExtractorService implements Service
     private bool $dryRun = false;
     private SymfonyStyle $io;
 
+    private const array MONTHS = [
+        'gennaio' => '01',
+        'febbraio' => '02',
+        'marzo' => '03',
+        'aprile' => '04',
+        'maggio' => '05',
+        'giugno' => '06',
+        'luglio' => '07',
+        'agosto' => '08',
+        'settembre' => '09',
+        'ottobre' => '10',
+        'novembre' => '11',
+        'dicembre' => '12',
+    ];
+
     public function withIO(SymfonyStyle $io): Service
     {
         $this->io = $io;
@@ -60,22 +75,6 @@ class ExtractorService implements Service
         $tds = $xpath->query('//td');
         $posts = [];
 
-        // Map Italian month names to their corresponding numerical values
-        $months = [
-            'gennaio' => '01',
-            'febbraio' => '02',
-            'marzo' => '03',
-            'aprile' => '04',
-            'maggio' => '05',
-            'giugno' => '06',
-            'luglio' => '07',
-            'agosto' => '08',
-            'settembre' => '09',
-            'ottobre' => '10',
-            'novembre' => '11',
-            'dicembre' => '12',
-        ];
-
         foreach ($tds as $td) {
             $children = $td->childNodes;
             $currentPost = null;
@@ -108,23 +107,7 @@ class ExtractorService implements Service
                         ];
                     } elseif ($currentPost !== null) {
                         if ($class === 'newsdate') {
-                            // Split the date into components
-                            $dateParts = explode(' ', trim($child->textContent));
-                            if (count($dateParts) === 3) {
-                                $day = $dateParts[0];
-                                $month = strtolower($dateParts[1]); // Convert month to lowercase
-                                $year = $dateParts[2];
-
-                                // Get the month number from the mapping
-                                if (isset($months[$month])) {
-                                    $monthNumber = $months[$month];
-                                    // Create DateTime object
-                                    $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', "$year-$monthNumber-$day 00:00:00");
-                                    if ($dateTime) {
-                                        $currentPost['creation_date'] = $dateTime->format('Y-m-d H:i:s');
-                                    }
-                                }
-                            }
+                            $currentPost['creation_date'] = $this->extractDate(null, $child->textContent);
                         } else {
                             // This is a generic content div (e.g., newstext, collegamentograndecentrato)
                             $html = $dom->saveHTML($child);
@@ -142,6 +125,31 @@ class ExtractorService implements Service
         }
 
         return $posts;
+    }
+
+    public function extractDate(?int $year, ?string $text = null): ?string
+    {
+        $dateParts = explode(' ', trim($text ?? ''));
+        if (count($dateParts) === 2 && !is_null($year)) {
+            $dateParts[2] = $year;
+        }
+        if (count($dateParts) === 3) {
+            $day = str_replace(['º'], '', $dateParts[0]);
+            $month = strtolower($dateParts[1]); // Convert month to lowercase
+            $year = $dateParts[2];
+
+            // Get the month number from the mapping
+            if (isset(self::MONTHS[$month])) {
+                $monthNumber = self::MONTHS[$month];
+                // Create DateTime object
+                $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', "$year-$monthNumber-$day 00:00:00");
+                if ($dateTime) {
+                    return $dateTime->format('Y-m-d H:i:s');
+                }
+            }
+        }
+
+        return null;
     }
 
     public function deriveCategories(string $htmlContent)

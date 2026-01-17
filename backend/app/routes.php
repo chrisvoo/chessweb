@@ -30,10 +30,6 @@ use App\Application\Actions\User\UpdateUserAction;
 use App\Application\Actions\User\ViewSingleUserAction;
 use App\Application\Middleware\AuthMiddleware;
 use App\Infrastructure\Components\JWTServiceInterface;
-//use Psr\Http\Message\ResponseInterface;
-//use Psr\Http\Message\ServerRequestInterface;
-//use Psr\Http\Server\RequestHandlerInterface;
-//use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Exception\HttpNotFoundException;
@@ -92,7 +88,7 @@ return function (App $app) {
         $group->get('/categories', ListCategoriesAction::class);
         $group->get('/categories/stats', CategoryCloudAction::class);
 
-        $group->get('/article/{id}', ViewSingleArticleAction::class);
+        $group->get('/article/{ref}', ViewSingleArticleAction::class);
         $group->get('/articles', ListArticlesAction::class);
 
         $group->get('/file', StreamFileAction::class);

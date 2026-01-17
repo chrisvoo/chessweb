@@ -86,7 +86,7 @@ export class MinipostsComponent implements OnInit {
 
               return {
                 name: item.name,
-                tag_id: item.tag_id,
+                slug: item.slug,
                 total_count: item.total_count,
                 weight: weight
               };
@@ -117,7 +117,7 @@ export class MinipostsComponent implements OnInit {
 
               return {
                 name: item.name,
-                tag_id: item.tag_id,
+                slug: item.slug,
                 total_count: item.total_count,
                 weight: weight
               };

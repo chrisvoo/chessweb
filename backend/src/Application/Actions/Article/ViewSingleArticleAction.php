@@ -29,18 +29,25 @@ class ViewSingleArticleAction extends Action
         $queryParams = $this->request->getQueryParams();
         $this->validator->validate($this->request, $queryParams);
 
-        $articleId = (int) $this->resolveArg('id');
-
-        $article = $this->articleRepository->findByIdWithExtraDetails(
-            $articleId,
-            isset($queryParams['extra_info']) && in_array($queryParams['extra_info'], ['true', '1'])
-        );
+        $articleRef = $this->resolveArg('ref');
+        if (is_numeric($articleRef)) {
+            $articleId = (int) $articleRef;
+            $article = $this->articleRepository->findByIdWithExtraDetails(
+                $articleId,
+                isset($queryParams['extra_info']) && in_array($queryParams['extra_info'], ['true', '1'])
+            );
+        } else {
+            $article = $this->articleRepository->findBySlugWithExtraDetails(
+                $articleRef,
+                isset($queryParams['extra_info']) && in_array($queryParams['extra_info'], ['true', '1'])
+            );
+        }
 
         if (!$article) {
             throw new ArticleNotFoundException();
         }
 
-        $this->logger->info("Article of id {$articleId} was viewed.");
+        $this->logger->info("Article {$articleRef} was viewed.");
 
         return $this->respondWithData($article);
     }

@@ -1,41 +1,24 @@
 <page title="Notizie">
-  @for (article of articles; track article.id) {
-    <h3>{{ article.title }}</h3>
-    <small>{{ article.created_at }}</small>
+    <h3>{{ article!.title }}</h3>
+    <small>{{ article!.created_at | date:'dd MMMM yyyy'}}</small>
     <chess-article-viewer
-      [content]="article.content"
+      [content]="article!.content"
     >
     </chess-article-viewer>
-    @for (tag of article.tags; track tag.id) {
+    @for (tag of article!.tags; track tag.id) {
       <p-tag
         [value]="'#' + tag.name" class="tag"
-        (click)="onTagClick(tag, 'tag_id')"
+        [routerLink]="['/notizie', 'tags', tag.slug]"
       >
       </p-tag>
     }
 
-    @for (category of article.categories; track category.id) {
+    @for (category of article!.categories; track category.id) {
       <p-tag
         [value]="'#' + category.name" class="tag"
-        (click)="onTagClick(category, 'category_id')"
+        [routerLink]="['/notizie', 'categoria', category.slug]"
       >
       </p-tag>
     }
-    <hr class="major" />
-  }
-  @if (articles.length === 0) {
-    <p>Nessuna notizia trovata per i parametri di ricerca specificati</p>
-  }
-  <p-paginator
-    (onPageChange)="onPageChange($event)"
-    [totalRecords]="totalCount"
-    [rows]="pageSize"
-    [first]="offset"
-    [alwaysShow]="false"
-    [showPageLinks]="true"
-    [showCurrentPageReport]="true"
-    currentPageReportTemplate="{totalRecords} notizie"
-  >
-  </p-paginator>
 </page>
 

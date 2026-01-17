@@ -41,6 +41,10 @@ ul.cloud a {
   height: 400px;
 }
 
+.puzzle > iframe {
+  border: 0;
+}
+
 @media screen and (max-width: 360px) {
   .puzzle {
     height: 300px;

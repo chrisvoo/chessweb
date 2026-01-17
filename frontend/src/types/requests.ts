@@ -39,14 +39,14 @@ export interface ListAllItemsResponse<T> {
 
 export interface TagCloudItem {
   name: string
-  tag_id: number
+  slug: string
   weight: number
   total_count: number
 }
 
 export interface CategoryStatsItem {
   name: string
-  category_id: number
+  slug: string
   total_count: number
 }
 
@@ -95,8 +95,8 @@ export interface SearchParams {
 export type ListPaginatedParams = SortParams & PaginationParams & SearchParams;
 export type ListArticlesFilters = {
   skip_content?: boolean
-  category_id?: number
-  tag_id?: number
+  cat_slug?: string
+  tag_slug?: string
   extra_info?: boolean
 }
 export type ListPaginatedArticles = ListPaginatedParams & ListArticlesFilters

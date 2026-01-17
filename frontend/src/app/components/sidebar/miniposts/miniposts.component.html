@@ -3,13 +3,12 @@
     <div class="mini-posts">
       <article>
         <ul class="cloud" role="listbox" aria-label="Tag cloud">
-          @for(tagCloudItem of tagCloudItems; track tagCloudItem.tag_id) {
+          @for(tagCloudItem of tagCloudItems; track tagCloudItem.slug) {
             <li>
               <p-overlaybadge [value]="tagCloudItem.total_count" badgeSize="small">
                 <a
                   [attr.data-weight]="tagCloudItem.weight"
-                  [routerLink]="['/notizie']"
-                  [queryParams]="{tag_id: tagCloudItem.tag_id}"
+                  [routerLink]="['/notizie', 'tag', tagCloudItem.slug]"
                 >
                 {{ tagCloudItem.name }}
               </a>
@@ -26,11 +25,10 @@
     <div class="mini-posts">
       <article>
         <ul class="alt">
-          @for(catItem of categoryStatsItems; track catItem.category_id) {
+          @for(catItem of categoryStatsItems; track catItem.slug) {
             <li>
               <a
-                [routerLink]="['/notizie']"
-                [queryParams]="{category_id: catItem.category_id}"
+                [routerLink]="['/notizie', 'categoria', catItem.slug]"
               >
                 {{ catItem.name }}
               </a>
@@ -47,7 +45,7 @@
     <article class="puzzle">
       <iframe
         src="https://lichess.org/training/frame?theme=brown&bg=dark"
-        style="width: 100%; height: 100%; aspect-ratio: 10/11;" allowtransparency="true" frameborder="0"
+        style="width: 100%; height: 100%; aspect-ratio: 10/11;" allowtransparency="true"
       >
       </iframe>
     </article>

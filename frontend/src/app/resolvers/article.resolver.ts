@@ -6,10 +6,10 @@ import {ViewArticleResponse} from '../../types/requests';
 
 export const articleResolver: ResolveFn<ViewArticleResponse | undefined> = (route, state) => {
   const articleService = inject(ArticlesService)
-  const id = route.queryParamMap.get('id');
+  const ref = route.queryParamMap.get('id') || route.paramMap.get('news_slug');
 
-  if (id) {
-    return articleService.viewArticle(+id, true).pipe(
+  if (ref) {
+    return articleService.viewArticleByRef(ref, true).pipe(
       catchError(error => {
         console.error('Error in article resolver:', error);
         // On error (e.g., article not found), resolve to undefined

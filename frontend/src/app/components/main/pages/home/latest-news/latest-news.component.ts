@@ -7,10 +7,11 @@ import {catchError, throwError} from 'rxjs';
 import {ArticleWithTagsAndCategories} from '../../../../../../types/models';
 import {ArticleCardComponent} from './article-card/article-card.component';
 import $ from 'jquery';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'latest-news',
-  imports: [PageComponent, ArticleCardComponent],
+  imports: [PageComponent, ArticleCardComponent, DatePipe],
   standalone: true,
   templateUrl: './latest-news.component.html',
   styleUrl: './latest-news.component.css'

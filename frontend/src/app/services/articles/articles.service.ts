@@ -71,7 +71,7 @@ export class ArticlesService {
 
   deleteArticle(articleId: number): Observable<ManagedEntityResponse> {
     return this.http.delete<ManagedEntityResponse>(
-      this.VIEW_SINGLE_ARTICLE_ENDPOINT.replace(':id', `${articleId}`),
+      this.VIEW_SINGLE_ARTICLE_ENDPOINT.replace(':ref', `${articleId}`),
       {
         headers: {
           'Authorization': `Bearer ${this.authService.getToken()}`

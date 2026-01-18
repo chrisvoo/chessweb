@@ -1,20 +1,17 @@
-import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject,} from '@angular/core';
 import { PageComponent } from '../../components/page/page.component';
 import {Button} from 'primeng/button';
 import {ConfirmDialog} from 'primeng/confirmdialog';
-import {Dialog} from 'primeng/dialog';
 import {Divider} from 'primeng/divider';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {IconField} from 'primeng/iconfield';
 import {InputIcon} from 'primeng/inputicon';
 import {InputText} from 'primeng/inputtext';
-import {Message} from 'primeng/message';
 import {ConfirmationService, MessageService, PrimeTemplate} from 'primeng/api';
 import {TableLazyLoadEvent, TableModule, TablePageEvent} from 'primeng/table';
 import {Toast} from 'primeng/toast';
 import {Tooltip} from 'primeng/tooltip';
 import {Article, ArticleWithTagsAndCategories} from '../../../types/models';
-import {noWhiteSpaceOnly} from '../../validators/no-whitespace-only';
 import {ArticlesService} from '../../services/articles/articles.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, throwError} from 'rxjs';
@@ -34,14 +31,13 @@ import {NgStyle} from '@angular/common';
   standalone: true,
   styleUrl: './admin-articles.component.css'
 })
-export class AdminArticlesComponent implements OnInit {
+export class AdminArticlesComponent {
   sortOrder: number = -1
   sortField: string = 'created_at'
   articles: ArticleWithTagsAndCategories[] = []
   errorMessage: string = ''
   error: boolean = false;
   targetArticle?: Article
-  articleForm: FormGroup
   loadingResponse = false
   offset: number = 0
   pageSize: number = 10
@@ -51,34 +47,16 @@ export class AdminArticlesComponent implements OnInit {
 
   constructor(
     private articlesService: ArticlesService,
-    private formBuilder: FormBuilder,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private router: Router
   ) {
-    this.articleForm = this.formBuilder.group({
-      title: ['', Validators.compose([
-        Validators.required,
-        noWhiteSpaceOnly()
-      ])],
-      content: ['', Validators.compose([
-        Validators.required,
-        noWhiteSpaceOnly()
-      ])],
-    })
+
   }
 
   #resetResponseStatusFields(): void {
     this.error = false;
     this.errorMessage = ''
-  }
-
-  hasServerError(): boolean {
-    return this.error && this.errorMessage != ''
-  }
-
-  ngOnInit(): void {
-    // this.loadArticles()
   }
 
   loadArticles(event: TableLazyLoadEvent): void {

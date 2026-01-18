@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, ViewChild} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit, ViewChild} from '@angular/core';
 import {PageComponent} from '../../../components/page/page.component';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {noWhiteSpaceOnly} from '../../../validators/no-whitespace-only';
@@ -37,7 +37,7 @@ import {CustomImageBlot} from './custom-image-blot';
   styleUrl: './manage-article.component.css',
   standalone: true
 })
-export class ManageArticleComponent {
+export class ManageArticleComponent implements OnInit {
   articleForm: FormGroup
   loadingResponse = false
   errorMessage: string = ''
@@ -87,6 +87,30 @@ export class ManageArticleComponent {
     this.uploadImageForm = this.formBuilder.group({})
   }
 
+  ngOnInit(): void {
+    // Subscribe to data to handle route changes or reuse
+    this.activatedRoute.data
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(data => {
+        const articleResponse = data['article'] as ViewArticleResponse;
+
+        // Check if response and data exist
+        if (articleResponse && articleResponse.data) {
+          const { id, title, content, categories, tags } = articleResponse.data;
+
+          this.articleId = id ?? null;
+
+          // Populate form immediately
+          this.articleForm.patchValue({
+            title: title,
+            content: content,
+            tags: tags ?? [],
+            categories: categories ?? []
+          });
+        }
+      });
+  }
+
   // Helper to determine UI state
   get isEditMode(): boolean {
     return !!this.articleId;
@@ -105,22 +129,6 @@ export class ManageArticleComponent {
     module.addHandler('image', () => {
       this.customImageHandler();
     });
-
-    const resolvedData = this.activatedRoute.snapshot.data;
-    if (resolvedData && resolvedData['article']) {
-      const articleResponse = resolvedData['article'] as ViewArticleResponse
-      if (articleResponse.statusCode === 200) {
-        const { id, title, content, categories, tags } = articleResponse.data
-
-        // Store the ID to enable Edit Mode
-        this.articleId = id ?? null;
-
-        this.articleForm.controls['title'].setValue(title)
-        this.articleForm.controls['content'].setValue(content)
-        this.articleForm.controls['tags'].setValue(tags ?? [])
-        this.articleForm.controls['categories'].setValue(categories ?? [])
-      }
-    }
   }
 
   insertImage() {

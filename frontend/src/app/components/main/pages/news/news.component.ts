@@ -1,12 +1,12 @@
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {PageComponent} from '../../../page/page.component';
-import {ArticleWithTagsAndCategories, NamedEntity} from '../../../../../types/models';
+import {ArticleWithTagsAndCategories} from '../../../../../types/models';
 import {ArticlesService} from '../../../../services/articles/articles.service';
 import {ListPaginatedArticles, ListPaginatedItemsResponse} from '../../../../../types/requests';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {catchError, throwError} from 'rxjs';
+import {catchError, combineLatest, throwError} from 'rxjs';
 import {Paginator, PaginatorState} from 'primeng/paginator';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import {ArticleViewerComponent} from '../../../article-viewer/article-viewer.component';
 import {Tag} from 'primeng/tag';
 import {DatePipe} from '@angular/common';
@@ -19,8 +19,6 @@ import {DatePipe} from '@angular/common';
   styleUrl: './news.component.css'
 })
 export class NewsComponent implements OnInit {
-  private router = inject(Router)
-
   articles: ArticleWithTagsAndCategories[] = []
   offset: number = 0
   pageSize: number = 5
@@ -38,30 +36,40 @@ export class NewsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.activatedRoute.queryParamMap.subscribe(params => {
-      const searchText = params.get('search_text')
-      if (searchText !== null && searchText.trim() !== '') {
-        this.searchText = searchText
-      }
+    // both of these observables emit a value immediately (even if the params are empty).
+    combineLatest([
+      this.activatedRoute.paramMap,
+      this.activatedRoute.queryParamMap
+    ]).pipe(
+      takeUntilDestroyed(this.#destroyRef)
+    ).subscribe(([params, queryParams]) => {
 
-      const endpointParams: ListPaginatedArticles = this.#buildListArticlesParams()
-      this.loadArticles(endpointParams)
-    })
+      // Reset filters first
+      this.categorySlug = undefined;
+      this.tagSlug = undefined;
+      this.searchText = undefined;
 
-    this.activatedRoute.paramMap.subscribe(params => {
-      const catSlug = params.get('cat_slug')
+      // Handle Path Params (category/tag)
+      const catSlug = params.get('cat_slug');
       if (catSlug !== null) {
-        this.categorySlug = catSlug
+        this.categorySlug = catSlug;
       }
 
-      const tagSlug = params.get('tag_slug')
+      const tagSlug = params.get('tag_slug');
       if (tagSlug !== null) {
-        this.tagSlug = tagSlug
+        this.tagSlug = tagSlug;
       }
 
-      const endpointParams: ListPaginatedArticles = this.#buildListArticlesParams()
-      this.loadArticles(endpointParams)
-    })
+      // Handle Query Params (Search)
+      const searchText = queryParams.get('search_text');
+      if (searchText !== null && searchText.trim() !== '') {
+        this.searchText = searchText;
+      }
+
+      // Single call to load
+      const endpointParams: ListPaginatedArticles = this.#buildListArticlesParams();
+      this.loadArticles(endpointParams);
+    });
   }
 
   #buildListArticlesParams(): ListPaginatedArticles {

@@ -9,7 +9,6 @@ import {
 } from '../../../types/requests';
 import {map, Observable} from 'rxjs';
 import {ArticleWithTagsAndCategories} from '../../../types/models';
-import {formatDate, parseISO} from 'date-fns';
 
 @Injectable({
   providedIn: 'root'
@@ -49,7 +48,7 @@ export class ArticlesService {
 
   updateArticle(article: ArticleWithTagsAndCategories): Observable<ManagedEntityResponse> {
     return this.http.put<ManagedEntityResponse>(
-      this.VIEW_SINGLE_ARTICLE_ENDPOINT.replace(':id', `${article.id}`),
+      this.VIEW_SINGLE_ARTICLE_ENDPOINT.replace(':ref', `${article.id}`),
       { ...article },
       {
         headers: {

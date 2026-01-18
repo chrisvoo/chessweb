@@ -32,8 +32,30 @@ export class ArticleViewerComponent implements OnChanges {
   contentParts: ContentPart[] = [];
   imagesForGalleria: GalleriaImage[] = [];
   imageCount = 0;
+  activeIndex: number = 0;
+
+  responsiveOptions: any[] = [
+    {
+      breakpoint: '1024px',
+      numVisible: 5
+    },
+    {
+      breakpoint: '768px',
+      numVisible: 3
+    },
+    {
+      breakpoint: '560px',
+      numVisible: 1
+    }
+  ];
 
   constructor(private sanitizer: DomSanitizer) {}
+
+  private reset(): void {
+    this.contentParts = [];
+    this.imagesForGalleria = [];
+    this.imageCount = 0;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['content']) {
@@ -42,55 +64,100 @@ export class ArticleViewerComponent implements OnChanges {
   }
 
   private parseContent(): void {
-    if (!this.content()) {
-      this.contentParts = [];
-      this.imageCount = 0;
+    const rawContent = this.content();
+
+    if (!rawContent) {
+      this.reset();
       return;
     }
 
-    const tempParts: ContentPart[] = [];
-    const tempImages: GalleriaImage[] = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawContent, 'text/html');
+    const imgElements = Array.from(doc.querySelectorAll('img'));
+    this.imageCount = imgElements.length;
+    this.activeIndex = 0;
 
-    // Regex to split the content by <img> tags, keeping the tags
-    const splitContent = this.content().split(/(<img.*?>)/g).filter(part => part);
+    this.imagesForGalleria = imgElements.map(img => ({
+      itemImageSrc: img.getAttribute('src') || '',
+      thumbnailImageSrc: img.getAttribute('src') || '',
+      alt: img.getAttribute('alt') || 'Article Image',
+      title: img.getAttribute('title') || ''
+    }));
 
-    splitContent.forEach(part => {
+    this.contentParts = [];
+
+    if (this.imageCount > 1) {
+      // MULTI-IMAGE MODE (Galleria)
+      // We want to show the Text *without* the images (Galleria is shown separately)
+
+      imgElements.forEach(img => {
+        // If the image is wrapped in an anchor <a>, remove the anchor too
+        const parent = img.parentElement;
+        if (parent && parent.tagName === 'A') {
+          // Remove the entire <a> tag from the DOM
+          parent.remove();
+        } else {
+          // Otherwise just remove the image tag
+          img.remove();
+        }
+      });
+
+      // The doc.body now contains only the text (with images removed)
+      this.contentParts.push({
+        type: 'text',
+        value: this.sanitizer.bypassSecurityTrustHtml(doc.body.innerHTML)
+      });
+
+    } else if (this.imageCount === 1) {
+      // SINGLE IMAGE MODE
+      // We want to preserve the "Text -> Image -> Text" flow?
+      // Or just render as is?
+      // Based on your template logic for case(1), we need to split parts.
+      // Reverting to a simple safe split for the single image case is easiest
+      // to keep your current template working for single images.
+
+      // Let's use the split logic just for this case, but cleaner:
+      this.parseSingleImageContent(rawContent);
+    } else {
+      // NO IMAGES
+      this.contentParts.push({
+        type: 'text',
+        value: this.sanitizer.bypassSecurityTrustHtml(rawContent)
+      });
+    }
+
+    console.log(this.imagesForGalleria)
+  }
+
+  // Helper for the single image case (preserves flow)
+  private parseSingleImageContent(html: string): void {
+    // Simple split to separate the image from text
+    const parts = html.split(/(<img[^>]*?>)/g);
+
+    parts.forEach(part => {
       if (part.startsWith('<img')) {
-        // This is an image part
+        // Extract src for the Single Image View
         const srcMatch = part.match(/src="(.*?)"/);
-        const styleMatch = part.match(/style="(.*?)"/);
+        this.contentParts.push({
+          type: 'image',
+          value: '',
+          imageAttributes: {
+            src: srcMatch ? srcMatch[1] : '',
+            style: 'width: 100%'
+          }
+        });
+      } else if (part.trim() !== '') {
+        // Clean up any ghost <a> tags that might have wrapped the image
+        // This regex removes a trailing <a...> or a leading </a>
+        let cleanedText = part.replace(/<a[^>]*?>\s*$/gi, '').replace(/^\s*<\/a>/gi, '');
 
-        if (srcMatch) {
-          const imageSrc = srcMatch[1];
-
-          tempImages.push({
-            itemImageSrc: imageSrc,
-            thumbnailImageSrc: imageSrc, // Use the same image for the thumbnail
-            alt: 'Article Image',
-            title: '' // You can add a title if needed
-          });
-
-          tempParts.push({
-            type: 'image',
-            value: '', // Not needed for image part
-            imageAttributes: {
-              src: imageSrc,
-              style: styleMatch ? styleMatch[1] : 'width: 100px;'
-            }
+        if (cleanedText.trim()) {
+          this.contentParts.push({
+            type: 'text',
+            value: this.sanitizer.bypassSecurityTrustHtml(cleanedText)
           });
         }
-      } else {
-        // This is a text part
-        tempParts.push({
-          type: 'text',
-          // Sanitize the HTML to prevent XSS attacks
-          value: this.sanitizer.bypassSecurityTrustHtml(part)
-        });
       }
     });
-
-    this.contentParts = tempParts;
-    this.imagesForGalleria = tempImages;
-    this.imageCount = tempImages.length;
   }
 }

@@ -24,6 +24,9 @@
         "ext-intl": "*"
     },
     "scripts": {
-        "migrate": "php bin/chess migrate"
+        "migrate": "php bin/chess migrate",
+        "deploy": "php /bin/chess deploy -e remote",
+        "deploy:fe": "php /bin/chess deploy -e remote frontend",
+        "deploy:be": "php /bin/chess deploy -e remote backend"
     }
 }

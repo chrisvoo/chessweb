@@ -24,21 +24,24 @@
         @if (imageCount > 1) {
           <p-galleria
             [value]="imagesForGalleria"
+            [(activeIndex)]="activeIndex"
             [circular]="true"
             [autoPlay]="true"
             [transitionInterval]="4000"
-            [showItemNavigators]="false"
-            [showThumbnails]="true"
+            [showItemNavigators]="true"
+            [showThumbnails]="false"
+            [numVisible]="5"
+            [responsiveOptions]="responsiveOptions"
             [containerStyle]="{ 'max-width': '800px', 'max-height': '500px', 'margin': '1rem auto' }"
             >
-            <ng-template pTemplate="item" let-item>
+            <ng-template #item let-item>
               <img
                 [src]="item.itemImageSrc"
                 [alt]="item.alt"
                 style="width: 100%; display: block;"
                 />
             </ng-template>
-            <ng-template pTemplate="thumbnail" let-item>
+            <ng-template #thumbnail let-item>
               <div class="p-galleria-thumbnail-content">
                 <img
                   [src]="item.thumbnailImageSrc"

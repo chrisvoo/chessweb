@@ -29,14 +29,14 @@ class CategoryRepository implements CategoryRepositoryInterface
     public function count(SimpleNamedFilters $filters): int
     {
         $table = Category::TABLE_NAME;
-        $whereCondition = isset($filters->name) ? "name LIKE :name" : '';
+        $whereCondition = isset($filters->name) ? "WHERE name LIKE :name" : '';
         $params = isset($filters->name) ? ['name' => "%{$filters->name}%"] : [];
 
         return $this->databaseManager->count(
             <<<SQL
             SELECT id
             FROM $table
-            WHERE $whereCondition
+            $whereCondition
 SQL,
             $params
         );
@@ -102,7 +102,7 @@ SQL,
          */
         $result = $this->databaseManager->row(
             <<<SQL
-            SELECT id, name, created_at, updated_at
+            SELECT id, name, slug, created_at, updated_at
             FROM $table
             WHERE id = :id
 SQL,

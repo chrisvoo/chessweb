@@ -34,7 +34,7 @@ class ArticlesCategoriesRepository implements ArticlesCategoriesRepositoryInterf
      * Save the tags for the specified articleId
      * @param int $articleId
      * @param array $fields The names of the columns, important for the order of rows to be inserted
-     * @param int[] $rows A list of category IDs
+     * @param array $rows A list of arrays with article ID and category ID
      * @return DatabaseOperation
      */
     public function saveCategoriesForArticle(int $articleId, array $fields, array $rows): DatabaseOperation

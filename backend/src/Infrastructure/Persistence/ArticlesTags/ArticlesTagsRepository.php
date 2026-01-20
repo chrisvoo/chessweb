@@ -34,7 +34,7 @@ class ArticlesTagsRepository implements ArticlesTagsRepositoryInterface
      * Save the tags for the specified articleId
      * @param int $articleId
      * @param array $fields The names of the columns, important for the order of rows to be inserted
-     * @param int[] $rows A list of records to insert
+     * @param array $rows A list of records to insert
      * @return DatabaseOperation
      */
     public function saveTagsForArticle(int $articleId, array $fields, array $rows): DatabaseOperation

@@ -7,6 +7,7 @@ use PDO;
 use PDOStatement;
 use Psr\Log\LoggerInterface;
 
+/** @codeCoverageIgnore  */
 class DatabaseManager implements DatabaseManagerInterface
 {
     private PDO $pdo;

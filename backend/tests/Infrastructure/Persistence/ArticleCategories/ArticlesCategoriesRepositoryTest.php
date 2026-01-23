@@ -8,10 +8,10 @@ use App\Infrastructure\Persistence\ArticlesCategories\ArticlesCategoriesReposito
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use PDOStatement;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Tests\IntegrationTestCase;
 
-class ArticlesCategoriesRepositoryTest extends TestCase
+class ArticlesCategoriesRepositoryTest extends IntegrationTestCase
 {
     private DatabaseManagerInterface|MockObject $database;
     private LoggerInterface|MockObject $logger;

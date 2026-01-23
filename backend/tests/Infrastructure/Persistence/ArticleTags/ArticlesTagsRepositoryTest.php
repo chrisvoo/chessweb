@@ -2,18 +2,16 @@
 
 namespace Tests\Infrastructure\Persistence\ArticleTags;
 
-use App\Domain\ArticlesCategories\ArticlesCategories;
 use App\Domain\ArticlesTags\ArticlesTags;
 use App\Domain\Operations\DatabaseOperation;
-use App\Infrastructure\Persistence\ArticlesCategories\ArticlesCategoriesRepository;
 use App\Infrastructure\Persistence\ArticlesTags\ArticlesTagsRepository;
 use App\Infrastructure\Persistence\DatabaseManagerInterface;
 use PDOStatement;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Tests\IntegrationTestCase;
 
-class ArticlesTagsRepositoryTest extends TestCase
+class ArticlesTagsRepositoryTest extends IntegrationTestCase
 {
     private DatabaseManagerInterface|MockObject $database;
     private LoggerInterface|MockObject $logger;

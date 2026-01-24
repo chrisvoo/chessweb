@@ -15,20 +15,20 @@ use Tests\ApiTestCase;
 
 class UpdateCategoryActionApiTest extends ApiTestCase
 {
-    private function getFakeTag(): array
+    private function getFakeCategory(): array
     {
-        $tag = Faker::fakeData(Category::class)->jsonSerialize();
-        unset($tag['created_at']);
-        unset($tag['updated_at']);
-        unset($tag['id']);
+        $category = Faker::fakeData(Category::class)->jsonSerialize();
+        unset($category['created_at']);
+        unset($category['updated_at']);
+        unset($category['id']);
 
-        return $tag;
+        return $category;
     }
 
     /**
      * @throws \ReflectionException
      */
-    public function testUpdateTagSuccess(): void
+    public function testUpdateCategorySuccess(): void
     {
         $repo = $this->mockRepository(CategoryRepositoryInterface::class);
         $dbOp = DatabaseOperation::newSingleEntitySuccessfullyUpdated(1);
@@ -37,7 +37,7 @@ class UpdateCategoryActionApiTest extends ApiTestCase
         $request = $this->createRequest(
             'PUT',
             '/api/category/1'
-        )->withParsedBody($this->getFakeTag());
+        )->withParsedBody($this->getFakeCategory());
 
         $response = $this->app->handle($request);
 
@@ -48,7 +48,7 @@ class UpdateCategoryActionApiTest extends ApiTestCase
         $this->assertEquals($serializedPayload, $payload);
     }
 
-    public function testUpdateTagNotFoundException(): void
+    public function testUpdateCategoryNotFoundException(): void
     {
         $repo = $this->mockRepository(CategoryRepositoryInterface::class);
         $repo->method('save')->willThrowException(new CategoryNotFoundException());
@@ -56,7 +56,7 @@ class UpdateCategoryActionApiTest extends ApiTestCase
         $request = $this->createRequest(
             'PUT',
             '/api/category/1'
-        )->withParsedBody($this->getFakeTag());
+        )->withParsedBody($this->getFakeCategory());
         $response = $this->app->handle($request);
         $payload = (string) $response->getBody();
 
@@ -64,5 +64,37 @@ class UpdateCategoryActionApiTest extends ApiTestCase
         $expectedPayload = new ActionPayload(404, null, $expectedError);
         $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
         $this->assertEquals($serializedPayload, $payload);
+    }
+
+    public function testUpdateCategoryFailsWhenOperationNotSuccessful(): void
+    {
+        $repo = $this->mockRepository(CategoryRepositoryInterface::class);
+
+        // Create a failed DatabaseOperation (e.g., duplicate entity)
+        $dbOp = DatabaseOperation::failed(
+            'Category Test already exists',
+            DatabaseOperation::ENTITY_DUPLICATED
+        );
+
+        $repo->method('save')->willReturn($dbOp);
+
+        $request = $this->createRequest(
+            'PUT',
+            '/api/category/1'
+        )->withParsedBody($this->getFakeCategory());
+
+        $response = $this->app->handle($request);
+        $payload = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(400, $payload['statusCode']);
+        $this->assertEquals([
+            'success' => false,
+            'message' => 'Category Test already exists',
+            'code' => DatabaseOperation::ENTITY_DUPLICATED
+        ], $payload['data']);
+        $this->assertEquals([
+            'type' => ActionError::BAD_REQUEST,
+            'description' => 'Category Test already exists'
+        ], $payload['error']);
     }
 }

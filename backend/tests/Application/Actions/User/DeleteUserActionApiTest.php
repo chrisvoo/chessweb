@@ -48,4 +48,24 @@ class DeleteUserActionApiTest extends ApiTestCase
         $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
         $this->assertEquals($serializedPayload, $payload);
     }
+
+    public function testDeleteUserNotFoundWhenAffectedRowsZero(): void
+    {
+        $repo = $this->mockRepository(UserRepositoryInterface::class);
+
+        // Create a DatabaseOperation with affectedRows = 0
+        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted(999);
+        $dbOp->affectedRows = 0;
+
+        $repo->method('delete')->willReturn($dbOp);
+
+        $request = $this->createRequest('DELETE', '/api/user/999');
+        $response = $this->app->handle($request);
+        $payload = (string) $response->getBody();
+
+        $expectedError = new ActionError(ActionError::RESOURCE_NOT_FOUND, "User not found");
+        $expectedPayload = new ActionPayload(404, null, $expectedError);
+        $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
+        $this->assertEquals($serializedPayload, $payload);
+    }
 }

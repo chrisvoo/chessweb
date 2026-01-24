@@ -68,4 +68,36 @@ class CreateTagActionApiTest extends ApiTestCase
         $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
         $this->assertEquals($serializedPayload, $payload);
     }
+
+    public function testCreateTagFailsWhenOperationNotSuccessful(): void
+    {
+        $repo = $this->mockRepository(TagRepositoryInterface::class);
+
+        // Create a failed DatabaseOperation (e.g., duplicate entity)
+        $dbOp = DatabaseOperation::failed(
+            'Tag Test already exists',
+            DatabaseOperation::ENTITY_DUPLICATED
+        );
+
+        $repo->method('save')->willReturn($dbOp);
+
+        $request = $this->createRequest(
+            'POST',
+            '/api/tag'
+        )->withParsedBody($this->getFakeTag());
+
+        $response = $this->app->handle($request);
+        $payload = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(400, $payload['statusCode']);
+        $this->assertEquals([
+            'success' => false,
+            'message' => 'Tag Test already exists',
+            'code' => DatabaseOperation::ENTITY_DUPLICATED
+        ], $payload['data']);
+        $this->assertEquals([
+            'type' => ActionError::BAD_REQUEST,
+            'description' => 'Tag Test already exists'
+        ], $payload['error']);
+    }
 }

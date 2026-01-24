@@ -46,4 +46,24 @@ class DeleteTagActionApiTest extends ApiTestCase
         $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
         $this->assertEquals($serializedPayload, $payload);
     }
+
+    public function testDeleteTagNotFoundWhenAffectedRowsZero(): void
+    {
+        $repo = $this->mockRepository(TagRepositoryInterface::class);
+
+        // Create a DatabaseOperation with affectedRows = 0
+        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted(999);
+        $dbOp->affectedRows = 0;
+
+        $repo->method('delete')->willReturn($dbOp);
+
+        $request = $this->createRequest('DELETE', '/api/tag/999');
+        $response = $this->app->handle($request);
+        $payload = (string) $response->getBody();
+
+        $expectedError = new ActionError(ActionError::RESOURCE_NOT_FOUND, "Tag not found");
+        $expectedPayload = new ActionPayload(404, null, $expectedError);
+        $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
+        $this->assertEquals($serializedPayload, $payload);
+    }
 }

@@ -8,9 +8,7 @@ use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
 use App\Domain\Category\CategoryNotFoundException;
 use App\Domain\Operations\DatabaseOperation;
-use App\Domain\Tag\TagNotFoundException;
 use App\Infrastructure\Persistence\Category\CategoryRepositoryInterface;
-use App\Infrastructure\Persistence\Tag\TagRepositoryInterface;
 use Tests\ApiTestCase;
 
 class DeleteCategoryActionApiTest extends ApiTestCase
@@ -18,7 +16,7 @@ class DeleteCategoryActionApiTest extends ApiTestCase
     /**
      * @throws \ReflectionException
      */
-    public function testGetSingleUserSuccess(): void
+    public function testDeleteCategorySuccess(): void
     {
         $repo = $this->mockRepository(CategoryRepositoryInterface::class);
         $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted(1);
@@ -34,12 +32,32 @@ class DeleteCategoryActionApiTest extends ApiTestCase
         $this->assertEquals($serializedPayload, $payload);
     }
 
-    public function testGetSingleUserNotFoundException(): void
+    public function testDeleteCategoryNotFoundException(): void
     {
         $repo = $this->mockRepository(CategoryRepositoryInterface::class);
         $repo->method('delete')->willThrowException(new CategoryNotFoundException());
 
         $request = $this->createRequest('DELETE', '/api/category/1');
+        $response = $this->app->handle($request);
+        $payload = (string) $response->getBody();
+
+        $expectedError = new ActionError(ActionError::RESOURCE_NOT_FOUND, "Category not found");
+        $expectedPayload = new ActionPayload(404, null, $expectedError);
+        $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
+        $this->assertEquals($serializedPayload, $payload);
+    }
+
+    public function testDeleteCategoryNotFoundWhenAffectedRowsZero(): void
+    {
+        $repo = $this->mockRepository(CategoryRepositoryInterface::class);
+        
+        // Create a DatabaseOperation with affectedRows = 0
+        $dbOp = DatabaseOperation::newSingleEntitySuccessfullyDeleted(999);
+        $dbOp->affectedRows = 0;
+        
+        $repo->method('delete')->willReturn($dbOp);
+
+        $request = $this->createRequest('DELETE', '/api/category/999');
         $response = $this->app->handle($request);
         $payload = (string) $response->getBody();
 

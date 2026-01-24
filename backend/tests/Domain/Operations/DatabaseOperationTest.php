@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Domain\Operations;
 
 use App\Domain\Operations\DatabaseOperation;
-use Tests\ApiTestCase;
+use PHPUnit\Framework\TestCase;
 
-class DatabaseOperationApiTest extends ApiTestCase
+class DatabaseOperationTest extends TestCase
 {
     public function testJsonSerialize()
     {

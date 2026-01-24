@@ -3,9 +3,9 @@
 namespace Tests\Domain\Tag;
 
 use App\Domain\Tag\Tag;
-use Tests\ApiTestCase;
+use PHPUnit\Framework\TestCase;
 
-class TagApiTest extends ApiTestCase
+class TagTest extends TestCase
 {
     public function testJsonSerialize(): void
     {

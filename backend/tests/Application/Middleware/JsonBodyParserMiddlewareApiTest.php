@@ -21,10 +21,9 @@ class JsonBodyParserMiddlewareApiTest extends ApiTestCase
         $stream = (new StreamFactory())->createStreamFromFile('php://temp', 'w+');
         $request = new Request('POST', $uri, $headers, [], [], $stream);
 
-        $middleware = $this->createPartialMock(JsonBodyParserMiddleware::class, [
-            'getContent'
-        ]);
-        $middleware->method('getContent')->willReturn('{"foo": "bar"}');
+        // No mock needed - when Content-Type is not application/json,
+        // the middleware skips JSON parsing and getContent() is never called
+        $middleware = new JsonBodyParserMiddleware();
         $handler = new RequestHandlerHelper();
         $middleware->process($request, $handler);
 

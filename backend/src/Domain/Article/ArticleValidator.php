@@ -22,7 +22,7 @@ class ArticleValidator implements ValidatorInterface
      * @param Request $request The request
      * @param array $data The request data
      * @param ValidationScope|null $scope The validation scope
-     * @throws NestedValidationException if the validation fails
+     * @throws InvalidRequestException if the validation fails
      */
     public function validate(Request $request, array $data, ?ValidationScope $scope = null): void
     {

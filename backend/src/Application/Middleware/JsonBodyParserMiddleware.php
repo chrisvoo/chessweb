@@ -12,6 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 class JsonBodyParserMiddleware implements Middleware
 {
+    /** @codeCoverageIgnore  */
     public function getContent(): string|false
     {
         return file_get_contents('php://input');

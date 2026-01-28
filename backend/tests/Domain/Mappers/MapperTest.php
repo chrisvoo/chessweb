@@ -92,7 +92,7 @@ class MapperTest extends TestCase
         ];
 
         $mapNestedProperties = [
-            'tags' => ['class' => Tag::class]
+            'tags' => ['class' => Tag::class, 'is_list' => true],
         ];
 
         $article = $this->mapper->map($data, Article::class, $mapNestedProperties);
@@ -138,8 +138,8 @@ class MapperTest extends TestCase
         ];
 
         $mapNestedProperties = [
-            'tags' => ['class' => Tag::class],
-            'categories' => ['class' => Category::class]
+            'tags' => ['class' => Tag::class, 'is_list' => true],
+            'categories' => ['class' => Category::class, 'is_list' => true]
         ];
 
         $article = $this->mapper->map($data, Article::class, $mapNestedProperties);
@@ -190,7 +190,7 @@ class MapperTest extends TestCase
         ];
 
         $mapNestedProperties = [
-            'tags' => ['class' => Tag::class]
+            'tags' => ['class' => Tag::class, 'is_list' => true]
         ];
 
         $article = $this->mapper->map($data, Article::class, $mapNestedProperties);

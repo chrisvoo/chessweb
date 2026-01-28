@@ -35,7 +35,7 @@ class UpdateArticleAction extends Action
 
         $this->validator->validate($this->request, $body, ValidationScope::UPDATE);
 
-        $article = (new Mapper())->map($body, Article::class);
+        $article = (new Mapper())->map($body, Article::class, Article::getMappers());
         $article->author_id = $user->id;
         $this->contentFormatter->formatOnSave($article);
         $op = $this->articleRepository->save($article);

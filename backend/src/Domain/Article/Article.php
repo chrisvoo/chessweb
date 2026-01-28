@@ -63,4 +63,12 @@ class Article extends BaseDomainEntity implements JsonSerializable
            'created_at'
         ];
     }
+
+    public static function getMappers(): array
+    {
+        return [
+            'tags' => ['class' => Tag::class, 'is_list' => true],
+            'categories' => ['class' => Category::class, 'is_list' => true]
+        ];
+    }
 }

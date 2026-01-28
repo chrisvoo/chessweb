@@ -38,10 +38,7 @@ class CreateArticleAction extends Action
         $article = (new Mapper())->map(
             $body,
             Article::class,
-            [
-                'tags' => ['class' => Tag::class, 'is_list' => true],
-                'categories' => ['class' => Category::class, 'is_list' => true]
-            ]
+            Article::getMappers()
         );
         $article->author_id = $user->id;
         $this->contentFormatter->formatOnSave($article);

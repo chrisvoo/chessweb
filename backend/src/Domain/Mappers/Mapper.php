@@ -31,11 +31,15 @@ class Mapper implements MapperInterface
                             "Class " . $nestedObjectProps['class'] . " does not exist."
                         );
                     }
-                    $nestedInstances = [];
-                    foreach ($value as $classProps) {
-                        $nestedInstances[] = $this->map($classProps, $nestedObjectProps['class']);
+                    if ($nestedObjectProps['is_list'] ?? false) {
+                        $nestedInstances = [];
+                        foreach ($value as $classProps) {
+                            $nestedInstances[] = $this->map($classProps, $nestedObjectProps['class']);
+                        }
+                        $instance->$property = $nestedInstances;
+                    } else {
+                        $instance->$property = $this->map($value, $nestedObjectProps['class']);
                     }
-                    $instance->$property = $nestedInstances;
                 } else {
                     $instance->$property = $value;
                 }

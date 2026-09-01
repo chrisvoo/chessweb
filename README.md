@@ -1,11 +1,11 @@
-# www.scacchilatorre.it
+# A chess website
 
-## Backend
+This was a simple exploring project aimed at providing custom CMS functionalities without requiring structured solutions like Wordpress and the like. 
 
-A Slimframework application that implements the REST API for the usual CRUD operations.
+## Tech stack
 
-## Resources
-
-* [PDO Wrapper](https://github.com/dcblogdev/pdo-wrapper)
+* backend: Slim framework (API)
+* frontend: Angular app (UI)
+* CLI: Symfony CLI (deploy and migration tasks)
 
 
